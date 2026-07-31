@@ -1,0 +1,448 @@
+import React, { useState } from 'react';
+import { Calendar, Printer, FileSpreadsheet, Sparkles, AlertTriangle, ChevronDown, ChevronUp, ExternalLink, Image as ImageIcon, TrendingUp, Filter } from 'lucide-react';
+import { CATEGORY_METADATA } from '../types/expense';
+import type { ExpenseItem, ExpenseCategory, ReportPeriod } from '../types/expense';
+import { formatVND, generateMultiPeriodReport } from '../services/storageService';
+
+interface SaturdayReportViewProps {
+  projectName: string;
+  onSelectExpense: (item: ExpenseItem) => void;
+  onExportExcel: () => void;
+  allExpenses: ExpenseItem[];
+}
+
+export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
+  projectName,
+  onSelectExpense,
+  onExportExcel,
+  allExpenses
+}) => {
+  const [selectedPeriod, setSelectedPeriod] = useState<ReportPeriod>('all');
+  
+  const report = generateMultiPeriodReport(allExpenses, selectedPeriod);
+
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
+    [report.categoryBreakdown[0]?.category || 'phần_thô_vật_tư']: true
+  });
+
+  const toggleCategory = (catKey: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [catKey]: !prev[catKey]
+    }));
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return (
+    <div style={{ maxWidth: '1100px', margin: '0 auto', paddingBottom: '60px' }}>
+      
+      {/* Top Header Banner & Multi-Period Switcher */}
+      <div className="glass-card" style={{ padding: '24px', marginBottom: '24px', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.12) 100%)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span className="badge" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.85rem' }}>
+                <Calendar size={14} /> {report.periodLabel}
+              </span>
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                Tự động tổng hợp cho {projectName}
+              </span>
+            </div>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', marginTop: '10px' }}>
+              Báo Cáo Phân Tích & Rà Soát Chi Phí
+            </h2>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+              Theo dõi biến động chi phí theo tuần, tháng và toàn bộ chu kỳ 12 tháng công trình
+            </p>
+          </div>
+
+          <div className="no-print" style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn btn-secondary" onClick={handlePrint}>
+              <Printer size={18} />
+              <span>In Báo Cáo / PDF</span>
+            </button>
+            <button className="btn btn-success" onClick={onExportExcel}>
+              <FileSpreadsheet size={18} />
+              <span>Xuất Excel</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Period Selector Tabs Bar: Tuần / Tháng / Quý / Toàn Bộ Dự Án */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Filter size={14} /> Kỳ Báo Cáo:
+          </span>
+
+          <button
+            onClick={() => setSelectedPeriod('weekly')}
+            className={`btn btn-sm ${selectedPeriod === 'weekly' ? 'btn-primary' : 'btn-secondary'}`}
+          >
+            Tuần
+          </button>
+
+          <button
+            onClick={() => setSelectedPeriod('monthly')}
+            className={`btn btn-sm ${selectedPeriod === 'monthly' ? 'btn-primary' : 'btn-secondary'}`}
+          >
+            Tháng
+          </button>
+
+          <button
+            onClick={() => setSelectedPeriod('quarterly')}
+            className={`btn btn-sm ${selectedPeriod === 'quarterly' ? 'btn-primary' : 'btn-secondary'}`}
+          >
+            Quý
+          </button>
+
+          <button
+            onClick={() => setSelectedPeriod('all')}
+            className={`btn btn-sm ${selectedPeriod === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+          >
+            Toàn Bộ Dự Án
+          </button>
+        </div>
+
+      </div>
+
+      {/* TOP PRIORITY: Flagged Expenses Needing Review */}
+      {report.flaggedExpenses.length > 0 ? (
+        <div className="glass-card" style={{ padding: '24px', marginBottom: '24px', border: '2px solid rgba(245, 158, 11, 0.6)', background: 'rgba(245, 158, 11, 0.06)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ padding: '8px', background: 'rgba(245, 158, 11, 0.2)', borderRadius: '10px' }}>
+                <AlertTriangle color="#fbbf24" size={24} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fbbf24' }}>
+                  ⚠️ Các Mục Cần Bạn & Mẹ Rà Soát Lại ({report.flaggedExpenses.length} mục)
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                  Hãy xem lại hóa đơn hoặc ghi chú bên dưới trong kỳ báo cáo này
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {report.flaggedExpenses.map(item => (
+              <div
+                key={item.id}
+                onClick={() => onSelectExpense(item)}
+                style={{
+                  background: 'var(--bg-input)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: '14px',
+                  padding: '14px 18px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  transition: 'transform 0.15s'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  {item.imageUrl ? (
+                    <img src={item.imageUrl} alt="Hóa đơn" style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
+                  ) : (
+                    <div style={{ width: '48px', height: '48px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <ImageIcon size={20} color="var(--text-dim)" />
+                    </div>
+                  )}
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontWeight: 800, color: '#fbbf24', fontSize: '1.05rem' }}>{formatVND(item.amount)}</span>
+                      {item.quantity && (
+                        <span style={{ fontSize: '0.8rem', background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: '6px', color: '#f8fafc', fontWeight: 700 }}>
+                          SL: {item.quantity} {item.unit || ''}
+                        </span>
+                      )}
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>• {item.date}</span>
+                    </div>
+                    <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', marginTop: '3px' }}>
+                      {item.merchant} ({CATEGORY_METADATA[item.category]?.label})
+                    </p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>Ghi chú: {item.note}</p>
+                  </div>
+                </div>
+
+                <div className="no-print" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700 }}>
+                  <span>Rà soát & Sửa</span>
+                  <ExternalLink size={16} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="glass-card" style={{ padding: '16px 24px', marginBottom: '24px', border: '1px solid rgba(16, 185, 129, 0.3)', background: 'rgba(16, 185, 129, 0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '1.2rem' }}>🟢</span>
+          <div>
+            <p style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>Tất cả hóa đơn trong kỳ này đã được xác minh chính xác!</p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Không có giao dịch nào đang chờ kiểm tra lại.</p>
+          </div>
+        </div>
+      )}
+
+      {/* AI Executive Summary Card */}
+      <div className="glass-card" style={{ padding: '20px 24px', marginBottom: '24px', borderLeft: '4px solid #10b981' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+          <div style={{ padding: '8px', background: 'rgba(16, 185, 129, 0.2)', borderRadius: '10px', color: '#34d399' }}>
+            <Sparkles size={20} />
+          </div>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#34d399' }}>
+            Tóm Tắt Tổng Quan ({report.periodLabel})
+          </h3>
+        </div>
+        <p style={{ fontSize: '0.95rem', color: '#f8fafc', lineHeight: '1.6', fontWeight: 500 }}>
+          {report.aiExecutiveSummary}
+        </p>
+      </div>
+
+      {/* Financial Metrics Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div className="glass-card" style={{ padding: '20px' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Tiêu ({report.periodType.toUpperCase()})</p>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#34d399', marginTop: '6px' }}>
+            {formatVND(report.totalAmount)}
+          </h3>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>{report.itemCount} hóa đơn & giao dịch</p>
+        </div>
+
+        <div className="glass-card" style={{ padding: '20px' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Hạng Mục Chi Nhiều Nhất</p>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#60a5fa', marginTop: '6px' }}>
+            {report.categoryBreakdown[0]?.label || 'Không có'}
+          </h3>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            {formatVND(report.categoryBreakdown[0]?.totalAmount || 0)} ({report.categoryBreakdown[0]?.percentage}%)
+          </p>
+        </div>
+
+        <div className="glass-card" style={{ padding: '20px' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Số Công Thợ Đã Ghi Nhận</p>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#34d399', marginTop: '6px' }}>
+            👷 {report.totalManDaysRecorded} Công Thợ
+          </h3>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Phần thô & Hoàn thiện</p>
+        </div>
+      </div>
+
+      {/* 12-Month Project Lifecycle Monthly Breakdown Trend */}
+      {selectedPeriod === 'all' && report.monthlyBreakdown.length > 0 && (
+        <div className="glass-card" style={{ padding: '24px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+            <TrendingUp size={20} color="#60a5fa" />
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc' }}>
+              📈 Tiến Độ Chi Phí Theo Tháng (12 Tháng Dự Án)
+            </h3>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+            {report.monthlyBreakdown.map((m, idx) => (
+              <div key={idx} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '14px' }}>
+                <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#60a5fa' }}>{m.label}</p>
+                <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#34d399', marginTop: '4px' }}>
+                  {formatVND(m.totalAmount)}
+                </h4>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  {m.itemCount} hóa đơn {m.manDays > 0 ? `• 👷 ${m.manDays} công` : ''}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Collapsible Accordion for 9 Categories & Actual Transactions */}
+      <div className="glass-card" style={{ padding: '24px', marginBottom: '24px' }}>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', marginBottom: '6px' }}>
+          📊 Chi Tiết Giao Dịch Theo 9 Danh Mục ({report.periodLabel})
+        </h3>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
+          Click/chạm vào bất kỳ danh mục nào bên dưới để xem danh sách chi tiết hóa đơn & số lượng tương ứng
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {report.categoryBreakdown.map((catSummary) => {
+            const catKey = catSummary.category as ExpenseCategory;
+            const meta = CATEGORY_METADATA[catKey] || CATEGORY_METADATA['chi_phí_khác'];
+            const isExpanded = Boolean(expandedCategories[catKey]);
+
+            const categoryTransactions = allExpenses.filter(i => i.category === catKey);
+
+            return (
+              <div
+                key={catKey}
+                style={{
+                  background: 'var(--bg-input)',
+                  border: `1px solid ${isExpanded ? meta.color : 'var(--border-color)'}`,
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {/* Clickable Category Header Accordion Bar */}
+                <div
+                  onClick={() => toggleCategory(catKey)}
+                  style={{
+                    padding: '16px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    background: isExpanded ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
+                    flexWrap: 'wrap',
+                    gap: '10px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '200px' }}>
+                    <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: meta.color, flexShrink: 0 }} />
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ fontWeight: 800, fontSize: '1rem', color: '#f8fafc' }}>{meta.label}</span>
+                        <span className="badge" style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                          {catSummary.count} giao dịch
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                        Ví dụ: {meta.examples.join(', ')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ textAlign: 'right' }}>
+                      <p style={{ fontSize: '1.1rem', fontWeight: 800, color: meta.color }}>
+                        {formatVND(catSummary.totalAmount)}
+                      </p>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        {catSummary.percentage}% tổng chi
+                      </p>
+                    </div>
+                    <div style={{ color: meta.color, padding: '4px' }}>
+                      {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress bar line */}
+                <div style={{ width: '100%', height: '4px', background: 'rgba(255, 255, 255, 0.05)' }}>
+                  <div style={{ width: `${catSummary.percentage}%`, height: '100%', background: meta.color }} />
+                </div>
+
+                {/* Expanded Transactions List Dropdown */}
+                {isExpanded && (
+                  <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', background: 'rgba(0, 0, 0, 0.15)' }}>
+                    {categoryTransactions.length === 0 ? (
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                        Chưa có giao dịch nào trong danh mục này.
+                      </p>
+                    ) : (
+                      <div>
+                        {/* Mobile Card List View for Accordion */}
+                        <div className="mobile-only-cards" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {categoryTransactions.map(item => {
+                            const uCost = item.unitCost || (item.quantity && item.amount ? Math.round(item.amount / item.quantity) : undefined);
+                            return (
+                              <div
+                                key={item.id}
+                                onClick={() => onSelectExpense(item)}
+                                style={{
+                                  background: 'var(--bg-input)',
+                                  border: '1px solid var(--border-color)',
+                                  borderRadius: '12px',
+                                  padding: '12px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <span style={{ fontWeight: 800, color: '#34d399', fontSize: '1rem' }}>{formatVND(item.amount)}</span>
+                                  <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{item.date}</span>
+                                </div>
+                                <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>
+                                  {item.merchant} {item.subCategory ? `(↳ ${item.subCategory})` : ''}
+                                </p>
+                                {item.quantity && (
+                                  <p style={{ fontSize: '0.78rem', color: '#fbbf24', fontWeight: 700, marginTop: '2px' }}>
+                                    SL: {item.quantity} {item.unit || ''} {uCost ? `(${formatVND(uCost)}/đv)` : ''}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Desktop Table View for Accordion */}
+                        <div className="desktop-only-table" style={{ overflowX: 'auto' }}>
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+                            <thead>
+                              <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-dim)', fontSize: '0.72rem', textTransform: 'uppercase' }}>
+                                <th style={{ padding: '8px' }}>Mã / Ngày</th>
+                                <th style={{ padding: '8px' }}>Số Lượng (Quantity)</th>
+                                <th style={{ padding: '8px' }}>Đơn Giá (Unit Cost)</th>
+                                <th style={{ padding: '8px' }}>Số Tiền (VND)</th>
+                                <th style={{ padding: '8px' }}>Chi Tiết Phụ</th>
+                                <th style={{ padding: '8px' }}>Nhà Cung Cấp / Thợ</th>
+                                <th style={{ padding: '8px' }}>Ghi Chú</th>
+                                <th style={{ padding: '8px', textAlign: 'right' }}>Thao Tác</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {categoryTransactions.map(item => (
+                                <tr key={item.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                  <td style={{ padding: '10px 8px', color: 'var(--text-muted)' }}>
+                                    <strong>{item.id}</strong>
+                                    <br />
+                                    <span style={{ fontSize: '0.75rem' }}>{item.date}</span>
+                                  </td>
+                                  <td style={{ padding: '10px 8px', fontWeight: 800, color: item.quantity ? '#f8fafc' : 'var(--text-dim)' }}>
+                                    {item.quantity ? `${item.quantity} ${item.unit || ''}` : item.manDays ? `👷 ${item.manDays} công` : '—'}
+                                  </td>
+                                  <td style={{ padding: '10px 8px', fontWeight: 700, color: item.unitCost ? '#fbbf24' : 'var(--text-dim)' }}>
+                                    {item.unitCost ? formatVND(item.unitCost) : '—'}
+                                  </td>
+                                  <td style={{ padding: '10px 8px', fontWeight: 800, color: '#34d399' }}>
+                                    {formatVND(item.amount)}
+                                  </td>
+                                  <td style={{ padding: '10px 8px', color: '#60a5fa', fontWeight: 600 }}>
+                                    {item.subCategory || '—'}
+                                  </td>
+                                  <td style={{ padding: '10px 8px', fontWeight: 700, color: '#f8fafc' }}>
+                                    {item.merchant}
+                                  </td>
+                                  <td style={{ padding: '10px 8px', color: 'var(--text-dim)', maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {item.note}
+                                  </td>
+                                  <td style={{ padding: '10px 8px', textAlign: 'right' }}>
+                                    <button
+                                      className="btn btn-secondary btn-sm"
+                                      onClick={() => onSelectExpense(item)}
+                                      style={{ padding: '4px 10px', fontSize: '0.78rem' }}
+                                    >
+                                      Xem & Sửa
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+    </div>
+  );
+};
