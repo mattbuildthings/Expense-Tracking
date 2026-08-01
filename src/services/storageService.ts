@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { CATEGORY_METADATA } from '../types/expense';
-import type { ExpenseItem, WeeklyReport, AuditLogEntry, FilterOptions, MultiPeriodReport, ReportPeriod, MonthlySummary, CategoryBudgets, ExpenseCategory, CapitalTransaction } from '../types/expense';
+import type { ExpenseItem, WeeklyReport, AuditLogEntry, FilterOptions, MultiPeriodReport, ReportPeriod, MonthlySummary, CategoryBudgets, ExpenseCategory, CapitalTransaction, VendorQuotation } from '../types/expense';
 import { getSupabaseClient } from './supabaseClient';
 
 const STORAGE_KEY = 'build_expenses_data_v7';
@@ -90,6 +90,36 @@ export function deleteCapitalTransaction(id: string): void {
   const transactions = getCapitalTransactions();
   const updated = transactions.filter(t => t.id !== id);
   localStorage.setItem(CAPITAL_TRANSACTIONS_KEY, JSON.stringify(updated));
+}
+
+const VENDOR_QUOTATIONS_KEY = 'build_vendor_quotations';
+
+export function getVendorQuotations(): VendorQuotation[] {
+  const raw = localStorage.getItem(VENDOR_QUOTATIONS_KEY);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    return [];
+  }
+}
+
+export function saveVendorQuotation(quote: Omit<VendorQuotation, 'id' | 'createdAt'>): VendorQuotation {
+  const quotes = getVendorQuotations();
+  const newQuote: VendorQuotation = {
+    ...quote,
+    id: 'quote_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+    createdAt: new Date().toISOString()
+  };
+  const updated = [newQuote, ...quotes];
+  localStorage.setItem(VENDOR_QUOTATIONS_KEY, JSON.stringify(updated));
+  return newQuote;
+}
+
+export function deleteVendorQuotation(id: string): void {
+  const quotes = getVendorQuotations();
+  const updated = quotes.filter(q => q.id !== id);
+  localStorage.setItem(VENDOR_QUOTATIONS_KEY, JSON.stringify(updated));
 }
 
 export function getUniqueVendors(expenses: ExpenseItem[]): string[] {

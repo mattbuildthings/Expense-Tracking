@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Users, HardHat, Boxes, Armchair, Briefcase, Search, ChevronDown, ChevronUp, FileSpreadsheet } from 'lucide-react';
 import type { ExpenseItem, ExpenseCategory } from '../types/expense';
-import { formatVND, removeVietnameseTones, exportVendorsToExcel } from '../services/storageService';
+import { formatVND, removeVietnameseTones, exportVendorsToExcel, getVendorQuotations } from '../services/storageService';
 
 export type VendorType = 'thợ_thi_công' | 'cung_cấp_vlxd' | 'cung_cấp_thiết_bị_nội_thất' | 'cung_cấp_dịch_vụ_khác';
 
@@ -252,6 +252,11 @@ export const VendorView: React.FC<VendorViewProps> = ({
           const IconComp = typeMeta.icon;
           const isSelected = selectedVendorName === vendor.name;
 
+          const allQuotes = getVendorQuotations();
+          const vendorQuotes = allQuotes.filter(q => q.vendorName.trim().toLowerCase() === vendor.name.trim().toLowerCase());
+          const quotedTotal = vendorQuotes.filter(q => q.status === 'signed').reduce((sum, q) => sum + q.amount, 0);
+          const remainingContract = quotedTotal - vendor.totalPaid;
+
           return (
             <div
               key={vendor.name}
@@ -282,10 +287,27 @@ export const VendorView: React.FC<VendorViewProps> = ({
                 {vendor.name}
               </h3>
 
-              {/* Total Paid */}
-              <p style={{ fontSize: '1.25rem', fontWeight: 800, color: '#34d399', marginBottom: '8px' }}>
-                {formatVND(vendor.totalPaid)}
-              </p>
+              {/* Contract vs Paid Numbers */}
+              {quotedTotal > 0 ? (
+                <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '10px', padding: '10px', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+                    <span style={{ color: '#818cf8', fontWeight: 700 }}>📜 Giá trị hợp đồng:</span>
+                    <span style={{ color: '#818cf8', fontWeight: 800 }}>{formatVND(quotedTotal)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+                    <span style={{ color: 'var(--text-dim)' }}>💸 Đã chi thanh toán:</span>
+                    <span style={{ color: '#38bdf8', fontWeight: 800 }}>{formatVND(vendor.totalPaid)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', borderTop: '1px dashed var(--border-color)', paddingTop: '4px' }}>
+                    <span style={{ color: 'var(--text-dim)' }}>⏳ Còn lại thuộc HĐ:</span>
+                    <span style={{ color: remainingContract < 0 ? '#f87171' : '#34d399', fontWeight: 800 }}>{formatVND(remainingContract)}</span>
+                  </div>
+                </div>
+              ) : (
+                <p style={{ fontSize: '1.25rem', fontWeight: 800, color: '#34d399', marginBottom: '8px' }}>
+                  {formatVND(vendor.totalPaid)}
+                </p>
+              )}
 
               {/* Man days info if applicable */}
               {vendor.totalManDays > 0 && (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { HardHat, PlusCircle, Calendar, Settings, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users, Wallet } from 'lucide-react';
+import { HardHat, PlusCircle, Calendar, Settings, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users, Wallet, FileText } from 'lucide-react';
 import { formatVND } from '../services/storageService';
 
 interface NavbarProps {
@@ -10,6 +10,7 @@ interface NavbarProps {
   setActiveView: (view: 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors' | 'cash_flow') => void;
   onOpenUpload: () => void;
   onOpenManualCreate: () => void;
+  onOpenQuotationModal: () => void;
   onOpenSettings: () => void;
   onOpenAuditLog: () => void;
   onLockApp: () => void;
@@ -23,6 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveView,
   onOpenUpload,
   onOpenManualCreate,
+  onOpenQuotationModal,
   onOpenSettings,
   onOpenAuditLog,
   onLockApp
@@ -88,6 +90,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button className="btn btn-secondary" onClick={onOpenManualCreate} title="Tạo hóa đơn thủ công khi không có ảnh đính kèm">
               <FilePlus size={18} color="#60a5fa" />
               <span>Tạo Hóa Đơn</span>
+            </button>
+
+            <button className="btn btn-secondary" onClick={onOpenQuotationModal} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }} title="Nhập báo giá hoặc hợp đồng chi tiết với nhà cung cấp">
+              <FileText size={18} color="#818cf8" />
+              <span>+ Nhập Báo Giá / HĐ</span>
             </button>
 
             <button className="btn btn-secondary" onClick={onOpenAuditLog} title="Lịch sử giao dịch & Thùng rác khôi phục">

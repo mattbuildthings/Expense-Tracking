@@ -12,8 +12,9 @@ import { SettingsModal } from './components/SettingsModal';
 import { PinLockScreen } from './components/PinLockScreen';
 import { AuditLogModal } from './components/AuditLogModal';
 import { ExportModal } from './components/ExportModal';
+import { QuotationModal } from './components/QuotationModal';
 import type { ExportContext } from './components/ExportModal';
-import type { ExpenseItem, AuditLogEntry } from './types/expense';
+import type { ExpenseItem, AuditLogEntry, VendorQuotation } from './types/expense';
 import {
   getExpenses,
   getDeletedExpenses,
@@ -29,7 +30,8 @@ import {
   fetchExpensesFromSupabase,
   subscribeToSupabaseChanges,
   getUniqueVendors,
-  getUniqueSubCategories
+  getUniqueSubCategories,
+  saveVendorQuotation
 } from './services/storageService';
 
 export default function App() {
@@ -46,6 +48,7 @@ export default function App() {
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isManualCreateOpen, setIsManualCreateOpen] = useState(false);
+  const [isQuotationOpen, setIsQuotationOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -57,6 +60,11 @@ export default function App() {
     setExportContext(context);
     setExportExpenses(customExpenses || expenses);
     setIsExportOpen(true);
+  };
+
+  const handleCreateQuotation = (quote: Omit<VendorQuotation, 'id' | 'createdAt'>) => {
+    saveVendorQuotation(quote);
+    refreshAllData();
   };
 
   // Load initial data
@@ -161,6 +169,7 @@ export default function App() {
         setActiveView={setActiveView}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenManualCreate={() => setIsManualCreateOpen(true)}
+        onOpenQuotationModal={() => setIsQuotationOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenAuditLog={() => setIsAuditLogOpen(true)}
         onLockApp={() => setIsLocked(true)}
@@ -177,6 +186,7 @@ export default function App() {
             onBatchVerify={handleBatchVerify}
             onExportExcel={() => handleOpenExport('ledger')}
             onOpenUpload={() => setIsUploadOpen(true)}
+            onOpenQuotationModal={() => setIsQuotationOpen(true)}
           />
         ) : activeView === 'saturday_report' ? (
           <SaturdayReportView
@@ -195,6 +205,7 @@ export default function App() {
               setSelectedExpense(item);
             }}
             onExportExcel={() => handleOpenExport('bva_budget')}
+            onOpenQuotationModal={() => setIsQuotationOpen(true)}
           />
         ) : activeView === 'vendors' ? (
           <VendorView
@@ -226,6 +237,15 @@ export default function App() {
         isOpen={isManualCreateOpen}
         onClose={() => setIsManualCreateOpen(false)}
         onSave={handleCreateManualExpense}
+        existingVendors={existingVendors}
+        existingSubCategories={existingSubCategories}
+      />
+
+      {/* Vendor Quotation & Contract Modal */}
+      <QuotationModal
+        isOpen={isQuotationOpen}
+        onClose={() => setIsQuotationOpen(false)}
+        onSave={handleCreateQuotation}
         existingVendors={existingVendors}
         existingSubCategories={existingSubCategories}
       />

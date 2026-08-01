@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Trash2, CheckCircle, ExternalLink, Boxes, AlertTriangle, ShieldCheck, Plus, Paintbrush, HardHat, Armchair, Filter, ChevronLeft, ChevronRight, RotateCcw, FileSpreadsheet } from 'lucide-react';
+import { Search, Trash2, CheckCircle, ExternalLink, Boxes, AlertTriangle, ShieldCheck, Plus, Paintbrush, HardHat, Armchair, Filter, ChevronLeft, ChevronRight, RotateCcw, FileSpreadsheet, FileText } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, FilterOptions } from '../types/expense';
 import { formatVND, filterExpenses, getCategoryBudgets, getInitialFunds } from '../services/storageService';
@@ -12,6 +12,7 @@ interface ExpenseLedgerProps {
   onBatchVerify: (ids: string[]) => void;
   onExportExcel: () => void;
   onOpenUpload: () => void;
+  onOpenQuotationModal?: () => void;
 }
 
 const ITEMS_PER_PAGE = 25;
@@ -23,7 +24,8 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
   onBatchDelete,
   onBatchVerify,
   onExportExcel,
-  onOpenUpload
+  onOpenUpload,
+  onOpenQuotationModal
 }) => {
   const [filters, setFilters] = useState<FilterOptions>({
     searchTerm: '',
@@ -296,6 +298,18 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
             <button className="btn btn-secondary btn-sm" onClick={handleResetFilters} title="Đặt lại bộ lọc">
               <RotateCcw size={16} />
             </button>
+
+            {onOpenQuotationModal && (
+              <button
+                className="btn btn-secondary"
+                onClick={onOpenQuotationModal}
+                style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }}
+                title="Nhập báo giá hoặc hợp đồng chi tiết với nhà cung cấp"
+              >
+                <FileText size={16} />
+                <span>+ Nhập Báo Giá / HĐ</span>
+              </button>
+            )}
 
             <button
               className="btn btn-secondary"

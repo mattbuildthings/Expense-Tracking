@@ -61,6 +61,21 @@ export interface CapitalTransaction {
   createdAt: string;
 }
 
+export type QuotationStatus = 'signed' | 'draft';
+
+export interface VendorQuotation {
+  id: string;
+  vendorName: string;
+  title: string;
+  category: ExpenseCategory;
+  subCategory?: string;
+  amount: number;
+  status: QuotationStatus;
+  date: string;
+  note?: string;
+  createdAt: string;
+}
+
 export interface FilterOptions {
   searchTerm: string;
   category: string; // 'all' or ExpenseCategory

@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Target, Save, AlertCircle, ChevronDown, ChevronUp, Check, Edit2, FileSpreadsheet } from 'lucide-react';
+import { Target, Save, AlertCircle, ChevronDown, ChevronUp, Check, Edit2, FileSpreadsheet, FileText, Trash2, Plus } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
-import type { ExpenseItem, ExpenseCategory, CategoryBudgets } from '../types/expense';
-import { formatVND, getCategoryBudgets, saveCategoryBudgets, generateMultiPeriodReport, exportBvaToExcel } from '../services/storageService';
+import type { ExpenseItem, ExpenseCategory, CategoryBudgets, VendorQuotation } from '../types/expense';
+import { formatVND, getCategoryBudgets, saveCategoryBudgets, generateMultiPeriodReport, exportBvaToExcel, getVendorQuotations, deleteVendorQuotation } from '../services/storageService';
 
 interface BudgetViewProps {
   projectName: string;
   allExpenses: ExpenseItem[];
   onSelectExpense: (item: ExpenseItem) => void;
   onExportExcel?: () => void;
+  onOpenQuotationModal?: () => void;
 }
 
 function formatFormattedNumber(raw: number | string | undefined | null): string {
@@ -30,12 +31,21 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
   projectName,
   allExpenses,
   onSelectExpense,
-  onExportExcel
+  onExportExcel,
+  onOpenQuotationModal
 }) => {
   const [budgets, setBudgets] = useState<CategoryBudgets>(getCategoryBudgets());
+  const [quotations, setQuotations] = useState<VendorQuotation[]>(getVendorQuotations());
   const [isEditing, setIsEditing] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+
+  const handleDeleteQuote = (id: string) => {
+    if (confirm('Bạn có chắc chắn muốn xóa báo giá/hợp đồng này?')) {
+      deleteVendorQuotation(id);
+      setQuotations(getVendorQuotations());
+    }
+  };
 
   const report = generateMultiPeriodReport(allExpenses, 'all');
 
@@ -201,7 +211,11 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => {
             const key = catKey as ExpenseCategory;
-            const targetB = budgets[key] || 0;
+            const catQuotes = quotations.filter(q => q.category === key);
+            const signedQuotesTotal = catQuotes.filter(q => q.status === 'signed').reduce((sum, q) => sum + q.amount, 0);
+            
+            // Quotation-driven target budget if signed quotes exist, otherwise user flat budget
+            const targetB = signedQuotesTotal > 0 ? signedQuotesTotal : (budgets[key] || 0);
             const catSummary = report.categoryBreakdown.find(c => c.category === key) || { totalAmount: 0, count: 0 };
             const actual = catSummary.totalAmount;
             const remaining = targetB - actual;
@@ -227,11 +241,16 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                 <div style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
                   
                   {/* Category Title & Icon */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '240px', flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '260px', flex: 1 }}>
                     <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: meta.color, flexShrink: 0 }} />
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#f8fafc' }}>{meta.label}</span>
+                        {catQuotes.length > 0 && (
+                          <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', fontSize: '0.72rem', fontWeight: 700 }}>
+                            📜 {catQuotes.length} Hợp đồng ({formatVND(signedQuotesTotal)})
+                          </span>
+                        )}
                         {isOver && (
                           <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', fontSize: '0.72rem', fontWeight: 800 }}>
                             ⚠️ Vượt {formatVND(actual - targetB)}
@@ -239,7 +258,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                         )}
                       </div>
                       <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '2px' }}>
-                        {meta.englishLabel} • {catSummary.count} giao dịch
+                        {meta.englishLabel} • {catSummary.count} hóa đơn
                       </p>
                     </div>
                   </div>
@@ -249,8 +268,10 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     
                     {/* Target Budget Input / Display */}
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Hạn Mức Dự Toán</p>
-                      {isEditing ? (
+                      <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
+                        {signedQuotesTotal > 0 ? 'Dự Toán (Theo HĐ)' : 'Hạn Mức Dự Toán'}
+                      </p>
+                      {isEditing && signedQuotesTotal === 0 ? (
                         <input
                           type="text"
                           value={formatFormattedNumber(targetB)}
@@ -295,7 +316,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                       className="btn btn-secondary btn-sm"
                       onClick={() => toggleCategory(key)}
                       style={{ padding: '8px', borderRadius: '8px' }}
-                      title="Xem danh sách chi tiết"
+                      title="Xem chi tiết hợp đồng & hóa đơn"
                     >
                       {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                     </button>
@@ -308,51 +329,143 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                   <div style={{ width: `${Math.min(100, pctUsed)}%`, height: '100%', background: barColor, transition: 'width 0.4s ease' }} />
                 </div>
 
-                {/* Expanded Transactions List Dropdown */}
+                {/* Expanded Details Dropdown */}
                 {isExpanded && (
-                  <div style={{ padding: '16px 22px', borderTop: '1px solid var(--border-color)', background: 'rgba(0, 0, 0, 0.18)' }}>
-                    {categoryTransactions.length === 0 ? (
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                        Chưa có giao dịch nào thuộc hạng mục này.
-                      </p>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {categoryTransactions.map(item => (
-                          <div
-                            key={item.id}
-                            onClick={() => onSelectExpense(item)}
-                            style={{
-                              background: 'var(--bg-panel)',
-                              border: '1px solid var(--border-color)',
-                              borderRadius: '10px',
-                              padding: '10px 14px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ fontWeight: 800, color: '#34d399', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
-                                {item.quantity && (
-                                  <span style={{ fontSize: '0.78rem', background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: '4px', color: '#f8fafc' }}>
-                                    SL: {item.quantity} {item.unit || ''}
-                                  </span>
-                                )}
-                                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>• {item.date}</span>
-                              </div>
-                              <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>
-                                {item.merchant} {item.subCategory ? `(↳ ${item.subCategory})` : ''}
-                              </p>
-                            </div>
-                            <span style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 700 }}>
-                              Xem chi tiết ➔
-                            </span>
-                          </div>
-                        ))}
+                  <div style={{ padding: '20px 22px', borderTop: '1px solid var(--border-color)', background: 'rgba(0, 0, 0, 0.22)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    
+                    {/* Section A: Quotations Breakdown Table */}
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                        <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#818cf8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <FileText size={16} /> Danh Sách Báo Giá & Hợp Đồng Thành Phần ({catQuotes.length})
+                        </h4>
+                        {onOpenQuotationModal && (
+                          <button className="btn btn-secondary btn-sm" onClick={onOpenQuotationModal} style={{ padding: '4px 10px', fontSize: '0.75rem', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>
+                            <Plus size={14} /> Thêm Báo Giá Hạng Mục Này
+                          </button>
+                        )}
                       </div>
-                    )}
+
+                      {catQuotes.length === 0 ? (
+                        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px' }}>
+                          Chưa có báo giá/hợp đồng nào được nhập cho hạng mục này. Hạn mức đang tính theo số tiền thủ công.
+                        </p>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {catQuotes.map(q => {
+                            const vendorExpenses = categoryTransactions.filter(i => (i.merchant || '').trim().toLowerCase() === q.vendorName.trim().toLowerCase());
+                            const paidAmount = vendorExpenses.reduce((sum, i) => sum + i.amount, 0);
+                            const qRemaining = q.amount - paidAmount;
+                            return (
+                              <div
+                                key={q.id}
+                                style={{
+                                  background: 'var(--bg-panel)',
+                                  border: '1px solid rgba(99, 102, 241, 0.3)',
+                                  borderRadius: '12px',
+                                  padding: '12px 16px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  flexWrap: 'wrap',
+                                  gap: '12px'
+                                }}
+                              >
+                                <div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ fontSize: '0.92rem', fontWeight: 800, color: '#f8fafc' }}>{q.vendorName}</span>
+                                    <span className="badge" style={{ background: q.status === 'signed' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)', color: q.status === 'signed' ? '#34d399' : '#fbbf24', fontSize: '0.72rem' }}>
+                                      {q.status === 'signed' ? '🟢 Hợp Đồng Đã Ký' : '🟡 Báo Giá Dự Thảo'}
+                                    </span>
+                                    {q.subCategory && (
+                                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {q.subCategory}</span>
+                                    )}
+                                  </div>
+                                  <p style={{ fontSize: '0.82rem', color: '#818cf8', fontWeight: 700, marginTop: '2px' }}>
+                                    {q.title} {q.note ? `— ${q.note}` : ''}
+                                  </p>
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+                                  <div style={{ textAlign: 'right' }}>
+                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>GIÁ TRỊ BÁO GIÁ</p>
+                                    <p style={{ fontSize: '0.95rem', fontWeight: 800, color: '#818cf8' }}>{formatVND(q.amount)}</p>
+                                  </div>
+                                  <div style={{ textAlign: 'right' }}>
+                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>ĐÃ CHI THANH TOÁN</p>
+                                    <p style={{ fontSize: '0.95rem', fontWeight: 800, color: '#38bdf8' }}>{formatVND(paidAmount)}</p>
+                                  </div>
+                                  <div style={{ textAlign: 'right', minWidth: '110px' }}>
+                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>CÒN LẠI THUỘC HĐ</p>
+                                    <p style={{ fontSize: '0.95rem', fontWeight: 800, color: qRemaining < 0 ? '#f87171' : '#34d399' }}>
+                                      {formatVND(qRemaining)}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => handleDeleteQuote(q.id)}
+                                    className="btn btn-secondary btn-sm"
+                                    style={{ padding: '6px', color: '#f87171' }}
+                                    title="Xóa báo giá này"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Section B: Logged Receipts List */}
+                    <div>
+                      <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#38bdf8', marginBottom: '10px' }}>
+                        🧾 Danh Sách Hóa Đơn Đã Ghi Nhận ({categoryTransactions.length})
+                      </h4>
+                      {categoryTransactions.length === 0 ? (
+                        <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                          Chưa có hóa đơn nào thuộc hạng mục này.
+                        </p>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {categoryTransactions.map(item => (
+                            <div
+                              key={item.id}
+                              onClick={() => onSelectExpense(item)}
+                              style={{
+                                background: 'var(--bg-panel)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '10px',
+                                padding: '10px 14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontWeight: 800, color: '#34d399', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
+                                  {item.quantity && (
+                                    <span style={{ fontSize: '0.78rem', background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: '4px', color: '#f8fafc' }}>
+                                      SL: {item.quantity} {item.unit || ''}
+                                    </span>
+                                  )}
+                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>• {item.date}</span>
+                                </div>
+                                <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>
+                                  {item.merchant} {item.subCategory ? `(↳ ${item.subCategory})` : ''}
+                                </p>
+                              </div>
+                              <span style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 700 }}>
+                                Xem chi tiết ➔
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
                   </div>
                 )}
 
