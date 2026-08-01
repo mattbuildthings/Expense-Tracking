@@ -9,6 +9,7 @@ interface ExpenseDetailModalProps {
   onClose: () => void;
   onSave: (updatedItem: ExpenseItem) => void;
   onDelete: (id: string) => void;
+  existingVendors?: string[];
 }
 
 // Utility to format input with thousand separators (e.g. 18500000 -> "18,500,000")
@@ -31,7 +32,8 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
   item,
   onClose,
   onSave,
-  onDelete
+  onDelete,
+  existingVendors = []
 }) => {
   if (!item) return null;
 
@@ -328,9 +330,15 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                     type="text"
                     required
                     value={merchant}
+                    list="vendor-suggestions-detail"
                     onChange={e => setMerchant(e.target.value)}
                     style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem', fontWeight: 700 }}
                   />
+                  <datalist id="vendor-suggestions-detail">
+                    {existingVendors.map(v => (
+                      <option key={v} value={v} />
+                    ))}
+                  </datalist>
                 </div>
               </div>
 

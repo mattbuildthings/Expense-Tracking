@@ -7,6 +7,7 @@ interface ManualInvoiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (item: ExpenseItem) => void;
+  existingVendors?: string[];
 }
 
 function formatFormattedNumber(raw: number | string | undefined | null): string {
@@ -27,7 +28,8 @@ function parseFormattedNumber(val: string): number {
 export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
   isOpen,
   onClose,
-  onSave
+  onSave,
+  existingVendors = []
 }) => {
   if (!isOpen) return null;
 
@@ -251,9 +253,15 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
                 required
                 placeholder="VD: Đại lý sắt thép, Tổ thợ anh Hùng..."
                 value={merchant}
+                list="vendor-suggestions-manual"
                 onChange={e => setMerchant(e.target.value)}
                 style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem', fontWeight: 700 }}
               />
+              <datalist id="vendor-suggestions-manual">
+                {existingVendors.map(v => (
+                  <option key={v} value={v} />
+                ))}
+              </datalist>
             </div>
           </div>
 

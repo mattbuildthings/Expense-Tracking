@@ -41,6 +41,17 @@ export function saveCategoryBudgets(budgets: CategoryBudgets): void {
   localStorage.setItem(CATEGORY_BUDGETS_KEY, JSON.stringify(budgets));
 }
 
+export function getUniqueVendors(expenses: ExpenseItem[]): string[] {
+  const countsMap = new Map<string, number>();
+  expenses.forEach(item => {
+    const m = (item.merchant || '').trim();
+    if (m) {
+      countsMap.set(m, (countsMap.get(m) || 0) + 1);
+    }
+  });
+  return Array.from(countsMap.keys()).sort((a, b) => (countsMap.get(b) || 0) - (countsMap.get(a) || 0));
+}
+
 // Vietnamese Diacritic Accent Normalizer (e.g. "Minh Ngọc" -> "minh ngoc")
 export function removeVietnameseTones(str: string): string {
   if (!str) return '';

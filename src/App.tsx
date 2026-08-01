@@ -25,7 +25,8 @@ import {
   getProjectName,
   resetToSampleData,
   fetchExpensesFromSupabase,
-  subscribeToSupabaseChanges
+  subscribeToSupabaseChanges,
+  getUniqueVendors
 } from './services/storageService';
 
 export default function App() {
@@ -35,6 +36,8 @@ export default function App() {
   const [projectName, setProjectName] = useState<string>('');
   const [activeView, setActiveView] = useState<'ledger' | 'saturday_report' | 'bva_budget' | 'vendors'>('ledger');
   const [isLocked, setIsLocked] = useState<boolean>(false);
+
+  const existingVendors = getUniqueVendors(expenses);
 
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -204,6 +207,7 @@ export default function App() {
         isOpen={isManualCreateOpen}
         onClose={() => setIsManualCreateOpen(false)}
         onSave={handleCreateManualExpense}
+        existingVendors={existingVendors}
       />
 
       {/* Detail Inspector & Edit Modal */}
@@ -212,6 +216,7 @@ export default function App() {
         onClose={() => setSelectedExpense(null)}
         onSave={handleUpdateExpense}
         onDelete={handleDeleteExpense}
+        existingVendors={existingVendors}
       />
 
       {/* Export Options Modal (Google Sheets & Excel) */}
