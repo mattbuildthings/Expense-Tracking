@@ -3,7 +3,7 @@ import { X, UploadCloud, Sparkles, Check, Image as ImageIcon, AlertTriangle } fr
 import type { ExpenseItem } from '../types/expense';
 import { parseInvoiceWithAI } from '../services/aiService';
 import { CATEGORY_METADATA } from '../types/expense';
-import { formatVND, uploadPhotoToSupabase } from '../services/storageService';
+import { uploadPhotoToSupabase } from '../services/storageService';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -28,17 +28,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const base64 = await fileToBase64(file);
+        const rawBase64 = await fileToBase64Raw(file);
         
-        // 1. Try uploading to Supabase Storage Bucket 'receipts' if connected
-        let finalImageUrl = base64;
-        const cdnUrl = await uploadPhotoToSupabase(base64, file.name);
+        // 1. Compress for local display & storage
+        let displayImageUrl = await compressImageBase64(rawBase64, 1200, 0.75);
+        const cdnUrl = await uploadPhotoToSupabase(displayImageUrl, file.name);
         if (cdnUrl) {
-          finalImageUrl = cdnUrl;
+          displayImageUrl = cdnUrl;
         }
 
-        // 2. Parse receipt with AI Vision
-        const parsed = await parseInvoiceWithAI(base64, file.name);
+        // 2. Parse FULL RESOLUTION raw receipt with Gemini AI Vision for max accuracy
+        const parsed = await parseInvoiceWithAI(rawBase64, file.name);
 
         parsedResults.push({
           id: `exp-${Date.now()}-${i}`,
@@ -53,7 +53,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
           note: parsed.note,
           manDays: parsed.manDays,
           paymentMethod: parsed.paymentMethod,
-          imageUrl: finalImageUrl,
+          imageUrl: displayImageUrl,
           imageType: parsed.imageType,
           status: parsed.confidenceScore >= 90 ? 'đã_xác_minh' : 'cần_kiểm_tra',
           confidenceScore: parsed.confidenceScore,
@@ -66,26 +66,26 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
       setExtractedItems(parsedResults);
     } catch (err: any) {
       console.error('Failed to read receipt:', err);
-      setErrorMessage('Có lỗi khi đọc ảnh hóa đơn. Vui lòng kiểm tra chìa khóa Gemini API trong Cài Đặt hoặc chọn ảnh định dạng JPG/PNG.');
+      setErrorMessage(err.message || 'Có lỗi khi đọc ảnh hóa đơn. Vui lòng kiểm tra chìa khóa Gemini API trong Cài Đặt.');
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const fileToBase64 = (file: File): Promise<string> => {
+  const fileToBase64Raw = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = async () => {
-        const raw = reader.result as string;
-        try {
-          const compressed = await compressImageBase64(raw, 1200, 0.75);
-          resolve(compressed);
-        } catch {
-          resolve(raw);
-        }
-      };
+      reader.onload = () => resolve(reader.result as string);
       reader.onerror = error => reject(error);
+    });
+  };
+
+  const handleItemChange = (index: number, field: keyof ExpenseItem, value: any) => {
+    setExtractedItems(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
     });
   };
 
@@ -286,26 +286,65 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
               {extractedItems.map((item, idx) => (
-                <div key={idx} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '16px', display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <div key={idx} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '16px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                   {item.imageUrl && (
-                    <img src={item.imageUrl} alt="Hóa đơn" style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
+                    <img src={item.imageUrl} alt="Hóa đơn" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
                   )}
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#34d399' }}>{formatVND(item.amount || 0)}</span>
-                      {item.quantity && (
-                        <span style={{ fontSize: '0.8rem', background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: '6px', color: '#f8fafc', fontWeight: 700 }}>
-                          SL: {item.quantity} {item.unit || ''} {item.unitCost ? `(Đơn giá: ${formatVND(item.unitCost)})` : ''}
-                        </span>
-                      )}
-                      <span className="badge" style={{ background: CATEGORY_METADATA[item.category as keyof typeof CATEGORY_METADATA]?.bg, color: CATEGORY_METADATA[item.category as keyof typeof CATEGORY_METADATA]?.color }}>
-                        {CATEGORY_METADATA[item.category as keyof typeof CATEGORY_METADATA]?.label}
-                      </span>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
+                          🏢 Nhà Cung Cấp / Cửa Hàng
+                        </label>
+                        <input
+                          type="text"
+                          value={item.merchant || ''}
+                          onChange={e => handleItemChange(idx, 'merchant', e.target.value)}
+                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.88rem', fontWeight: 700 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
+                          💰 Số Tiền Thực Chi (VND)
+                        </label>
+                        <input
+                          type="number"
+                          value={item.amount || 0}
+                          onChange={e => handleItemChange(idx, 'amount', Number(e.target.value) || 0)}
+                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#34d399', fontSize: '0.95rem', fontWeight: 800 }}
+                        />
+                      </div>
                     </div>
-                    <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', marginTop: '4px' }}>
-                      {item.merchant} {item.subCategory ? `(↳ ${item.subCategory})` : ''}
-                    </p>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>Ghi chú: {item.note}</p>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
+                          🏗️ Hạng Mục Ngân Sách
+                        </label>
+                        <select
+                          value={item.category}
+                          onChange={e => handleItemChange(idx, 'category', e.target.value)}
+                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.82rem', fontWeight: 700 }}
+                        >
+                          {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => (
+                            <option key={catKey} value={catKey} style={{ background: '#1e293b', color: '#fff' }}>
+                              {meta.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
+                          📝 Ghi Chú Chi Tiết Vật Tư
+                        </label>
+                        <input
+                          type="text"
+                          value={item.note || ''}
+                          onChange={e => handleItemChange(idx, 'note', e.target.value)}
+                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
