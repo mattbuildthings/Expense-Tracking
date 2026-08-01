@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { ExpenseLedger } from './components/ExpenseLedger';
 import { SaturdayReportView } from './components/SaturdayReportView';
+import { BudgetView } from './components/BudgetView';
+import { VendorView } from './components/VendorView';
 import { UploadModal } from './components/UploadModal';
 import { ManualInvoiceModal } from './components/ManualInvoiceModal';
 import { ExpenseDetailModal } from './components/ExpenseDetailModal';
@@ -26,12 +28,12 @@ import {
   subscribeToSupabaseChanges
 } from './services/storageService';
 
-export function App() {
+export default function App() {
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [deletedExpenses, setDeletedExpenses] = useState<ExpenseItem[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [projectName, setProjectName] = useState<string>('');
-  const [activeView, setActiveView] = useState<'ledger' | 'saturday_report'>('ledger');
+  const [activeView, setActiveView] = useState<'ledger' | 'saturday_report' | 'bva_budget' | 'vendors'>('ledger');
   const [isLocked, setIsLocked] = useState<boolean>(false);
 
   // Modals state
@@ -162,7 +164,7 @@ export function App() {
             onExportExcel={() => setIsExportOpen(true)}
             onOpenUpload={() => setIsUploadOpen(true)}
           />
-        ) : (
+        ) : activeView === 'saturday_report' ? (
           <SaturdayReportView
             projectName={projectName}
             allExpenses={expenses}
@@ -170,6 +172,22 @@ export function App() {
               setSelectedExpense(item);
             }}
             onExportExcel={() => setIsExportOpen(true)}
+          />
+        ) : activeView === 'bva_budget' ? (
+          <BudgetView
+            projectName={projectName}
+            allExpenses={expenses}
+            onSelectExpense={item => {
+              setSelectedExpense(item);
+            }}
+          />
+        ) : (
+          <VendorView
+            projectName={projectName}
+            allExpenses={expenses}
+            onSelectExpense={item => {
+              setSelectedExpense(item);
+            }}
           />
         )}
       </main>
@@ -204,26 +222,24 @@ export function App() {
         projectName={projectName}
       />
 
-      {/* Audit Trail & Recycle Bin Modal */}
-      <AuditLogModal
-        isOpen={isAuditLogOpen}
-        onClose={() => setIsAuditLogOpen(false)}
-        deletedExpenses={deletedExpenses}
-        auditLogs={auditLogs}
-        onRestoreExpense={handleRestoreExpense}
-        onPermanentDeleteExpense={handlePermanentDeleteExpense}
-      />
-
       {/* Settings Modal */}
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        onProjectNameChange={setProjectName}
+        onProjectNameChange={name => setProjectName(name)}
         onResetData={handleResetData}
+      />
+
+      {/* Audit Logs & Recycle Bin Modal */}
+      <AuditLogModal
+        isOpen={isAuditLogOpen}
+        onClose={() => setIsAuditLogOpen(false)}
+        auditLogs={auditLogs}
+        deletedExpenses={deletedExpenses}
+        onRestoreExpense={handleRestoreExpense}
+        onPermanentDeleteExpense={handlePermanentDeleteExpense}
       />
 
     </div>
   );
 }
-
-export default App;

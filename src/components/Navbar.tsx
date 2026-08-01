@@ -1,13 +1,13 @@
 import React from 'react';
-import { HardHat, PlusCircle, Calendar, Settings, FileSpreadsheet, CheckCircle2, AlertCircle, Lock, History, FilePlus } from 'lucide-react';
+import { HardHat, PlusCircle, Calendar, Settings, FileSpreadsheet, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users } from 'lucide-react';
 import { formatVND } from '../services/storageService';
 
 interface NavbarProps {
   projectName: string;
   totalSpent: number;
   pendingCount: number;
-  activeView: 'ledger' | 'saturday_report';
-  setActiveView: (view: 'ledger' | 'saturday_report') => void;
+  activeView: 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors';
+  setActiveView: (view: 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors') => void;
   onOpenUpload: () => void;
   onOpenManualCreate: () => void;
   onOpenSettings: () => void;
@@ -115,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* View Switching Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '18px', borderTop: '1px solid var(--border-color)', paddingTop: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '18px', borderTop: '1px solid var(--border-color)', paddingTop: '14px', flexWrap: 'wrap' }}>
           <button
             onClick={() => setActiveView('ledger')}
             style={{
@@ -158,9 +158,52 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             )}
           </button>
+
+          <button
+            onClick={() => setActiveView('bva_budget')}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '10px',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              border: 'none',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: activeView === 'bva_budget' ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'transparent',
+              color: activeView === 'bva_budget' ? '#ffffff' : 'var(--text-muted)'
+            }}
+          >
+            <Target size={18} />
+            <span>🎯 Dự Toán Ngân Sách (BVA)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveView('vendors')}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '10px',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              border: 'none',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: activeView === 'vendors' ? 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)' : 'transparent',
+              color: activeView === 'vendors' ? '#ffffff' : 'var(--text-muted)'
+            }}
+          >
+            <Users size={18} />
+            <span>👷 Nhà Cung Cấp & Tổ Thợ</span>
+          </button>
         </div>
 
       </div>
     </header>
   );
 };
+
