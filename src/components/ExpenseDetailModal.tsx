@@ -10,6 +10,7 @@ interface ExpenseDetailModalProps {
   onSave: (updatedItem: ExpenseItem) => void;
   onDelete: (id: string) => void;
   existingVendors?: string[];
+  existingSubCategories?: string[];
 }
 
 // Utility to format input with thousand separators (e.g. 18500000 -> "18,500,000")
@@ -33,7 +34,8 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
   onClose,
   onSave,
   onDelete,
-  existingVendors = []
+  existingVendors = [],
+  existingSubCategories = []
 }) => {
   if (!item) return null;
 
@@ -300,9 +302,15 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                   type="text"
                   placeholder="VD: Sắt Phi 16, Sơn Dulux, Thợ tô..."
                   value={subCategory}
+                  list="subcategory-suggestions-detail"
                   onChange={e => setSubCategory(e.target.value)}
                   style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700 }}
                 />
+                <datalist id="subcategory-suggestions-detail">
+                  {existingSubCategories.map(s => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
               </div>
 
               {/* Date & Merchant */}

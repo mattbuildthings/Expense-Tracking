@@ -26,7 +26,8 @@ import {
   resetToSampleData,
   fetchExpensesFromSupabase,
   subscribeToSupabaseChanges,
-  getUniqueVendors
+  getUniqueVendors,
+  getUniqueSubCategories
 } from './services/storageService';
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
   const [isLocked, setIsLocked] = useState<boolean>(false);
 
   const existingVendors = getUniqueVendors(expenses);
+  const existingSubCategories = getUniqueSubCategories(expenses);
 
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -208,6 +210,7 @@ export default function App() {
         onClose={() => setIsManualCreateOpen(false)}
         onSave={handleCreateManualExpense}
         existingVendors={existingVendors}
+        existingSubCategories={existingSubCategories}
       />
 
       {/* Detail Inspector & Edit Modal */}
@@ -217,6 +220,7 @@ export default function App() {
         onSave={handleUpdateExpense}
         onDelete={handleDeleteExpense}
         existingVendors={existingVendors}
+        existingSubCategories={existingSubCategories}
       />
 
       {/* Export Options Modal (Google Sheets & Excel) */}

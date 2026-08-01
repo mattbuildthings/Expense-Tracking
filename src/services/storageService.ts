@@ -52,6 +52,17 @@ export function getUniqueVendors(expenses: ExpenseItem[]): string[] {
   return Array.from(countsMap.keys()).sort((a, b) => (countsMap.get(b) || 0) - (countsMap.get(a) || 0));
 }
 
+export function getUniqueSubCategories(expenses: ExpenseItem[]): string[] {
+  const countsMap = new Map<string, number>();
+  expenses.forEach(item => {
+    const s = (item.subCategory || '').trim();
+    if (s) {
+      countsMap.set(s, (countsMap.get(s) || 0) + 1);
+    }
+  });
+  return Array.from(countsMap.keys()).sort((a, b) => (countsMap.get(b) || 0) - (countsMap.get(a) || 0));
+}
+
 // Vietnamese Diacritic Accent Normalizer (e.g. "Minh Ngọc" -> "minh ngoc")
 export function removeVietnameseTones(str: string): string {
   if (!str) return '';

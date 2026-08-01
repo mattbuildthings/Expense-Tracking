@@ -8,6 +8,7 @@ interface ManualInvoiceModalProps {
   onClose: () => void;
   onSave: (item: ExpenseItem) => void;
   existingVendors?: string[];
+  existingSubCategories?: string[];
 }
 
 function formatFormattedNumber(raw: number | string | undefined | null): string {
@@ -29,7 +30,8 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  existingVendors = []
+  existingVendors = [],
+  existingSubCategories = []
 }) => {
   if (!isOpen) return null;
 
@@ -222,9 +224,15 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
               type="text"
               placeholder="VD: Sắt thép Phi 16, Sơn Dulux..."
               value={subCategory}
+              list="subcategory-suggestions-manual"
               onChange={e => setSubCategory(e.target.value)}
               style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700 }}
             />
+            <datalist id="subcategory-suggestions-manual">
+              {existingSubCategories.map(s => (
+                <option key={s} value={s} />
+              ))}
+            </datalist>
           </div>
 
           {/* Date & Merchant */}
