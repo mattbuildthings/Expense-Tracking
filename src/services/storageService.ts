@@ -41,6 +41,27 @@ export function saveCategoryBudgets(budgets: CategoryBudgets): void {
   localStorage.setItem(CATEGORY_BUDGETS_KEY, JSON.stringify(budgets));
 }
 
+const INITIAL_BANK_FUNDS_KEY = 'build_initial_bank_funds';
+const INITIAL_CASH_FUNDS_KEY = 'build_initial_cash_funds';
+
+export function getInitialFunds(): { bank: number; cash: number } {
+  const bankRaw = localStorage.getItem(INITIAL_BANK_FUNDS_KEY);
+  const cashRaw = localStorage.getItem(INITIAL_CASH_FUNDS_KEY);
+
+  const bank = bankRaw !== null ? parseFloat(bankRaw) : 1000000000; // 1 Billion VND default bank balance
+  const cash = cashRaw !== null ? parseFloat(cashRaw) : 100000000;   // 100 Million VND default cash balance
+
+  return {
+    bank: isNaN(bank) ? 1000000000 : bank,
+    cash: isNaN(cash) ? 100000000 : cash
+  };
+}
+
+export function saveInitialFunds(bank: number, cash: number): void {
+  localStorage.setItem(INITIAL_BANK_FUNDS_KEY, bank.toString());
+  localStorage.setItem(INITIAL_CASH_FUNDS_KEY, cash.toString());
+}
+
 export function getUniqueVendors(expenses: ExpenseItem[]): string[] {
   const countsMap = new Map<string, number>();
   expenses.forEach(item => {

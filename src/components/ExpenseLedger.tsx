@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Trash2, CheckCircle, ExternalLink, Boxes, AlertTriangle, ShieldCheck, Plus, Paintbrush, HardHat, Armchair, Filter, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, FilterOptions } from '../types/expense';
-import { formatVND, filterExpenses, getCategoryBudgets } from '../services/storageService';
+import { formatVND, filterExpenses, getCategoryBudgets, getInitialFunds } from '../services/storageService';
 
 interface ExpenseLedgerProps {
   expenses: ExpenseItem[];
@@ -45,6 +45,14 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
   const budgets = getCategoryBudgets();
   const totalTargetBudget = Object.values(budgets).reduce((sum, b) => sum + (b || 0), 0);
+
+  // Automatic Zero-Work Cash Flow Math
+  const initialFunds = getInitialFunds();
+  const bankSpent = expenses.filter(i => i.paymentMethod === 'chuyển_khoản').reduce((sum, i) => sum + i.amount, 0);
+  const cashSpent = expenses.filter(i => i.paymentMethod === 'tiền_mặt').reduce((sum, i) => sum + i.amount, 0);
+  const bankAvailable = initialFunds.bank - bankSpent;
+  const cashAvailable = initialFunds.cash - cashSpent;
+  const totalFundsAvailable = bankAvailable + cashAvailable;
 
   const categoryStats = expenses.reduce((acc, item) => {
     acc[item.category] = (acc[item.category] || 0) + item.amount;
@@ -100,93 +108,129 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
   return (
     <div style={{ paddingBottom: '60px' }}>
       
-      {/* Metric Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '24px' }}>
-        <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #3b82f6' }}>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Phí Thực Tế</p>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f8fafc', marginTop: '4px' }}>
-            {formatVND(totalSpent)}
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-            {expenses.length} giao dịch
-          </p>
-        </div>
-
-        <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #60a5fa' }}>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Dự Toán Ngân Sách (BVA)</p>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#60a5fa', marginTop: '4px' }}>
-            {formatVND(totalTargetBudget)}
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-            Hạn mức 9 hạng mục
-          </p>
-        </div>
-
-        <div className="glass-card" style={{ padding: '16px', borderLeft: `4px solid ${totalRemainingBudget < 0 ? '#f87171' : '#10b981'}` }}>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Ngân Sách Còn Lại</p>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: totalRemainingBudget < 0 ? '#f87171' : '#34d399', marginTop: '4px' }}>
-            {formatVND(totalRemainingBudget)}
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: totalRemainingBudget < 0 ? '#f87171' : '#34d399', marginTop: '2px', fontWeight: 700 }}>
-            {totalRemainingBudget < 0 ? '⚠️ Đã Vượt Ngân Sách' : '🟢 Khả Dụng'}
-          </p>
-        </div>
-
-        <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #3b82f6' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Phần Thô — Vật Tư</p>
-            <Boxes size={16} color="#3b82f6" />
+      {/* GROUP 1: OVERALL PROJECT BUDGET SUMMARY (BVA) */}
+      <div style={{ marginBottom: '20px' }}>
+        <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          🎯 Tổng Quan Ngân Sách Dự Án (BVA)
+        </h4>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', background: 'rgba(99, 102, 241, 0.06)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(99, 102, 241, 0.25)' }}>
+          <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #3b82f6', background: 'var(--bg-panel)' }}>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Phí Thực Tế</p>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc', marginTop: '4px' }}>
+              {formatVND(totalSpent)}
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+              {expenses.length} giao dịch
+            </p>
           </div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#60a5fa', marginTop: '4px' }}>
-            {formatVND(categoryStats['phần_thô_vật_tư'] || 0)}
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>Sắt, cát, xi măng</p>
+
+          <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #60a5fa', background: 'var(--bg-panel)' }}>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Dự Toán Ngân Sách</p>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#60a5fa', marginTop: '4px' }}>
+              {formatVND(totalTargetBudget)}
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Hạn mức 9 hạng mục
+            </p>
+          </div>
+
+          <div className="glass-card" style={{ padding: '16px', borderLeft: `4px solid ${totalRemainingBudget < 0 ? '#f87171' : '#10b981'}`, background: 'var(--bg-panel)' }}>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Ngân Sách Còn Lại</p>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: totalRemainingBudget < 0 ? '#f87171' : '#34d399', marginTop: '4px' }}>
+              {formatVND(totalRemainingBudget)}
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: totalRemainingBudget < 0 ? '#f87171' : '#34d399', marginTop: '2px', fontWeight: 700 }}>
+              {totalRemainingBudget < 0 ? '⚠️ Đã Vượt Ngân Sách' : '🟢 Khả Dụng'}
+            </p>
+          </div>
         </div>
 
-        <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #10b981' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Phần Thô — Nhân Công</p>
-            <HardHat size={16} color="#10b981" />
+        {/* Real-time Cash Flow Sub-strip */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginTop: '12px' }}>
+          <div style={{ background: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.25)', padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#93c5fd' }}>🏦 Số Dư Ngân Hàng Còn:</span>
+            <span style={{ fontSize: '0.95rem', fontWeight: 800, color: bankAvailable < 0 ? '#f87171' : '#ffffff' }}>{formatVND(bankAvailable)}</span>
           </div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#34d399', marginTop: '4px' }}>
-            {formatVND(categoryStats['phần_thô_nhân_công'] || 0)}
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 700, marginTop: '2px' }}>
-            👷 Lương thợ
-          </p>
+          <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.25)', padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6ee7b7' }}>💵 Ví Tiền Mặt Còn:</span>
+            <span style={{ fontSize: '0.95rem', fontWeight: 800, color: cashAvailable < 0 ? '#f87171' : '#ffffff' }}>{formatVND(cashAvailable)}</span>
+          </div>
+          <div style={{ background: 'rgba(99, 102, 241, 0.18)', border: '1px solid rgba(99, 102, 241, 0.35)', padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#a7f3d0' }}>💰 Tổng Dòng Tiền Khả Dụng:</span>
+            <span style={{ fontSize: '1rem', fontWeight: 900, color: totalFundsAvailable < 0 ? '#f87171' : '#34d399' }}>{formatVND(totalFundsAvailable)}</span>
+          </div>
         </div>
+      </div>
 
-        <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #06b6d4' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Hoàn Thiện — Vật Tư</p>
-            <Paintbrush size={16} color="#06b6d4" />
-          </div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#22d3ee', marginTop: '4px' }}>
-            {formatVND(categoryStats['hoàn_thiện_vật_tư'] || 0)}
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>Sơn, gạch, thiết bị</p>
+      {/* GROUP 2: CATEGORY BREAKDOWN & STATUS */}
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+          <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            🏗️ Chi Phí Hạng Mục Chính & Trạng Thái
+          </h4>
+          {totalManDays > 0 && (
+            <span style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 800 }}>
+              👷 Tổng {totalManDays} công thợ ghi nhận
+            </span>
+          )}
         </div>
-
-        <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #f59e0b' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Nội Thất (FF&E)</p>
-            <Armchair size={16} color="#f59e0b" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '12px', background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+          <div className="glass-card" style={{ padding: '14px', borderLeft: '4px solid #3b82f6', background: 'var(--bg-panel)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Phần Thô — Vật Tư</p>
+              <Boxes size={14} color="#3b82f6" />
+            </div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#60a5fa', marginTop: '4px' }}>
+              {formatVND(categoryStats['phần_thô_vật_tư'] || 0)}
+            </h3>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Sắt, cát, xi măng</p>
           </div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fbbf24', marginTop: '4px' }}>
-            {formatVND(categoryStats['nội_thất_thiết_bị'] || 0)}
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>Tủ kệ, máy lạnh</p>
-        </div>
 
-        <div className="glass-card" style={{ padding: '16px', borderLeft: `4px solid ${pendingItems.length > 0 ? '#f59e0b' : '#10b981'}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Cần Rà Soát</p>
-            {pendingItems.length > 0 ? <AlertTriangle size={16} color="#fbbf24" /> : <ShieldCheck size={16} color="#34d399" />}
+          <div className="glass-card" style={{ padding: '14px', borderLeft: '4px solid #10b981', background: 'var(--bg-panel)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Phần Thô — Nhân Công</p>
+              <HardHat size={14} color="#10b981" />
+            </div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#34d399', marginTop: '4px' }}>
+              {formatVND(categoryStats['phần_thô_nhân_công'] || 0)}
+            </h3>
+            <p style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: 700, marginTop: '2px' }}>
+              👷 Lương thợ
+            </p>
           </div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: pendingItems.length > 0 ? '#fbbf24' : '#34d399', marginTop: '4px' }}>
-            {pendingItems.length} Hóa Đơn
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>👷 {totalManDays} công thợ</p>
+
+          <div className="glass-card" style={{ padding: '14px', borderLeft: '4px solid #06b6d4', background: 'var(--bg-panel)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Hoàn Thiện — Vật Tư</p>
+              <Paintbrush size={14} color="#06b6d4" />
+            </div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#22d3ee', marginTop: '4px' }}>
+              {formatVND(categoryStats['hoàn_thiện_vật_tư'] || 0)}
+            </h3>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Sơn, gạch, thiết bị</p>
+          </div>
+
+          <div className="glass-card" style={{ padding: '14px', borderLeft: '4px solid #f59e0b', background: 'var(--bg-panel)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Nội Thất (FF&E)</p>
+              <Armchair size={14} color="#f59e0b" />
+            </div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fbbf24', marginTop: '4px' }}>
+              {formatVND(categoryStats['nội_thất_thiết_bị'] || 0)}
+            </h3>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Tủ kệ, máy lạnh</p>
+          </div>
+
+          <div className="glass-card" style={{ padding: '14px', borderLeft: `4px solid ${pendingItems.length > 0 ? '#f59e0b' : '#10b981'}`, background: 'var(--bg-panel)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Cần Rà Soát</p>
+              {pendingItems.length > 0 ? <AlertTriangle size={14} color="#fbbf24" /> : <ShieldCheck size={14} color="#34d399" />}
+            </div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: pendingItems.length > 0 ? '#fbbf24' : '#34d399', marginTop: '4px' }}>
+              {pendingItems.length} mục
+            </h3>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Chưa xác minh</p>
+          </div>
         </div>
       </div>
 

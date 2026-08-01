@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Lock, ShieldCheck, Key, RefreshCw, Database, Copy, Check, Target } from 'lucide-react';
-import { savePinCode, isPinEnabled, setPinEnabled, getProjectName, saveProjectName, getCategoryBudgets, saveCategoryBudgets, formatVND } from '../services/storageService';
+import { savePinCode, isPinEnabled, setPinEnabled, getProjectName, saveProjectName, getCategoryBudgets, saveCategoryBudgets, getInitialFunds, saveInitialFunds, formatVND } from '../services/storageService';
 import { getSupabaseUrl, getSupabaseAnonKey, setSupabaseConfig, resetSupabaseInstance, getSupabaseClient } from '../services/supabaseClient';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { CategoryBudgets, ExpenseCategory } from '../types/expense';
@@ -39,6 +39,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [pinCode, setPinCodeInput] = useState('');
   const [pinEnabled, setPinEnabledInput] = useState(false);
   const [budgets, setBudgets] = useState<CategoryBudgets>({} as CategoryBudgets);
+  const [bankFundsStr, setBankFundsStr] = useState('');
+  const [cashFundsStr, setCashFundsStr] = useState('');
   
   // Supabase state
   const [supabaseUrl, setSupabaseUrlInput] = useState('');
@@ -53,6 +55,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setSupabaseUrlInput(getSupabaseUrl());
     setSupabaseAnonKeyInput(getSupabaseAnonKey());
     setBudgets(getCategoryBudgets());
+    const funds = getInitialFunds();
+    setBankFundsStr(formatFormattedNumber(funds.bank));
+    setCashFundsStr(formatFormattedNumber(funds.cash));
 
     // Purge any lingering client-side API keys from local storage
     localStorage.removeItem('gemini_api_key');
@@ -75,6 +80,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     onProjectNameChange(projectName);
     setPinEnabled(pinEnabled);
     saveCategoryBudgets(budgets);
+
+    const bankNum = parseFormattedNumber(bankFundsStr);
+    const cashNum = parseFormattedNumber(cashFundsStr);
+    saveInitialFunds(bankNum, cashNum);
     
     if (pinEnabled && pinCode.trim()) {
       await savePinCode(pinCode.trim());
@@ -204,6 +213,43 @@ alter table public.audit_logs disable row level security;
                 fontWeight: 700
               }}
             />
+          </div>
+
+          {/* Initial Funds Setup (Quỹ Dòng Tiền Ban Đầu) */}
+          <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '18px', padding: '20px' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#34d399', marginBottom: '12px' }}>
+              💵 Nguồn Vốn / Dòng Tiền Ban Đầu (Cash Flow Baseline)
+            </h3>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '14px' }}>
+              Nhập số tiền ban đầu trong Ngân hàng và Tiền mặt. Hệ thống sẽ tự động trừ dần khi bạn ghi chép hóa đơn mà KHÔNG CẦN nhập thêm thao tác kế toán nào!
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#60a5fa', display: 'block', marginBottom: '4px' }}>
+                  🏦 Số Dư Ngân Hàng Ban Đầu (đ)
+                </label>
+                <input
+                  type="text"
+                  placeholder="VD: 1,000,000,000"
+                  value={bankFundsStr}
+                  onChange={e => setBankFundsStr(formatFormattedNumber(e.target.value))}
+                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#60a5fa', fontSize: '0.9rem', fontWeight: 800 }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399', display: 'block', marginBottom: '4px' }}>
+                  💵 Số Dư Ví Tiền Mặt Ban Đầu (đ)
+                </label>
+                <input
+                  type="text"
+                  placeholder="VD: 100,000,000"
+                  value={cashFundsStr}
+                  onChange={e => setCashFundsStr(formatFormattedNumber(e.target.value))}
+                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#34d399', fontSize: '0.9rem', fontWeight: 800 }}
+                />
+              </div>
+            </div>
           </div>
 
           {/* Phase 1: Target Budget Setup (Ngân Sách Dự Toán 9 Hạng Mục) */}
