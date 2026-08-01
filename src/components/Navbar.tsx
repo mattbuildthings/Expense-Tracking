@@ -1,5 +1,5 @@
 import React from 'react';
-import { HardHat, PlusCircle, Calendar, Settings, FileSpreadsheet, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users, Wallet } from 'lucide-react';
+import { HardHat, PlusCircle, Calendar, Settings, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users, Wallet } from 'lucide-react';
 import { formatVND } from '../services/storageService';
 
 interface NavbarProps {
@@ -12,7 +12,6 @@ interface NavbarProps {
   onOpenManualCreate: () => void;
   onOpenSettings: () => void;
   onOpenAuditLog: () => void;
-  onOpenExport: () => void;
   onLockApp: () => void;
 }
 
@@ -26,7 +25,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenManualCreate,
   onOpenSettings,
   onOpenAuditLog,
-  onOpenExport,
   onLockApp
 }) => {
   return (
@@ -90,11 +88,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button className="btn btn-secondary" onClick={onOpenManualCreate} title="Tạo hóa đơn thủ công khi không có ảnh đính kèm">
               <FilePlus size={18} color="#60a5fa" />
               <span>Tạo Hóa Đơn</span>
-            </button>
-
-            <button className="btn btn-secondary" onClick={onOpenExport} title="Xuất dữ liệu ra Google Sheets hoặc Excel">
-              <FileSpreadsheet size={18} color="#34d399" />
-              <span>Xuất Sheets / Excel</span>
             </button>
 
             <button className="btn btn-secondary" onClick={onOpenAuditLog} title="Lịch sử giao dịch & Thùng rác khôi phục">

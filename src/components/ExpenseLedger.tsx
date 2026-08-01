@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Trash2, CheckCircle, ExternalLink, Boxes, AlertTriangle, ShieldCheck, Plus, Paintbrush, HardHat, Armchair, Filter, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import { Search, Trash2, CheckCircle, ExternalLink, Boxes, AlertTriangle, ShieldCheck, Plus, Paintbrush, HardHat, Armchair, Filter, ChevronLeft, ChevronRight, RotateCcw, FileSpreadsheet } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, FilterOptions } from '../types/expense';
 import { formatVND, filterExpenses, getCategoryBudgets, getInitialFunds } from '../services/storageService';
@@ -22,6 +22,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
   onDeleteExpense,
   onBatchDelete,
   onBatchVerify,
+  onExportExcel,
   onOpenUpload
 }) => {
   const [filters, setFilters] = useState<FilterOptions>({
@@ -294,6 +295,16 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
             <button className="btn btn-secondary btn-sm" onClick={handleResetFilters} title="Đặt lại bộ lọc">
               <RotateCcw size={16} />
+            </button>
+
+            <button
+              className="btn btn-secondary"
+              onClick={onExportExcel}
+              style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
+              title="Xuất bảng danh sách hóa đơn hiển thị ra Excel hoặc Google Sheets"
+            >
+              <FileSpreadsheet size={16} />
+              <span>Xuất Sheets / Excel ({filteredExpenses.length})</span>
             </button>
           </div>
 

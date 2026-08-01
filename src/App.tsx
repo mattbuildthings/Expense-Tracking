@@ -154,7 +154,6 @@ export default function App() {
         onOpenManualCreate={() => setIsManualCreateOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenAuditLog={() => setIsAuditLogOpen(true)}
-        onOpenExport={() => setIsExportOpen(true)}
         onLockApp={() => setIsLocked(true)}
       />
 

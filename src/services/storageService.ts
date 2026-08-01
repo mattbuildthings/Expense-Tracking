@@ -839,6 +839,112 @@ export function exportToExcel(expenses: ExpenseItem[], projectName: string): voi
   XLSX.writeFile(workbook, fileName);
 }
 
+export function exportBvaToExcel(expenses: ExpenseItem[], projectName: string): void {
+  const budgets = getCategoryBudgets();
+  const categoryTotals: Record<string, number> = {};
+  expenses.forEach(item => {
+    categoryTotals[item.category] = (categoryTotals[item.category] || 0) + item.amount;
+  });
+
+  const bvaData = Object.entries(CATEGORY_METADATA).map(([key, meta], index) => {
+    const catKey = key as ExpenseCategory;
+    const target = budgets[catKey] || 0;
+    const spent = categoryTotals[key] || 0;
+    const remaining = target - spent;
+    const pct = target > 0 ? Math.round((spent / target) * 100) : 0;
+
+    return {
+      'STT': index + 1,
+      'Hạng Mục Công Trình': meta.label,
+      'Tiếng Anh': meta.englishLabel,
+      'Hạn Mức Dự Toán (VND)': formatCommasForExcel(target),
+      'Thực Chi Đã Log (VND)': formatCommasForExcel(spent),
+      'Ngân Sách Còn Lại (VND)': formatCommasForExcel(remaining),
+      'Tỷ Lệ Đã Chi (%)': `${pct}%`,
+      'Trạng Thái': remaining < 0 ? '⚠️ Vượt Dự Toán' : '🟢 Trong Hạn Mức'
+    };
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(bvaData);
+  worksheet['!cols'] = [{ wch: 5 }, { wch: 32 }, { wch: 30 }, { wch: 22 }, { wch: 22 }, { wch: 22 }, { wch: 16 }, { wch: 20 }];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Dự Toán BVA');
+  XLSX.writeFile(workbook, `Du_Toan_BVA_${projectName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+export function exportVendorsToExcel(expenses: ExpenseItem[], projectName: string): void {
+  const vendorsMap = new Map<string, { merchant: string; totalPaid: number; count: number; manDays: number; categories: Set<string> }>();
+  expenses.forEach(item => {
+    const m = (item.merchant || 'Không xác định').trim();
+    if (!vendorsMap.has(m)) {
+      vendorsMap.set(m, { merchant: m, totalPaid: 0, count: 0, manDays: 0, categories: new Set() });
+    }
+    const entry = vendorsMap.get(m)!;
+    entry.totalPaid += item.amount;
+    entry.count += 1;
+    entry.manDays += (item.manDays || 0);
+    entry.categories.add(CATEGORY_METADATA[item.category]?.label || item.category);
+  });
+
+  const vendorData = Array.from(vendorsMap.values()).map((v, idx) => ({
+    'STT': idx + 1,
+    'Đơn Vị / Thợ Nhận': v.merchant,
+    'Tổng Tiền Đã Thanh Toán (VND)': formatCommasForExcel(v.totalPaid),
+    'Số Lượng Hóa Đơn': v.count,
+    'Tổng Số Công Thợ': v.manDays || 0,
+    'Hạng Mục Đảm Nhận': Array.from(v.categories).join(', ')
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(vendorData);
+  worksheet['!cols'] = [{ wch: 5 }, { wch: 32 }, { wch: 25 }, { wch: 18 }, { wch: 18 }, { wch: 45 }];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Nha Cung Cap & To Tho');
+  XLSX.writeFile(workbook, `Nha_Cung_Cap_${projectName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+export function exportCashFlowToExcel(expenses: ExpenseItem[], projectName: string): void {
+  const initial = getInitialFunds();
+  const capitalTxs = getCapitalTransactions();
+  const bankSpent = expenses.filter(i => i.paymentMethod === 'chuyển_khoản').reduce((sum, i) => sum + i.amount, 0);
+  const cashSpent = expenses.filter(i => i.paymentMethod === 'tiền_mặt').reduce((sum, i) => sum + i.amount, 0);
+  const capitalDeposits = capitalTxs.filter(t => t.type === 'deposit').reduce((sum, t) => sum + t.amount, 0);
+  const cashWithdrawals = capitalTxs.filter(t => t.type === 'withdrawal').reduce((sum, t) => sum + t.amount, 0);
+
+  const bankBalance = (initial.bank + capitalDeposits) - cashWithdrawals - bankSpent;
+  const cashBalance = (initial.cash + cashWithdrawals) - cashSpent;
+
+  const summaryData = [
+    { 'Chỉ Số Dòng Tiền': 'Ngân Sách Ban Đầu Ngân Hàng', 'Số Tiền (VND)': formatCommasForExcel(initial.bank) },
+    { 'Chỉ Số Dòng Tiền': 'Ngân Sách Ban Đầu Tiền Mặt', 'Số Tiền (VND)': formatCommasForExcel(initial.cash) },
+    { 'Chỉ Số Dòng Tiền': 'Tổng Nạp Vốn Bổ Sung', 'Số Tiền (VND)': formatCommasForExcel(capitalDeposits) },
+    { 'Chỉ Số Dòng Tiền': 'Tổng Rút Tiền Mặt Nhập Quỹ', 'Số Tiền (VND)': formatCommasForExcel(cashWithdrawals) },
+    { 'Chỉ Số Dòng Tiền': 'Tổng Chi Chuyển Khoản', 'Số Tiền (VND)': formatCommasForExcel(bankSpent) },
+    { 'Chỉ Số Dòng Tiền': 'Tổng Chi Tiền Mặt', 'Số Tiền (VND)': formatCommasForExcel(cashSpent) },
+    { 'Chỉ Số Dòng Tiền': 'Số Dư Ngân Hàng Hiện Tại', 'Số Tiền (VND)': formatCommasForExcel(bankBalance) },
+    { 'Chỉ Số Dòng Tiền': 'Số Dư Ví Tiền Mặt Hiện Tại', 'Số Tiền (VND)': formatCommasForExcel(cashBalance) },
+    { 'Chỉ Số Dòng Tiền': 'TỔNG DÒNG TIỀN KHẢ DỤNG', 'Số Tiền (VND)': formatCommasForExcel(bankBalance + cashBalance) }
+  ];
+
+  const txData = capitalTxs.map((tx, idx) => ({
+    'STT': idx + 1,
+    'Ngày': tx.date,
+    'Loại Giao Dịch': tx.type === 'deposit' ? 'Nạp Vốn Ngân Hàng' : 'Rút Ngân Hàng ➔ Tiền Mặt',
+    'Số Tiền (VND)': formatCommasForExcel(tx.amount),
+    'Ghi Chú': tx.note
+  }));
+
+  const workbook = XLSX.utils.book_new();
+  const ws1 = XLSX.utils.json_to_sheet(summaryData);
+  ws1['!cols'] = [{ wch: 35 }, { wch: 25 }];
+  XLSX.utils.book_append_sheet(workbook, ws1, 'Tong Quan Dong Tien');
+
+  const ws2 = XLSX.utils.json_to_sheet(txData);
+  ws2['!cols'] = [{ wch: 5 }, { wch: 12 }, { wch: 30 }, { wch: 22 }, { wch: 40 }];
+  XLSX.utils.book_append_sheet(workbook, ws2, 'Nhat Ky Nap Rut');
+
+  XLSX.writeFile(workbook, `Dong_Tien_${projectName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
 export function formatVND(amount: number): string {
   const hasDecimal = amount % 1 !== 0;
   return new Intl.NumberFormat('vi-VN', {

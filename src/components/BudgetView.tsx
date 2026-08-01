@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Target, Save, AlertCircle, ChevronDown, ChevronUp, Check, Edit2 } from 'lucide-react';
+import { Target, Save, AlertCircle, ChevronDown, ChevronUp, Check, Edit2, FileSpreadsheet } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, ExpenseCategory, CategoryBudgets } from '../types/expense';
-import { formatVND, getCategoryBudgets, saveCategoryBudgets, generateMultiPeriodReport } from '../services/storageService';
+import { formatVND, getCategoryBudgets, saveCategoryBudgets, generateMultiPeriodReport, exportBvaToExcel } from '../services/storageService';
 
 interface BudgetViewProps {
   projectName: string;
@@ -93,6 +93,16 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
           </div>
 
           <div className="no-print" style={{ display: 'flex', gap: '10px' }}>
+            <button
+              className="btn btn-secondary"
+              onClick={() => exportBvaToExcel(allExpenses, projectName)}
+              style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
+              title="Xuất báo cáo dự toán BVA 9 hạng mục ra Excel"
+            >
+              <FileSpreadsheet size={18} />
+              <span>Xuất Dự Toán BVA (Excel)</span>
+            </button>
+
             {isEditing ? (
               <button className="btn btn-primary" onClick={handleSaveBudgets}>
                 <Save size={18} />

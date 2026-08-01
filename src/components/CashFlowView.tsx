@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Landmark, Wallet, TrendingDown, ArrowUpRight, ArrowDownLeft, Calendar, Clock, AlertTriangle, Trash2 } from 'lucide-react';
+import { DollarSign, Landmark, Wallet, TrendingDown, ArrowUpRight, ArrowDownLeft, Calendar, Clock, AlertTriangle, Trash2, FileSpreadsheet } from 'lucide-react';
 import type { ExpenseItem, CapitalTransaction, CapitalTransactionType } from '../types/expense';
-import { formatVND, getInitialFunds, getCapitalTransactions, addCapitalTransaction, deleteCapitalTransaction } from '../services/storageService';
+import { formatVND, getInitialFunds, getCapitalTransactions, addCapitalTransaction, deleteCapitalTransaction, exportCashFlowToExcel } from '../services/storageService';
 
 interface CashFlowViewProps {
   projectName: string;
@@ -117,6 +117,16 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
 
           {/* Action Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button
+              className="btn btn-secondary"
+              onClick={() => exportCashFlowToExcel(allExpenses, projectName)}
+              style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
+              title="Xuất tổng quan số dư dòng tiền & nhật ký nạp rút vốn ra Excel"
+            >
+              <FileSpreadsheet size={18} />
+              <span>Xuất Dòng Tiền (Excel)</span>
+            </button>
+
             <button
               className="btn btn-primary"
               onClick={() => { setTxType('deposit'); setIsModalOpen(true); }}

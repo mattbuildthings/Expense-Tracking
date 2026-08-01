@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Users, HardHat, Boxes, Armchair, Briefcase, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Users, HardHat, Boxes, Armchair, Briefcase, Search, ChevronDown, ChevronUp, FileSpreadsheet } from 'lucide-react';
 import type { ExpenseItem, ExpenseCategory } from '../types/expense';
-import { formatVND, removeVietnameseTones } from '../services/storageService';
+import { formatVND, removeVietnameseTones, exportVendorsToExcel } from '../services/storageService';
 
 export type VendorType = 'thợ_thi_công' | 'cung_cấp_vlxd' | 'cung_cấp_thiết_bị_nội_thất' | 'cung_cấp_dịch_vụ_khác';
 
@@ -144,6 +144,18 @@ export const VendorView: React.FC<VendorViewProps> = ({
             <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Quản lý tổng tiền đã chi trả, số công thợ & bảng kê quyết toán theo 4 nhóm đối tác chuẩn
             </p>
+          </div>
+
+          <div className="no-print">
+            <button
+              className="btn btn-secondary"
+              onClick={() => exportVendorsToExcel(allExpenses, projectName)}
+              style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
+              title="Xuất danh sách nhà cung cấp & tổ thợ ra Excel"
+            >
+              <FileSpreadsheet size={18} />
+              <span>Xuất Nhà Cung Cấp (Excel)</span>
+            </button>
           </div>
         </div>
 
