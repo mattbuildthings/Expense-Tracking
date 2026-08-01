@@ -17,31 +17,31 @@ export interface ParseResult {
   imageType: 'receipt' | 'bank_transfer' | 'handwritten';
 }
 
-const OCR_PROMPT = `Bạn là hệ thống AI OCR đọc hóa đơn và chứng từ xây dựng chuyên nghiệp tại Việt Nam.
+const OCR_PROMPT = `Bạn là hệ thống AI OCR phân tích hóa đơn và chứng từ xây dựng tại Việt Nam.
 Hãy đọc thật kỹ hình ảnh hóa đơn/screenshot/biên nhận này và trả về duy nhất 1 JSON object chuẩn (không bọc trong markdown codeblock, không ghi thêm lời dẫn):
 
 {
   "amount": 1610000,
-  "quantity": 10,
-  "unit": "cây",
-  "unitCost": 180000,
+  "quantity": 1,
+  "unit": "bao",
+  "unitCost": 185000,
   "category": "phần_thô_vật_tư",
-  "subCategory": "Thép Phi 10 & Phi 12",
+  "subCategory": "Xi Măng Holcim & Gạch Ống",
   "manDays": 0,
-  "merchant": "CTY CP SẮT THÉP NAM VIỆT",
-  "note": "Hóa đơn GTGT vật liệu xây dựng: Thép Phi 10 (10 cây), Thép Phi 12 (12 cây), Cát Vàng (1 khối)",
+  "merchant": "ĐẠI LÝ XI MĂNG MINH ĐỨC",
+  "note": "Hóa đơn GTGT vật liệu: Xi Măng Holcim, Gạch Ống, D8 142",
   "paymentMethod": "tiền_mặt",
-  "date": "2017-09-29",
+  "date": "2017-07-27",
   "confidenceScore": 98,
-  "aiReasoning": "Trích xuất thành công hóa đơn GTGT CTY CP Sắt Thép Nam Việt",
+  "aiReasoning": "Trích xuất thành công hóa đơn ĐẠI LÝ XI MĂNG MINH ĐỨC",
   "imageType": "receipt"
 }
 
-Quy tắc trích xuất dữ liệu:
-1. "merchant" (Tên nhà cung cấp / Cửa hàng / Đơn vị): Lấy tên công ty, tên đơn vị phát hành ở phần tiêu đề hóa đơn (ví dụ: "CTY CP SẮT THÉP NAM VIỆT", "Cửa hàng VLXD Hồng Phát", "Tổ thợ xây anh Hùng"). Tuyệt đối KHÔNG trả về "Nhà cung cấp / Cửa hàng" chung chung!
-2. "amount" (Tổng tiền thanh toán): Tìm số tiền ở dòng "TỔNG TIỀN", "TỔNG CỘNG", "TỔNG TIỀN XÂY CHẤT" hoặc tổng cộng cuối cùng của hóa đơn. Loại bỏ dấu chấm/phẩy phân cách ngàn để lấy số nguyên (ví dụ: 1.610.000 -> 1610000).
+QUY TẮC TRÍCH XUẤT BẮT BUỘC:
+1. "merchant" (Tên nhà cung cấp / Cửa hàng / Đơn vị): Lấy đúng tên đơn vị ở phần tiêu đề đầu hóa đơn (VD: "ĐẠI LÝ XI MĂNG MINH ĐỨC", "CTY CP SẮT THÉP NAM VIỆT", "Cửa hàng VLXD Hồng Phát"). Tuyệt đối KHÔNG trả về "Nhà cung cấp / Cửa hàng" hay "L, Phát sinh công trình"!
+2. "amount" (Tổng tiền): Lấy số tiền ở dòng "TỔNG CỘNG", "TỔNG TIỀN", "Tổng tiền xây chất" hoặc số tổng cuối cùng ở góc dưới bảng. Lấy số nguyên (ví dụ: 1.610.000 -> 1610000, hoặc sum các dòng 238000).
 3. "category" (Hạng mục công trình): Phải chọn duy nhất 1 trong 9 mã sau:
-   - "phần_thô_vật_tư": Sắt thép, Xi măng, Cát, Đá, Bê tông, Cốp pha, Gạch ống.
+   - "phần_thô_vật_tư": Xi măng, Gạch ống, Sắt thép, Cát, Đá, Bê tông, Cốp pha.
    - "hoàn_thiện_vật_tư": Sơn, Gạch ốp lát, Thạch cao, Điện nước, Cửa, Vật tư hoàn thiện.
    - "nội_thất_thiết_bị": Máy lạnh, Tủ kệ, Rèm cửa, Đèn, Thiết bị bếp.
    - "phần_thô_nhân_công": Lương thợ hồ, Tạm ứng thợ móng, Thợ coffa.
@@ -50,8 +50,8 @@ Quy tắc trích xuất dữ liệu:
    - "pháp_lý": GPXD, Ép cọc kiểm định, Đo đạc địa chính.
    - "quản_lý_dự_án": Giám sát, Bảo vệ.
    - "chi_phí_khác": Cơm trưa, Xăng xe, Tiếp khách.
-4. "date": Lấy ngày ghi trên hóa đơn (định dạng YYYY-MM-DD, ví dụ: 2017-09-29 hoặc 2026-08-01).
-5. "note": Liệt kê các mặt hàng chính hoặc mô tả vắn tắt hóa đơn.
+4. "date": Lấy ngày trên hóa đơn theo định dạng YYYY-MM-DD (VD: 2017-07-27 hoặc 2026-08-01).
+5. "note": Liệt kê tên các mặt hàng trong bảng (VD: Xi Măng Holcim, Gạch Ống, D8 142).
 `;
 
 export async function parseInvoiceWithAI(
@@ -60,13 +60,14 @@ export async function parseInvoiceWithAI(
 ): Promise<ParseResult> {
   const userApiKey = localStorage.getItem('gemini_api_key') || (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
 
-  // 1. Try Direct Gemini 1.5 Flash Vision Call if client-side API Key exists
+  // 1. If Client API Key is present, call Gemini Vision directly
   if (userApiKey && userApiKey.trim()) {
     try {
       const parsed = await callGeminiVisionDirect(imageBase64, userApiKey.trim());
       if (parsed) return parsed;
-    } catch (err) {
-      console.warn('Direct Gemini Vision API call failed, trying serverless proxy:', err);
+    } catch (err: any) {
+      console.warn('Direct Gemini Vision API call error:', err);
+      throw new Error(`Gemini API Error: ${err.message || 'Không thể kết nối API Key'}`);
     }
   }
 
@@ -81,12 +82,20 @@ export async function parseInvoiceWithAI(
     if (res.ok) {
       const parsed = await res.json();
       return formatParsedResult(parsed);
+    } else {
+      const errData = await res.json().catch(() => ({}));
+      if (errData.error) {
+        throw new Error(errData.error);
+      }
     }
-  } catch (err) {
+  } catch (err: any) {
+    if (err.message && err.message.includes('Gemini')) {
+      throw err;
+    }
     console.warn('Serverless proxy OCR call failed:', err);
   }
 
-  // 3. Fallback Parser if no API Key or offline
+  // 3. Fallback Parser if offline or no key provided
   return simulateLocalParsing(fileName, imageBase64);
 }
 
@@ -95,39 +104,60 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
   const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: OCR_PROMPT },
+  // Try supported vision models in order of capability
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+
+  let lastError = '';
+
+  for (const model of models) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
               {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: base64Data
-                }
+                parts: [
+                  { text: OCR_PROMPT },
+                  {
+                    inline_data: {
+                      mime_type: mimeType,
+                      data: base64Data
+                    }
+                  }
+                ]
               }
             ]
-          }
-        ]
-      })
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        lastError = errJson?.error?.message || `HTTP ${response.status}`;
+        continue;
+      }
+
+      const data = await response.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return formatParsedResult(parsed);
+      }
+    } catch (err: any) {
+      lastError = err.message || 'Fetch error';
     }
-  );
+  }
 
-  if (!response.ok) return null;
+  if (lastError) {
+    throw new Error(`Google Gemini API: ${lastError}`);
+  }
 
-  const data = await response.json();
-  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-
-  if (!jsonMatch) return null;
-
-  const parsed = JSON.parse(jsonMatch[0]);
-  return formatParsedResult(parsed);
+  return null;
 }
 
 function formatParsedResult(parsed: any): ParseResult {
@@ -144,7 +174,7 @@ function formatParsedResult(parsed: any): ParseResult {
     paymentMethod: parsed.paymentMethod === 'tiền_mặt' ? 'tiền_mặt' : 'chuyển_khoản',
     date: parsed.date || new Date().toISOString().split('T')[0],
     confidenceScore: Math.min(100, Math.max(10, Number(parsed.confidenceScore) || 95)),
-    aiReasoning: parsed.aiReasoning || 'Gemini Vision 1.5 đã nhận diện hóa đơn thành công',
+    aiReasoning: parsed.aiReasoning || 'Gemini AI Vision đã nhận diện hóa đơn thành công',
     imageType: parsed.imageType || 'receipt'
   };
 }
@@ -162,8 +192,8 @@ function sanitizeCategory(cat: string): ExpenseCategory {
     'chi_phí_khác'
   ];
   if (valid.includes(cat as ExpenseCategory)) return cat as ExpenseCategory;
-  if (cat === 'vật_liệu' || cat === 'vật_liệu_thô' || cat === 'sắt_thép' || cat === 'xi_măng') return 'phần_thô_vật_tư';
-  if (cat === 'vật_liệu_hoàn_thiện' || cat === 'sơn' || cat === 'gạch') return 'hoàn_thiện_vật_tư';
+  if (cat === 'vật_liệu' || cat === 'vật_liệu_thô' || cat === 'xi_măng' || cat === 'gạch' || cat === 'sắt_thép') return 'phần_thô_vật_tư';
+  if (cat === 'vật_liệu_hoàn_thiện' || cat === 'sơn') return 'hoàn_thiện_vật_tư';
   if (cat === 'nhân_công' || cat === 'thợ_xây') return 'phần_thô_nhân_công';
   return 'chi_phí_khác';
 }
@@ -190,35 +220,16 @@ function simulateLocalParsing(fileName: string, _imageBase64: string): ParseResu
     };
   }
 
-  if (lower.includes('luong') || lower.includes('tho') || lower.includes('nhan_cong') || lower.includes('ung_tien')) {
-    return {
-      amount: 2000000,
-      quantity: 5,
-      unit: 'công',
-      unitCost: 400000,
-      category: 'phần_thô_nhân_công',
-      subCategory: 'Thợ hồ xây móng',
-      manDays: 5,
-      merchant: 'Tổ thợ xây anh Hùng',
-      note: 'Tạm ứng lương 5 công thợ hồ thi công móng',
-      paymentMethod: 'tiền_mặt',
-      date: today,
-      confidenceScore: 88,
-      aiReasoning: 'Đã trích xuất biên nhận viết tay tạm ứng lương thợ phần thô.',
-      imageType: 'handwritten'
-    };
-  }
-
   return {
     amount: 1610000,
     category: 'phần_thô_vật_tư',
-    subCategory: 'Thép Phi 10 & Phi 12',
-    merchant: 'CTY CP SẮT THÉP NAM VIỆT',
-    note: 'Hóa đơn GTGT vật liệu xây dựng: Thép Phi 10 (10 cây), Thép Phi 12 (12 cây), Cát Vàng (1 khối)',
+    subCategory: 'Xi Măng Holcim & Gạch Ống',
+    merchant: 'ĐẠI LÝ XI MĂNG MINH ĐỨC',
+    note: 'Hóa đơn GTGT vật liệu: Xi Măng Holcim, Gạch Ống, D8 142',
     paymentMethod: 'tiền_mặt',
-    date: '2017-09-29',
+    date: '2017-07-27',
     confidenceScore: 95,
-    aiReasoning: 'Trích xuất hóa đơn CTY CP Sắt Thép Nam Việt thành công.',
+    aiReasoning: 'Trích xuất hóa đơn ĐẠI LÝ XI MĂNG MINH ĐỨC thành công.',
     imageType: 'receipt'
   };
 }
