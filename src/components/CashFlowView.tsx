@@ -6,11 +6,13 @@ import { formatVND, getInitialFunds, getCapitalTransactions, addCapitalTransacti
 interface CashFlowViewProps {
   projectName: string;
   allExpenses: ExpenseItem[];
+  onExportExcel?: () => void;
 }
 
 export const CashFlowView: React.FC<CashFlowViewProps> = ({
   projectName,
-  allExpenses
+  allExpenses,
+  onExportExcel
 }) => {
   const [initialFunds, setInitialFunds] = useState(getInitialFunds());
   const [capitalTxs, setCapitalTxs] = useState<CapitalTransaction[]>(getCapitalTransactions());
@@ -119,12 +121,12 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
               className="btn btn-secondary"
-              onClick={() => exportCashFlowToExcel(allExpenses, projectName)}
+              onClick={() => onExportExcel ? onExportExcel() : exportCashFlowToExcel(allExpenses, projectName)}
               style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
-              title="Xuất tổng quan số dư dòng tiền & nhật ký nạp rút vốn ra Excel"
+              title="Xuất tổng quan số dư dòng tiền & nhật ký nạp rút vốn"
             >
               <FileSpreadsheet size={18} />
-              <span>Xuất Dòng Tiền (Excel)</span>
+              <span>Xuất Báo Cáo Dòng Tiền</span>
             </button>
 
             <button

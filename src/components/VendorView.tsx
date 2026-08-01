@@ -48,6 +48,7 @@ interface VendorViewProps {
   projectName: string;
   allExpenses: ExpenseItem[];
   onSelectExpense: (item: ExpenseItem) => void;
+  onExportExcel?: () => void;
 }
 
 export function autoClassifyVendorType(category: ExpenseCategory): VendorType {
@@ -66,7 +67,8 @@ export function autoClassifyVendorType(category: ExpenseCategory): VendorType {
 export const VendorView: React.FC<VendorViewProps> = ({
   projectName,
   allExpenses,
-  onSelectExpense
+  onSelectExpense,
+  onExportExcel
 }) => {
   const [activeFilterType, setActiveFilterType] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -149,12 +151,12 @@ export const VendorView: React.FC<VendorViewProps> = ({
           <div className="no-print">
             <button
               className="btn btn-secondary"
-              onClick={() => exportVendorsToExcel(allExpenses, projectName)}
+              onClick={() => onExportExcel ? onExportExcel() : exportVendorsToExcel(allExpenses, projectName)}
               style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
-              title="Xuất danh sách nhà cung cấp & tổ thợ ra Excel"
+              title="Xuất danh sách nhà cung cấp & tổ thợ"
             >
               <FileSpreadsheet size={18} />
-              <span>Xuất Nhà Cung Cấp (Excel)</span>
+              <span>Xuất Nhà Cung Cấp</span>
             </button>
           </div>
         </div>

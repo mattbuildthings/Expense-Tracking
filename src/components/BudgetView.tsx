@@ -8,6 +8,7 @@ interface BudgetViewProps {
   projectName: string;
   allExpenses: ExpenseItem[];
   onSelectExpense: (item: ExpenseItem) => void;
+  onExportExcel?: () => void;
 }
 
 function formatFormattedNumber(raw: number | string | undefined | null): string {
@@ -28,7 +29,8 @@ function parseFormattedNumber(val: string): number {
 export const BudgetView: React.FC<BudgetViewProps> = ({
   projectName,
   allExpenses,
-  onSelectExpense
+  onSelectExpense,
+  onExportExcel
 }) => {
   const [budgets, setBudgets] = useState<CategoryBudgets>(getCategoryBudgets());
   const [isEditing, setIsEditing] = useState(false);
@@ -95,12 +97,12 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
           <div className="no-print" style={{ display: 'flex', gap: '10px' }}>
             <button
               className="btn btn-secondary"
-              onClick={() => exportBvaToExcel(allExpenses, projectName)}
+              onClick={() => onExportExcel ? onExportExcel() : exportBvaToExcel(allExpenses, projectName)}
               style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
-              title="Xuất báo cáo dự toán BVA 9 hạng mục ra Excel"
+              title="Xuất báo cáo dự toán BVA 9 hạng mục"
             >
               <FileSpreadsheet size={18} />
-              <span>Xuất Dự Toán BVA (Excel)</span>
+              <span>Xuất Báo Cáo Dự Toán (BVA)</span>
             </button>
 
             {isEditing ? (

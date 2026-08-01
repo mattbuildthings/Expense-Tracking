@@ -12,6 +12,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { PinLockScreen } from './components/PinLockScreen';
 import { AuditLogModal } from './components/AuditLogModal';
 import { ExportModal } from './components/ExportModal';
+import type { ExportContext } from './components/ExportModal';
 import type { ExpenseItem, AuditLogEntry } from './types/expense';
 import {
   getExpenses,
@@ -48,7 +49,15 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [exportContext, setExportContext] = useState<ExportContext>('ledger');
+  const [exportExpenses, setExportExpenses] = useState<ExpenseItem[]>([]);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseItem | null>(null);
+
+  const handleOpenExport = (context: ExportContext, customExpenses?: ExpenseItem[]) => {
+    setExportContext(context);
+    setExportExpenses(customExpenses || expenses);
+    setIsExportOpen(true);
+  };
 
   // Load initial data
   const refreshAllData = () => {
@@ -166,7 +175,7 @@ export default function App() {
             onDeleteExpense={handleDeleteExpense}
             onBatchDelete={handleBatchDelete}
             onBatchVerify={handleBatchVerify}
-            onExportExcel={() => setIsExportOpen(true)}
+            onExportExcel={() => handleOpenExport('ledger')}
             onOpenUpload={() => setIsUploadOpen(true)}
           />
         ) : activeView === 'saturday_report' ? (
@@ -176,7 +185,7 @@ export default function App() {
             onSelectExpense={item => {
               setSelectedExpense(item);
             }}
-            onExportExcel={() => setIsExportOpen(true)}
+            onExportExcel={() => handleOpenExport('saturday_report')}
           />
         ) : activeView === 'bva_budget' ? (
           <BudgetView
@@ -185,6 +194,7 @@ export default function App() {
             onSelectExpense={item => {
               setSelectedExpense(item);
             }}
+            onExportExcel={() => handleOpenExport('bva_budget')}
           />
         ) : activeView === 'vendors' ? (
           <VendorView
@@ -193,11 +203,13 @@ export default function App() {
             onSelectExpense={item => {
               setSelectedExpense(item);
             }}
+            onExportExcel={() => handleOpenExport('vendors')}
           />
         ) : (
           <CashFlowView
             projectName={projectName}
             allExpenses={expenses}
+            onExportExcel={() => handleOpenExport('cash_flow')}
           />
         )}
       </main>
@@ -232,8 +244,9 @@ export default function App() {
       <ExportModal
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
-        expenses={expenses}
+        expenses={exportExpenses.length > 0 ? exportExpenses : expenses}
         projectName={projectName}
+        exportContext={exportContext}
       />
 
       {/* Settings Modal */}
