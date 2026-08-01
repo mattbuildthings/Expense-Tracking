@@ -4,6 +4,7 @@ import { ExpenseLedger } from './components/ExpenseLedger';
 import { SaturdayReportView } from './components/SaturdayReportView';
 import { BudgetView } from './components/BudgetView';
 import { VendorView } from './components/VendorView';
+import { CashFlowView } from './components/CashFlowView';
 import { UploadModal } from './components/UploadModal';
 import { ManualInvoiceModal } from './components/ManualInvoiceModal';
 import { ExpenseDetailModal } from './components/ExpenseDetailModal';
@@ -35,7 +36,7 @@ export default function App() {
   const [deletedExpenses, setDeletedExpenses] = useState<ExpenseItem[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [projectName, setProjectName] = useState<string>('');
-  const [activeView, setActiveView] = useState<'ledger' | 'saturday_report' | 'bva_budget' | 'vendors'>('ledger');
+  const [activeView, setActiveView] = useState<'ledger' | 'saturday_report' | 'bva_budget' | 'vendors' | 'cash_flow'>('ledger');
   const [isLocked, setIsLocked] = useState<boolean>(false);
 
   const existingVendors = getUniqueVendors(expenses);
@@ -186,13 +187,18 @@ export default function App() {
               setSelectedExpense(item);
             }}
           />
-        ) : (
+        ) : activeView === 'vendors' ? (
           <VendorView
             projectName={projectName}
             allExpenses={expenses}
             onSelectExpense={item => {
               setSelectedExpense(item);
             }}
+          />
+        ) : (
+          <CashFlowView
+            projectName={projectName}
+            allExpenses={expenses}
           />
         )}
       </main>

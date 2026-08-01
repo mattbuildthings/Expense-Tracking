@@ -1,13 +1,13 @@
 import React from 'react';
-import { HardHat, PlusCircle, Calendar, Settings, FileSpreadsheet, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users } from 'lucide-react';
+import { HardHat, PlusCircle, Calendar, Settings, FileSpreadsheet, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users, Wallet } from 'lucide-react';
 import { formatVND } from '../services/storageService';
 
 interface NavbarProps {
   projectName: string;
   totalSpent: number;
   pendingCount: number;
-  activeView: 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors';
-  setActiveView: (view: 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors') => void;
+  activeView: 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors' | 'cash_flow';
+  setActiveView: (view: 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors' | 'cash_flow') => void;
   onOpenUpload: () => void;
   onOpenManualCreate: () => void;
   onOpenSettings: () => void;
@@ -199,6 +199,27 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Users size={18} />
             <span>👷 Nhà Cung Cấp & Tổ Thợ</span>
+          </button>
+
+          <button
+            onClick={() => setActiveView('cash_flow')}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '10px',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              border: 'none',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: activeView === 'cash_flow' ? 'linear-gradient(135deg, #818cf8 0%, #4f46e5 100%)' : 'transparent',
+              color: activeView === 'cash_flow' ? '#ffffff' : 'var(--text-muted)'
+            }}
+          >
+            <Wallet size={18} />
+            <span>💵 Dòng Tiền & Quỹ</span>
           </button>
         </div>
 

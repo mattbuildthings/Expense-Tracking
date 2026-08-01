@@ -50,6 +50,17 @@ export interface AuditLogEntry {
   description: string;
 }
 
+export type CapitalTransactionType = 'deposit' | 'withdrawal';
+
+export interface CapitalTransaction {
+  id: string;
+  date: string;
+  amount: number;
+  type: CapitalTransactionType; // 'deposit' = Nạp vốn vào ngân hàng, 'withdrawal' = Rút ngân hàng nhập quỹ tiền mặt
+  note: string;
+  createdAt: string;
+}
+
 export interface FilterOptions {
   searchTerm: string;
   category: string; // 'all' or ExpenseCategory

@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { CATEGORY_METADATA } from '../types/expense';
-import type { ExpenseItem, WeeklyReport, AuditLogEntry, FilterOptions, MultiPeriodReport, ReportPeriod, MonthlySummary, CategoryBudgets, ExpenseCategory } from '../types/expense';
+import type { ExpenseItem, WeeklyReport, AuditLogEntry, FilterOptions, MultiPeriodReport, ReportPeriod, MonthlySummary, CategoryBudgets, ExpenseCategory, CapitalTransaction } from '../types/expense';
 import { getSupabaseClient } from './supabaseClient';
 
 const STORAGE_KEY = 'build_expenses_data_v7';
@@ -60,6 +60,36 @@ export function getInitialFunds(): { bank: number; cash: number } {
 export function saveInitialFunds(bank: number, cash: number): void {
   localStorage.setItem(INITIAL_BANK_FUNDS_KEY, bank.toString());
   localStorage.setItem(INITIAL_CASH_FUNDS_KEY, cash.toString());
+}
+
+const CAPITAL_TRANSACTIONS_KEY = 'build_capital_transactions';
+
+export function getCapitalTransactions(): CapitalTransaction[] {
+  const raw = localStorage.getItem(CAPITAL_TRANSACTIONS_KEY);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    return [];
+  }
+}
+
+export function addCapitalTransaction(tx: Omit<CapitalTransaction, 'id' | 'createdAt'>): CapitalTransaction {
+  const transactions = getCapitalTransactions();
+  const newTx: CapitalTransaction = {
+    ...tx,
+    id: 'cap_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+    createdAt: new Date().toISOString()
+  };
+  const updated = [newTx, ...transactions];
+  localStorage.setItem(CAPITAL_TRANSACTIONS_KEY, JSON.stringify(updated));
+  return newTx;
+}
+
+export function deleteCapitalTransaction(id: string): void {
+  const transactions = getCapitalTransactions();
+  const updated = transactions.filter(t => t.id !== id);
+  localStorage.setItem(CAPITAL_TRANSACTIONS_KEY, JSON.stringify(updated));
 }
 
 export function getUniqueVendors(expenses: ExpenseItem[]): string[] {
