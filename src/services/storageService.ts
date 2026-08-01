@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { CATEGORY_METADATA } from '../types/expense';
-import type { ExpenseItem, WeeklyReport, AuditLogEntry, FilterOptions, MultiPeriodReport, ReportPeriod, MonthlySummary } from '../types/expense';
+import type { ExpenseItem, WeeklyReport, AuditLogEntry, FilterOptions, MultiPeriodReport, ReportPeriod, MonthlySummary, CategoryBudgets, ExpenseCategory } from '../types/expense';
 import { getSupabaseClient } from './supabaseClient';
 
 const STORAGE_KEY = 'build_expenses_data_v7';
@@ -10,8 +10,36 @@ const LEGACY_PIN_CODE_KEY = 'build_expenses_pin_code';
 const PIN_HASH_KEY = 'build_expenses_pin_hash';
 const PIN_ENABLED_KEY = 'build_expenses_pin_enabled';
 const PIN_SALT = 'construction_expense_pin_salt_v1_2026';
+const CATEGORY_BUDGETS_KEY = 'build_category_budgets';
 
 export const INITIAL_PROJECT_NAME = 'Quản Lý Chi Phí';
+
+export const DEFAULT_CATEGORY_BUDGETS: CategoryBudgets = {
+  pháp_lý: 50000000,           // 50,000,000 đ
+  tư_vấn_thiết_kế: 60000000,   // 60,000,000 đ
+  phần_thô_nhân_công: 250000000, // 250,000,000 đ
+  phần_thô_vật_tư: 550000000,    // 550,000,000 đ
+  hoàn_thiện_nhân_công: 180000000, // 180,000,000 đ
+  hoàn_thiện_vật_tư: 350000000, // 350,000,000 đ
+  nội_thất_thiết_bị: 300000000, // 300,000,000 đ
+  quản_lý_dự_án: 50000000,      // 50,000,000 đ
+  chi_phí_khác: 30000000        // 30,000,000 đ
+};
+
+export function getCategoryBudgets(): CategoryBudgets {
+  const raw = localStorage.getItem(CATEGORY_BUDGETS_KEY);
+  if (!raw) return DEFAULT_CATEGORY_BUDGETS;
+  try {
+    const parsed = JSON.parse(raw);
+    return { ...DEFAULT_CATEGORY_BUDGETS, ...parsed };
+  } catch (err) {
+    return DEFAULT_CATEGORY_BUDGETS;
+  }
+}
+
+export function saveCategoryBudgets(budgets: CategoryBudgets): void {
+  localStorage.setItem(CATEGORY_BUDGETS_KEY, JSON.stringify(budgets));
+}
 
 // Vietnamese Diacritic Accent Normalizer (e.g. "Minh Ngọc" -> "minh ngoc")
 export function removeVietnameseTones(str: string): string {
@@ -34,11 +62,9 @@ export async function hashPinCode(pin: string): Promise<string> {
 }
 
 export function getStoredPinHash(): string | null {
-  // Purge legacy plaintext PIN key if present in localStorage
   if (localStorage.getItem(LEGACY_PIN_CODE_KEY)) {
     localStorage.removeItem(LEGACY_PIN_CODE_KEY);
   }
-  // NO '1234' FALLBACK! Returns null if no stored PIN hash exists.
   return localStorage.getItem(PIN_HASH_KEY);
 }
 
@@ -480,19 +506,15 @@ export function subscribeToSupabaseChanges(onUpdate: () => void) {
 // Diacritic-insensitive and amount-matching precision filter engine
 export function filterExpenses(expenses: ExpenseItem[], filters: FilterOptions): ExpenseItem[] {
   return expenses.filter(item => {
-    // Basic text search with diacritic (NFD accent) removal + amount matching
     if (filters.searchTerm) {
       const rawTerm = filters.searchTerm.trim();
       const termNorm = removeVietnameseTones(rawTerm);
       const cleanDigits = rawTerm.replace(/[^0-9]/g, '');
 
-      // 1. Match merchant, note, subcategory, ID with/without accents
       const matchMerchant = removeVietnameseTones(item.merchant).includes(termNorm);
       const matchNote = removeVietnameseTones(item.note).includes(termNorm);
       const matchSubCat = item.subCategory ? removeVietnameseTones(item.subCategory).includes(termNorm) : false;
       const matchId = removeVietnameseTones(item.id).includes(termNorm);
-
-      // 2. Match exact numerical amount (e.g., typing "18500000" matches 18,500,000đ)
       const matchAmount = cleanDigits ? item.amount.toString().includes(cleanDigits) : false;
 
       if (!matchMerchant && !matchNote && !matchSubCat && !matchId && !matchAmount) {
@@ -573,14 +595,24 @@ export function generateMultiPeriodReport(expenses: ExpenseItem[], period: Repor
     categoryTotals[item.category].manDays += (item.manDays || 0);
   });
 
+  const budgets = getCategoryBudgets();
+
   const categoryBreakdown = Object.entries(CATEGORY_METADATA).map(([key, meta]) => {
+    const catKey = key as ExpenseCategory;
     const stat = categoryTotals[key] || { amount: 0, count: 0, manDays: 0 };
     const percentage = totalAmount > 0 ? Math.round((stat.amount / totalAmount) * 100) : 0;
+    const targetBudget = budgets[catKey] || 0;
+    const remainingBudget = targetBudget - stat.amount;
+    const variancePercentage = targetBudget > 0 ? Math.round((stat.amount / targetBudget) * 100) : 0;
+
     return {
-      category: key as any,
+      category: catKey,
       label: meta.label,
       icon: meta.iconName,
       totalAmount: stat.amount,
+      targetBudget,
+      remainingBudget,
+      variancePercentage,
       count: stat.count,
       percentage,
       totalManDays: stat.manDays

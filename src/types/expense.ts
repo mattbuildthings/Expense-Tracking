@@ -15,6 +15,8 @@ export type VerificationStatus = 'đã_xác_minh' | 'cần_kiểm_tra';
 
 export type ReportPeriod = 'weekly' | 'monthly' | 'quarterly' | 'all';
 
+export type CategoryBudgets = Record<ExpenseCategory, number>;
+
 export interface ExpenseItem {
   id: string;
   date: string; // YYYY-MM-DD
@@ -68,6 +70,9 @@ export interface CategorySummary {
   label: string;
   icon: string;
   totalAmount: number;
+  targetBudget?: number;
+  remainingBudget?: number;
+  variancePercentage?: number;
   count: number;
   percentage: number;
   totalManDays?: number;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Trash2, CheckCircle, ExternalLink, Boxes, AlertTriangle, ShieldCheck, Plus, Paintbrush, HardHat, Armchair, Filter, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, FilterOptions } from '../types/expense';
-import { formatVND, filterExpenses } from '../services/storageService';
+import { formatVND, filterExpenses, getCategoryBudgets } from '../services/storageService';
 
 interface ExpenseLedgerProps {
   expenses: ExpenseItem[];
@@ -43,12 +43,16 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  const budgets = getCategoryBudgets();
+  const totalTargetBudget = Object.values(budgets).reduce((sum, b) => sum + (b || 0), 0);
+
   const categoryStats = expenses.reduce((acc, item) => {
     acc[item.category] = (acc[item.category] || 0) + item.amount;
     return acc;
   }, {} as Record<string, number>);
 
   const totalSpent = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const totalRemainingBudget = totalTargetBudget - totalSpent;
   const pendingItems = expenses.filter(i => i.status === 'cần_kiểm_tra');
   const totalManDays = expenses.reduce((sum, item) => sum + (item.manDays || 0), 0);
 
@@ -99,12 +103,32 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
       {/* Metric Cards Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #3b82f6' }}>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Phí</p>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Phí Thực Tế</p>
           <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f8fafc', marginTop: '4px' }}>
             {formatVND(totalSpent)}
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
             {expenses.length} giao dịch
+          </p>
+        </div>
+
+        <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid #60a5fa' }}>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Dự Toán Ngân Sách (BVA)</p>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#60a5fa', marginTop: '4px' }}>
+            {formatVND(totalTargetBudget)}
+          </h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+            Hạn mức 9 hạng mục
+          </p>
+        </div>
+
+        <div className="glass-card" style={{ padding: '16px', borderLeft: `4px solid ${totalRemainingBudget < 0 ? '#f87171' : '#10b981'}` }}>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Ngân Sách Còn Lại</p>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: totalRemainingBudget < 0 ? '#f87171' : '#34d399', marginTop: '4px' }}>
+            {formatVND(totalRemainingBudget)}
+          </h3>
+          <p style={{ fontSize: '0.75rem', color: totalRemainingBudget < 0 ? '#f87171' : '#34d399', marginTop: '2px', fontWeight: 700 }}>
+            {totalRemainingBudget < 0 ? '⚠️ Đã Vượt Ngân Sách' : '🟢 Khả Dụng'}
           </p>
         </div>
 

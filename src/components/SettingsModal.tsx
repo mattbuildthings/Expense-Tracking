@@ -1,13 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Lock, ShieldCheck, Key, RefreshCw, Database, Copy, Check } from 'lucide-react';
-import { savePinCode, isPinEnabled, setPinEnabled, getProjectName, saveProjectName } from '../services/storageService';
+import { X, Save, Lock, ShieldCheck, Key, RefreshCw, Database, Copy, Check, Target } from 'lucide-react';
+import { savePinCode, isPinEnabled, setPinEnabled, getProjectName, saveProjectName, getCategoryBudgets, saveCategoryBudgets, formatVND } from '../services/storageService';
 import { getSupabaseUrl, getSupabaseAnonKey, setSupabaseConfig, resetSupabaseInstance, getSupabaseClient } from '../services/supabaseClient';
+import { CATEGORY_METADATA } from '../types/expense';
+import type { CategoryBudgets, ExpenseCategory } from '../types/expense';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProjectNameChange: (name: string) => void;
   onResetData: () => void;
+}
+
+function formatFormattedNumber(raw: number | string | undefined | null): string {
+  if (raw === undefined || raw === null || raw === '') return '';
+  const num = typeof raw === 'number' ? raw : parseFloat(raw.toString().replace(/,/g, ''));
+  if (isNaN(num)) return '';
+  const parts = num.toString().split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
+}
+
+function parseFormattedNumber(val: string): number {
+  const clean = val.replace(/,/g, '');
+  const parsed = parseFloat(clean);
+  return isNaN(parsed) ? 0 : parsed;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -21,6 +38,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [projectName, setProjectNameInput] = useState('');
   const [pinCode, setPinCodeInput] = useState('');
   const [pinEnabled, setPinEnabledInput] = useState(false);
+  const [budgets, setBudgets] = useState<CategoryBudgets>({} as CategoryBudgets);
   
   // Supabase state
   const [supabaseUrl, setSupabaseUrlInput] = useState('');
@@ -34,6 +52,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setPinEnabledInput(isPinEnabled());
     setSupabaseUrlInput(getSupabaseUrl());
     setSupabaseAnonKeyInput(getSupabaseAnonKey());
+    setBudgets(getCategoryBudgets());
 
     // Purge any lingering client-side API keys from local storage
     localStorage.removeItem('gemini_api_key');
@@ -43,10 +62,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsSupabaseConnected(Boolean(client && getSupabaseAnonKey()));
   }, [isOpen]);
 
+  const handleBudgetChange = (catKey: ExpenseCategory, valStr: string) => {
+    const parsed = parseFormattedNumber(valStr);
+    setBudgets(prev => ({
+      ...prev,
+      [catKey]: parsed
+    }));
+  };
+
   const handleSave = async () => {
     saveProjectName(projectName);
     onProjectNameChange(projectName);
     setPinEnabled(pinEnabled);
+    saveCategoryBudgets(budgets);
     
     if (pinEnabled && pinCode.trim()) {
       await savePinCode(pinCode.trim());
@@ -68,6 +96,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       onClose();
     }, 1200);
   };
+
+  const totalTargetBudget = Object.values(budgets).reduce((sum, b) => sum + (b || 0), 0);
 
   const sqlScript = `-- Run this script ONCE in your Supabase SQL Editor:
 
@@ -123,7 +153,7 @@ alter table public.audit_logs disable row level security;
 
   return (
     <div className="modal-overlay">
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '640px', borderRadius: '24px', padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}>
+      <div className="glass-panel" style={{ width: '100%', maxWidth: '720px', borderRadius: '24px', padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}>
         
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
@@ -133,10 +163,10 @@ alter table public.audit_logs disable row level security;
             </div>
             <div>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc' }}>
-                Cài Đặt & Đồng Bộ Đa Thiết Bị
+                Cài Đặt & Định Mức Ngân Sách
               </h2>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Cấu hình tên công trình, bảo mật PIN & Supabase Cloud Sync
+                Cấu hình tên công trình, hạn mức dự toán (BVA) & Supabase Cloud Sync
               </p>
             </div>
           </div>
@@ -174,6 +204,59 @@ alter table public.audit_logs disable row level security;
                 fontWeight: 700
               }}
             />
+          </div>
+
+          {/* Phase 1: Target Budget Setup (Ngân Sách Dự Toán 9 Hạng Mục) */}
+          <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '18px', padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Target size={20} color="#60a5fa" />
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#60a5fa' }}>
+                  🎯 Hạn Mức Ngân Sách Dự Toán (Budget vs. Actual - BVA)
+                </h3>
+              </div>
+              <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#34d399' }}>
+                Tổng Dự Toán: {formatVND(totalTargetBudget)}
+              </span>
+            </div>
+
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
+              Thiết lập hạn mức ngân sách tối đa cho 9 hạng mục công trình. Hệ thống sẽ tính toán mức chi tiêu thực tế vs. dự toán và cảnh báo khi sắp vượt trần chi phí.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+              {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => {
+                const key = catKey as ExpenseCategory;
+                const val = budgets[key] !== undefined ? budgets[key] : 0;
+
+                return (
+                  <div key={key} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '12px' }}>
+                    <label style={{ fontSize: '0.78rem', fontWeight: 700, color: meta.color, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: meta.color }} />
+                      <span>{meta.label}</span>
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        placeholder="VD: 550,000,000"
+                        value={formatFormattedNumber(val)}
+                        onChange={e => handleBudgetChange(key, e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '8px 10px',
+                          background: 'rgba(0,0,0,0.3)',
+                          border: '1px solid var(--border-color)',
+                          borderRadius: '8px',
+                          color: '#f8fafc',
+                          fontSize: '0.88rem',
+                          fontWeight: 700
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Supabase Cloud Sync Configuration */}
@@ -231,7 +314,7 @@ alter table public.audit_logs disable row level security;
             </div>
           </div>
 
-          {/* PIN Passcode Security (SHA-256 Hashed) */}
+          {/* PIN Passcode Security */}
           <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '18px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Printer, FileSpreadsheet, Sparkles, AlertTriangle, ChevronDown, ChevronUp, ExternalLink, Image as ImageIcon, TrendingUp, Filter } from 'lucide-react';
+import { Calendar, Printer, FileSpreadsheet, Sparkles, AlertTriangle, ChevronDown, ChevronUp, ExternalLink, Image as ImageIcon, Filter, AlertCircle } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, ExpenseCategory, ReportPeriod } from '../types/expense';
 import { formatVND, generateMultiPeriodReport } from '../services/storageService';
@@ -36,6 +36,8 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
     window.print();
   };
 
+  const overBudgetCategories = report.categoryBreakdown.filter(c => c.targetBudget && c.totalAmount > c.targetBudget);
+
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', paddingBottom: '60px' }}>
       
@@ -52,10 +54,10 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
               </span>
             </div>
             <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', marginTop: '10px' }}>
-              Báo Cáo Phân Tích & Rà Soát Chi Phí
+              Báo Cáo Phân Tích Ngân Sách & Chi Phí (BVA)
             </h2>
             <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Theo dõi biến động chi phí theo tuần, tháng và toàn bộ chu kỳ 12 tháng công trình
+              So sánh hạn mức dự toán vs. thực chi, rà soát biến động & tiến độ 12 tháng dự án
             </p>
           </div>
 
@@ -71,7 +73,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
           </div>
         </div>
 
-        {/* Period Selector Tabs Bar: Tuần / Tháng / Quý / Toàn Bộ Dự Án */}
+        {/* Period Selector Tabs Bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
           <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Filter size={14} /> Kỳ Báo Cáo:
@@ -108,8 +110,32 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
 
       </div>
 
+      {/* PHASE 1 OVERRUN WARNING ALERT CARD */}
+      {overBudgetCategories.length > 0 && (
+        <div className="glass-card" style={{ padding: '20px 24px', marginBottom: '24px', background: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.5)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+            <AlertCircle size={24} color="#f87171" />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f87171' }}>
+              🚨 CẢNH BÁO: Phát Hiện {overBudgetCategories.length} Hạng Mục Chi Vượt Ngân Sách Dự Toán!
+            </h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {overBudgetCategories.map(c => (
+              <div key={c.category} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.2)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#f8fafc' }}>
+                  {c.label}
+                </span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#f87171' }}>
+                  Thực chi: {formatVND(c.totalAmount)} / Dự toán: {formatVND(c.targetBudget || 0)} (Vượt {formatVND(c.totalAmount - (c.targetBudget || 0))})
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* TOP PRIORITY: Flagged Expenses Needing Review */}
-      {report.flaggedExpenses.length > 0 ? (
+      {report.flaggedExpenses.length > 0 && (
         <div className="glass-card" style={{ padding: '24px', marginBottom: '24px', border: '2px solid rgba(245, 158, 11, 0.6)', background: 'rgba(245, 158, 11, 0.06)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -118,7 +144,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
               </div>
               <div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fbbf24' }}>
-                  ⚠️ Các Mục Cần Bạn & Mẹ Rà Soát Lại ({report.flaggedExpenses.length} mục)
+                  ⚠️ Các Mục Cần Rà Soát Lại ({report.flaggedExpenses.length} mục)
                 </h3>
                 <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                   Hãy xem lại hóa đơn hoặc ghi chú bên dưới trong kỳ báo cáo này
@@ -177,14 +203,6 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
             ))}
           </div>
         </div>
-      ) : (
-        <div className="glass-card" style={{ padding: '16px 24px', marginBottom: '24px', border: '1px solid rgba(16, 185, 129, 0.3)', background: 'rgba(16, 185, 129, 0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '1.2rem' }}>🟢</span>
-          <div>
-            <p style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>Tất cả hóa đơn trong kỳ này đã được xác minh chính xác!</p>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Không có giao dịch nào đang chờ kiểm tra lại.</p>
-          </div>
-        </div>
       )}
 
       {/* AI Executive Summary Card */}
@@ -205,7 +223,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
       {/* Financial Metrics Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Tiêu ({report.periodType.toUpperCase()})</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Tiêu Thực Tế</p>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#34d399', marginTop: '6px' }}>
             {formatVND(report.totalAmount)}
           </h3>
@@ -231,55 +249,41 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
         </div>
       </div>
 
-      {/* 12-Month Project Lifecycle Monthly Breakdown Trend */}
-      {selectedPeriod === 'all' && report.monthlyBreakdown.length > 0 && (
-        <div className="glass-card" style={{ padding: '24px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-            <TrendingUp size={20} color="#60a5fa" />
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc' }}>
-              📈 Tiến Độ Chi Phí Theo Tháng (12 Tháng Dự Án)
+      {/* PHASE 1: BVA BUDGET VS ACTUAL ACCORDION CARDS */}
+      <div className="glass-card" style={{ padding: '24px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+          <div>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', marginBottom: '4px' }}>
+              🎯 Chi Tiết Ngân Sách Dự Toán vs. Thực Chi (BVA)
             </h3>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
-            {report.monthlyBreakdown.map((m, idx) => (
-              <div key={idx} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '14px' }}>
-                <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#60a5fa' }}>{m.label}</p>
-                <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#34d399', marginTop: '4px' }}>
-                  {formatVND(m.totalAmount)}
-                </h4>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  {m.itemCount} hóa đơn {m.manDays > 0 ? `• 👷 ${m.manDays} công` : ''}
-                </p>
-              </div>
-            ))}
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              Theo dõi biến động chi phí, ngân sách còn lại & tỷ lệ hoàn thành 9 hạng mục
+            </p>
           </div>
         </div>
-      )}
-
-      {/* Interactive Collapsible Accordion for 9 Categories & Actual Transactions */}
-      <div className="glass-card" style={{ padding: '24px', marginBottom: '24px' }}>
-        <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', marginBottom: '6px' }}>
-          📊 Chi Tiết Giao Dịch Theo 9 Danh Mục ({report.periodLabel})
-        </h3>
-        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-          Click/chạm vào bất kỳ danh mục nào bên dưới để xem danh sách chi tiết hóa đơn & số lượng tương ứng
-        </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {report.categoryBreakdown.map((catSummary) => {
             const catKey = catSummary.category as ExpenseCategory;
             const meta = CATEGORY_METADATA[catKey] || CATEGORY_METADATA['chi_phí_khác'];
             const isExpanded = Boolean(expandedCategories[catKey]);
-
             const categoryTransactions = allExpenses.filter(i => i.category === catKey);
+
+            const targetB = catSummary.targetBudget || 0;
+            const remaining = catSummary.remainingBudget || 0;
+            const variancePct = catSummary.variancePercentage || 0;
+            const isOverBudget = targetB > 0 && catSummary.totalAmount > targetB;
+
+            let progressColor = '#34d399'; // Green < 85%
+            if (variancePct >= 85 && variancePct <= 100) progressColor = '#fbbf24'; // Yellow
+            if (isOverBudget) progressColor = '#f87171'; // Red > 100%
 
             return (
               <div
                 key={catKey}
                 style={{
                   background: 'var(--bg-input)',
-                  border: `1px solid ${isExpanded ? meta.color : 'var(--border-color)'}`,
+                  border: `1px solid ${isOverBudget ? 'rgba(239, 68, 68, 0.5)' : isExpanded ? meta.color : 'var(--border-color)'}`,
                   borderRadius: '16px',
                   overflow: 'hidden',
                   transition: 'all 0.2s ease'
@@ -297,31 +301,33 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                     userSelect: 'none',
                     background: isExpanded ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
                     flexWrap: 'wrap',
-                    gap: '10px'
+                    gap: '12px'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '200px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '220px' }}>
                     <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: meta.color, flexShrink: 0 }} />
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 800, fontSize: '1rem', color: '#f8fafc' }}>{meta.label}</span>
-                        <span className="badge" style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                          {catSummary.count} giao dịch
-                        </span>
+                        <span style={{ fontWeight: 800, fontSize: '1.02rem', color: '#f8fafc' }}>{meta.label}</span>
+                        {isOverBudget && (
+                          <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', fontSize: '0.72rem', fontWeight: 800 }}>
+                            ⚠️ Vượt {formatVND(catSummary.totalAmount - targetB)}
+                          </span>
+                        )}
                       </div>
-                      <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '2px' }}>
-                        Ví dụ: {meta.examples.join(', ')}
+                      <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '3px' }}>
+                        Dự toán: <strong style={{ color: '#f8fafc' }}>{formatVND(targetB)}</strong> • Còn lại: <strong style={{ color: remaining < 0 ? '#f87171' : '#34d399' }}>{formatVND(remaining)}</strong>
                       </p>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 800, color: meta.color }}>
+                      <p style={{ fontSize: '1.1rem', fontWeight: 800, color: progressColor }}>
                         {formatVND(catSummary.totalAmount)}
                       </p>
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        {catSummary.percentage}% tổng chi
+                        Đã dùng {variancePct}% dự toán
                       </p>
                     </div>
                     <div style={{ color: meta.color, padding: '4px' }}>
@@ -331,8 +337,8 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                 </div>
 
                 {/* Progress bar line */}
-                <div style={{ width: '100%', height: '4px', background: 'rgba(255, 255, 255, 0.05)' }}>
-                  <div style={{ width: `${catSummary.percentage}%`, height: '100%', background: meta.color }} />
+                <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.05)' }}>
+                  <div style={{ width: `${Math.min(100, variancePct)}%`, height: '100%', background: progressColor, transition: 'width 0.4s ease' }} />
                 </div>
 
                 {/* Expanded Transactions List Dropdown */}
