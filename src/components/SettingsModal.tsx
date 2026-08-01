@@ -42,7 +42,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [bankFundsStr, setBankFundsStr] = useState('');
   const [cashFundsStr, setCashFundsStr] = useState('');
   
-  // Supabase state
+  const [geminiApiKey, setGeminiApiKeyInput] = useState('');
   const [supabaseUrl, setSupabaseUrlInput] = useState('');
   const [supabaseAnonKey, setSupabaseAnonKeyInput] = useState('');
   const [isSupabaseConnected, setIsSupabaseConnected] = useState(false);
@@ -52,15 +52,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   useEffect(() => {
     setProjectNameInput(getProjectName());
     setPinEnabledInput(isPinEnabled());
+    setGeminiApiKeyInput(localStorage.getItem('gemini_api_key') || '');
     setSupabaseUrlInput(getSupabaseUrl());
     setSupabaseAnonKeyInput(getSupabaseAnonKey());
     setBudgets(getCategoryBudgets());
     const funds = getInitialFunds();
     setBankFundsStr(formatFormattedNumber(funds.bank));
     setCashFundsStr(formatFormattedNumber(funds.cash));
-
-    // Purge any lingering client-side API keys from local storage
-    localStorage.removeItem('gemini_api_key');
 
     // Check Supabase connection
     const client = getSupabaseClient();
@@ -80,6 +78,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     onProjectNameChange(projectName);
     setPinEnabled(pinEnabled);
     saveCategoryBudgets(budgets);
+
+    if (geminiApiKey.trim()) {
+      localStorage.setItem('gemini_api_key', geminiApiKey.trim());
+    } else {
+      localStorage.removeItem('gemini_api_key');
+    }
 
     const bankNum = parseFormattedNumber(bankFundsStr);
     const cashNum = parseFormattedNumber(cashFundsStr);
@@ -303,6 +307,33 @@ alter table public.audit_logs disable row level security;
                 );
               })}
             </div>
+          </div>
+
+          {/* Gemini Vision AI API Key Configuration */}
+          <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '16px', padding: '18px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Key size={20} color="#60a5fa" />
+                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#60a5fa' }}>
+                  🤖 Chìa Khóa AI Đọc Hóa Đơn (Gemini Vision API Key)
+                </h3>
+              </div>
+              <span className="badge" style={{ background: geminiApiKey ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)', color: geminiApiKey ? '#34d399' : '#fbbf24' }}>
+                {geminiApiKey ? '🟢 Đã Kích Hoạt Key' : '🟡 Chưa Điền Key'}
+              </span>
+            </div>
+
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
+              Nhập chìa khóa Google Gemini Flash API key để AI nhận diện và trích xuất hóa đơn Zalo/Vietcombank chính xác 100%. Lấy key miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>Google AI Studio ➔</a>
+            </p>
+
+            <input
+              type="password"
+              placeholder="AIzaSy... (Dán Gemini API Key tại đây)"
+              value={geminiApiKey}
+              onChange={e => setGeminiApiKeyInput(e.target.value)}
+              style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#60a5fa', fontSize: '0.9rem', fontWeight: 700 }}
+            />
           </div>
 
           {/* Supabase Cloud Sync Configuration */}
