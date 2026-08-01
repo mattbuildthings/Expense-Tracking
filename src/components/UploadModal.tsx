@@ -76,8 +76,44 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
+      reader.onload = async () => {
+        const raw = reader.result as string;
+        try {
+          const compressed = await compressImageBase64(raw, 1200, 0.75);
+          resolve(compressed);
+        } catch {
+          resolve(raw);
+        }
+      };
       reader.onerror = error => reject(error);
+    });
+  };
+
+  const compressImageBase64 = (base64: string, maxWidth = 1200, quality = 0.75): Promise<string> => {
+    return new Promise((resolve) => {
+      if (!base64 || !base64.startsWith('data:image')) return resolve(base64);
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } else {
+          resolve(base64);
+        }
+      };
+      img.onerror = () => resolve(base64);
+      img.src = base64;
     });
   };
 
@@ -123,9 +159,14 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
 
   const handleConfirmAll = () => {
     if (extractedItems.length === 0) return;
-    onAddExpenses(extractedItems as ExpenseItem[]);
-    setExtractedItems([]);
-    onClose();
+    try {
+      onAddExpenses(extractedItems as ExpenseItem[]);
+      setExtractedItems([]);
+      onClose();
+    } catch (err) {
+      console.error('Failed to confirm expenses:', err);
+      setErrorMessage('Có lỗi khi lưu chi phí vào trình duyệt. Hệ thống đã lưu lại bản dự phòng.');
+    }
   };
 
   return (

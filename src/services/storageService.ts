@@ -335,7 +335,23 @@ export async function fetchExpensesFromSupabase(): Promise<ExpenseItem[] | null>
 }
 
 export function saveExpensesLocally(expenses: ExpenseItem[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+  } catch (err) {
+    console.warn('LocalStorage quota exceeded. Stripping large base64 images to IndexedDB fallback...', err);
+    const stripped = expenses.map(item => {
+      if (item.imageUrl && item.imageUrl.length > 50000 && item.imageUrl.startsWith('data:image')) {
+        savePhotoToIndexedDB(item.id, item.imageUrl);
+        return { ...item, imageUrl: `indexeddb:${item.id}` };
+      }
+      return item;
+    });
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stripped));
+    } catch (e) {
+      console.error('Failed even after stripping base64 images:', e);
+    }
+  }
 }
 
 // Backward-compatible data migration helper (Preserves data_v1 through v7)
