@@ -82,7 +82,7 @@ QUY TẮC TRÍCH XUẤT BẮT BUỘC:
 5. "note": Liệt kê tên các mặt hàng trong bảng (VD: Xi Măng Holcim, Gạch Ống, D8 142).
 `;
 
-    const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    const models = ['gemini-1.5-flash', 'gemini-1.5-pro'];
     let lastError = '';
 
     for (const model of models) {
@@ -117,7 +117,17 @@ QUY TẮC TRÍCH XUẤT BẮT BUỘC:
 
         if (!geminiRes.ok) {
           const errText = await geminiRes.text();
-          lastError = `Gemini API (${model}) Error ${geminiRes.status}: ${errText}`;
+          let errMessage = errText;
+          try {
+            const parsedErr = JSON.parse(errText);
+            errMessage = parsedErr?.error?.message || errText;
+          } catch (_) {}
+
+          lastError = `Gemini API (${model}) ${geminiRes.status}: ${errMessage}`;
+
+          if (geminiRes.status === 400 || geminiRes.status === 401 || geminiRes.status === 403) {
+            return res.status(geminiRes.status).json({ error: `Google Gemini API Key: ${errMessage}` });
+          }
           continue;
         }
 

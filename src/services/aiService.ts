@@ -104,8 +104,8 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
   const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-  // Try supported vision models in order of capability
-  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+  // Official supported vision models in Google AI Studio
+  const models = ['gemini-1.5-flash', 'gemini-1.5-pro'];
 
   let lastError = '';
 
@@ -142,6 +142,11 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
       if (!response.ok) {
         const errJson = await response.json().catch(() => ({}));
         lastError = errJson?.error?.message || `HTTP ${response.status}`;
+        
+        // Stop immediately if key is invalid or permission denied
+        if (response.status === 400 || response.status === 401 || response.status === 403) {
+          throw new Error(`Google Gemini API Key (${response.status}): ${lastError}`);
+        }
         continue;
       }
 
@@ -154,6 +159,9 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
         return formatParsedResult(parsed);
       }
     } catch (err: any) {
+      if (err.message && err.message.includes('Google Gemini API Key')) {
+        throw err;
+      }
       lastError = err.message || 'Fetch error';
     }
   }
