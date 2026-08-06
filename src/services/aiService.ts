@@ -105,17 +105,21 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
   // Try supported vision models in order of capability
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'];
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
 
   let lastError = '';
 
   for (const model of models) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     try {
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             contents: [
               {
@@ -133,6 +137,7 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
           })
         }
       );
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errJson = await response.json().catch(() => ({}));

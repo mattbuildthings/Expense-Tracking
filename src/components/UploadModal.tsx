@@ -31,14 +31,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
         const rawBase64 = await fileToBase64Raw(file);
         
         // 1. Compress for local display & storage
-        let displayImageUrl = await compressImageBase64(rawBase64, 1200, 0.75);
-        const cdnUrl = await uploadPhotoToSupabase(displayImageUrl, file.name);
-        if (cdnUrl) {
-          displayImageUrl = cdnUrl;
-        }
+        const displayImageUrl = await compressImageBase64(rawBase64, 1200, 0.75);
 
-        // 2. Parse FULL RESOLUTION raw receipt with Gemini AI Vision for max accuracy
+        // 2. Start Supabase storage upload asynchronously (non-blocking)
+        const cdnPromise = uploadPhotoToSupabase(displayImageUrl, file.name).catch(() => null);
+
+        // 3. Parse FULL RESOLUTION raw receipt with Gemini AI Vision instantly
         const parsed = await parseInvoiceWithAI(rawBase64, file.name);
+        const cdnUrl = await Promise.race([
+          cdnPromise,
+          new Promise<string | null>(res => setTimeout(() => res(null), 3000))
+        ]);
 
         parsedResults.push({
           id: `exp-${Date.now()}-${i}`,
@@ -53,7 +56,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
           note: parsed.note,
           manDays: parsed.manDays,
           paymentMethod: parsed.paymentMethod,
-          imageUrl: displayImageUrl,
+          imageUrl: cdnUrl || displayImageUrl,
           imageType: parsed.imageType,
           status: parsed.confidenceScore >= 90 ? 'đã_xác_minh' : 'cần_kiểm_tra',
           confidenceScore: parsed.confidenceScore,
