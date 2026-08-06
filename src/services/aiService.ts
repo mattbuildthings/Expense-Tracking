@@ -105,7 +105,7 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
   // Try supported vision models in order of capability
-  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'];
 
   let lastError = '';
 
