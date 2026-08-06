@@ -104,8 +104,8 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
   const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-  // Official supported vision models in Google AI Studio
-  const models = ['gemini-1.5-flash', 'gemini-1.5-pro'];
+  // Primary & fallback vision models in Google AI Studio
+  const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
 
   let lastError = '';
 
