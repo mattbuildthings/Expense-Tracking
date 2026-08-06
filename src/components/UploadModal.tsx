@@ -95,9 +95,14 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
   const compressImageBase64 = (base64: string, maxWidth = 1200, quality = 0.75): Promise<string> => {
     return new Promise((resolve) => {
       if (!base64 || !base64.startsWith('data:image')) return resolve(base64);
+      
+      const timer = setTimeout(() => resolve(base64), 2000);
       const img = new Image();
-      img.crossOrigin = 'anonymous';
+      if (base64.startsWith('http')) {
+        img.crossOrigin = 'anonymous';
+      }
       img.onload = () => {
+        clearTimeout(timer);
         let width = img.width;
         let height = img.height;
         if (width > maxWidth) {
@@ -115,7 +120,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
           resolve(base64);
         }
       };
-      img.onerror = () => resolve(base64);
+      img.onerror = () => {
+        clearTimeout(timer);
+        resolve(base64);
+      };
       img.src = base64;
     });
   };
