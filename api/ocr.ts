@@ -21,7 +21,14 @@ export default async function handler(req: any, res: any) {
   const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
   const { imageBase64, userApiKey } = body || {};
 
-  const apiKey = userApiKey || process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+  const apiKey =
+    userApiKey ||
+    process.env.GEMINI_API_KEY ||
+    process.env.VITE_GEMINI_API_KEY ||
+    process.env.GEMINI_KEY ||
+    process.env.gemini_api_key ||
+    process.env.GEMINI_PRO_KEY ||
+    process.env.GOOGLE_API_KEY;
 
   if (!apiKey || !apiKey.trim()) {
     return res.status(400).json({
