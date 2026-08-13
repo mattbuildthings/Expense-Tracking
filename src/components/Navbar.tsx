@@ -70,16 +70,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <>
       <header className="glass-panel no-print" style={{ borderBottom: '1px solid var(--border-color)', position: 'sticky', top: 0, zIndex: 100, background: 'var(--header-bg)' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '16px 24px' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: 'clamp(8px, 2vw, 16px) clamp(12px, 3vw, 24px)' }}>
           {/* Top row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
 
-            {/* Logo & Title */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            {/* Logo & Title (shrinks on mobile) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
               <div style={{
-                width: '46px',
-                height: '46px',
-                borderRadius: '14px',
+                width: 'clamp(28px, 8vw, 46px)',
+                height: 'clamp(28px, 8vw, 46px)',
+                borderRadius: '12px',
                 background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                 display: 'flex',
                 alignItems: 'center',
@@ -87,36 +87,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                 boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
                 flexShrink: 0
               }}>
-                <HardHat size={26} color="#ffffff" />
+                <HardHat size="clamp(16px, 4vw, 26px)" color="#ffffff" />
               </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
-                    {projectName}
-                  </h1>
-                  <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: 'var(--primary)', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
-                    AI Vision 1.5
-                  </span>
-                </div>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+              <div style={{ minWidth: 0 }} className="desktop-only">
+                <h1 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+                  {projectName}
+                </h1>
+                <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: 'var(--primary)', border: '1px solid rgba(59, 130, 246, 0.3)', fontSize: '0.75rem', fontWeight: 600 }}>
+                  AI Vision 1.5
+                </span>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                   Hệ thống tự động đọc hóa đơn Zalo
                 </p>
               </div>
             </div>
 
-            {/* Quick Metrics Bar + Theme Toggle */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', background: 'var(--bg-card-alt)', padding: '8px 18px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+            {/* Quick Metrics Bar (desktop only) + Theme Toggle */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ alignItems: 'center', gap: '20px', background: 'var(--bg-card-alt)', padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)' }} className="desktop-only" title="Metrics">
                 <div>
-                  <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Tổng Chi Phí</p>
-                  <p style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--success)' }}>{formatVND(totalSpent)}</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Tổng Chi Phí</p>
+                  <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)' }}>{formatVND(totalSpent)}</p>
                 </div>
-                <div style={{ width: '1px', height: '28px', background: 'var(--border-color)' }} />
+                <div style={{ width: '1px', height: '24px', background: 'var(--border-color)' }} />
                 <div>
-                  <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Cần Xác Minh</p>
-                  <p style={{ fontSize: '1.1rem', fontWeight: 800, color: pendingCount > 0 ? 'var(--warning)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    {pendingCount > 0 ? <AlertCircle size={16} color="var(--warning)" /> : <CheckCircle2 size={16} color="var(--success)" />}
-                    {pendingCount} mục
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Cần Xác Minh</p>
+                  <p style={{ fontSize: '0.95rem', fontWeight: 800, color: pendingCount > 0 ? 'var(--danger)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    {pendingCount > 0 ? <AlertCircle size={14} color="var(--danger)" /> : <CheckCircle2 size={14} color="var(--success)" />}
+                    {pendingCount}
                   </p>
                 </div>
               </div>
@@ -126,47 +124,47 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={onToggleTheme}
                 title={theme === 'light' ? 'Chuyển sang giao diện tối' : 'Chuyển sang giao diện sáng'}
                 aria-label="Đổi giao diện sáng / tối"
-                style={{ padding: '9px' }}
+                style={{ padding: '7px' }}
               >
-                {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
               </button>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '14px' }}>
-            <button className="btn btn-primary" onClick={onOpenUpload}>
-              <PlusCircle size={18} />
-              <span>Thêm Ảnh / Hóa Đơn</span>
+          {/* Action Buttons (icon-only on mobile, scrollable) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', overflowY: 'hidden', marginTop: '8px', paddingBottom: '4px', scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}>
+            <button className="btn btn-primary" onClick={onOpenUpload} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <PlusCircle size={16} />
+              <span className="desktop-only">Thêm Ảnh / Hóa Đơn</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onOpenManualCreate} title="Tạo hóa đơn thủ công khi không có ảnh đính kèm">
-              <FilePlus size={18} color="var(--primary)" />
-              <span>Tạo Hóa Đơn</span>
+            <button className="btn btn-secondary" onClick={onOpenManualCreate} title="Tạo hóa đơn thủ công khi không có ảnh đính kèm" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <FilePlus size={16} color="var(--primary)" />
+              <span className="desktop-only">Tạo Hóa Đơn</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onOpenQuotationModal} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }} title="Nhập báo giá hoặc hợp đồng chi tiết với nhà cung cấp">
-              <FileText size={18} color="#818cf8" />
-              <span>Nhập Báo Giá / HĐ</span>
+            <button className="btn btn-secondary" onClick={onOpenQuotationModal} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', whiteSpace: 'nowrap', flexShrink: 0 }} title="Nhập báo giá hoặc hợp đồng chi tiết với nhà cung cấp">
+              <FileText size={16} color="#818cf8" />
+              <span className="desktop-only">Nhập Báo Giá / HĐ</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onOpenAuditLog} title="Lịch sử giao dịch & Thùng rác khôi phục">
-              <History size={18} color="var(--primary)" />
-              <span>Lịch Sử & Thùng Rác</span>
+            <button className="btn btn-secondary" onClick={onOpenAuditLog} title="Lịch sử giao dịch & Thùng rác khôi phục" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <History size={16} color="var(--primary)" />
+              <span className="desktop-only">Lịch Sử & Thùng Rác</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onOpenSettings} title="Cài đặt chìa khóa AI Gemini & Tên công trình">
-              <Settings size={18} />
-              <span>Cài Đặt</span>
+            <button className="btn btn-secondary" onClick={onOpenSettings} title="Cài đặt chìa khóa AI Gemini & Tên công trình" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <Settings size={16} />
+              <span className="desktop-only">Cài Đặt</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onLockApp} title="Khóa ứng dụng ngay lập tức">
-              <Lock size={16} color="var(--warning)" />
+            <button className="btn btn-secondary" onClick={onLockApp} title="Khóa ứng dụng ngay lập tức" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <Lock size={14} color="var(--danger)" />
             </button>
           </div>
 
           {/* Desktop View Switching Tabs */}
-          <nav className="desktop-only-nav" style={{ alignItems: 'center', gap: '10px', marginTop: '18px', borderTop: '1px solid var(--border-color)', paddingTop: '14px', flexWrap: 'wrap' }}>
+          <nav className="desktop-only-nav" style={{ alignItems: 'center', gap: '10px', marginTop: '12px', borderTop: '1px solid var(--border-color)', paddingTop: '10px', flexWrap: 'wrap', display: 'none' }}>
             {TABS.map(tab => {
               const Icon = tab.icon;
               const active = activeView === tab.key;
@@ -175,10 +173,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   key={tab.key}
                   onClick={() => setActiveView(tab.key)}
                   style={{
-                    padding: '8px 18px',
+                    padding: '8px 16px',
                     borderRadius: '10px',
                     fontWeight: 700,
-                    fontSize: '0.88rem',
+                    fontSize: '0.75rem',
                     cursor: 'pointer',
                     border: 'none',
                     transition: 'all 0.2s',
@@ -189,10 +187,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     color: active ? '#ffffff' : 'var(--text-muted)'
                   }}
                 >
-                  <Icon size={18} />
+                  <Icon size={16} />
                   <span>{tab.label}</span>
                   {tab.key === 'saturday_report' && pendingCount > 0 && (
-                    <span style={{ background: 'var(--warning)', color: '#000', fontSize: '0.7rem', fontWeight: 900, padding: '2px 6px', borderRadius: '10px' }}>
+                    <span style={{ background: 'var(--danger)', color: '#ffffff', fontSize: '0.7rem', fontWeight: 900, padding: '2px 6px', borderRadius: '10px' }}>
                       {pendingCount}
                     </span>
                   )}

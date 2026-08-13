@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    @keyframes fadeSlide { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+    body { margin:0; }
+    a { color:#2563eb; }
+    a:hover { color:#1d4ed8; }
+  </style>
+</helmet>
+
+<div style="{{ styles.page }}">
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ styles.toast }}">
+      <span>{{ toast }}</span>
+      <button onClick="{{ dismissToast }}" style="{{ styles.toastClose }}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+    </div>
+  </sc-if>
+
+  <header style="{{ styles.header }}">
+    <div style="{{ styles.headerInner }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+
+        <div style="display:flex;align-items:center;gap:{{ logoGap }}">
+          <div style="{{ styles.logoBox }}">
+            <svg width="{{ logoIconSize }}" height="{{ logoIconSize }}" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18v-2a8 8 0 0 1 16 0v2"></path><path d="M2 18h20"></path><path d="M12 2v4"></path></svg>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <h1 style="{{ styles.brandTitle }}">{{ projectName }}</h1>
+            </div>
+            <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+              <p style="{{ styles.brandSubtitle }}">AI Quản Lý Chi Phí Công Trình</p>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:{{ logoGap }}">
+          <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+            <div style="{{ styles.metricBox }}">
+              <div>
+                <p style="{{ styles.metricLabel }}">Tổng Chi Phí</p>
+                <p style="{{ styles.metricValueSuccess }}">{{ fmtTotalSpent }}</p>
+              </div>
+              <div style="width:1px;height:26px;background:{{ t.border }}"></div>
+              <div>
+                <p style="{{ styles.metricLabel }}">Cần Xác Minh</p>
+                <p style="{{ styles.metricValuePending }}">{{ pendingCount }} mục</p>
+              </div>
+            </div>
+          </sc-if>
+
+          <button onClick="{{ toggleTheme }}" title="Đổi giao diện sáng / tối" style="{{ styles.iconBtn }}">
+            <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+            </sc-if>
+            <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path></svg>
+            </sc-if>
+          </button>
+        </div>
+
+      </div>
+
+      <div style="{{ styles.headerBtnRow }}">
+        <button onClick="{{ openUploadToast }}" title="Thêm Ảnh / Hóa Đơn" style="{{ styles.btnPrimary }}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+          <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}"><span>Thêm Ảnh / Hóa Đơn</span></sc-if>
+        </button>
+        <button onClick="{{ openUploadToast }}" title="Tạo Hóa Đơn" style="{{ styles.btnSecondary }}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+          <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}"><span>Tạo Hóa Đơn</span></sc-if>
+        </button>
+        <button onClick="{{ openUploadToast }}" title="Nhập Báo Giá / HĐ" style="{{ styles.btnSecondaryIndigo }}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v6h6"></path></svg>
+          <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}"><span>Nhập Báo Giá / HĐ</span></sc-if>
+        </button>
+        <button onClick="{{ openUploadToast }}" title="Lịch sử &amp; Thùng rác" style="{{ styles.iconBtn }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"></path><path d="M3 3v5h5"></path></svg>
+        </button>
+        <button onClick="{{ openUploadToast }}" title="Cài đặt" style="{{ styles.iconBtn }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"></path></svg>
+        </button>
+        <button onClick="{{ openUploadToast }}" title="Khóa ứng dụng" style="{{ styles.iconBtnWarn }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </button>
+      </div>
+
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+        <nav style="display:flex;align-items:center;gap:8px;margin-top:16px;border-top:1px solid {{ t.border }};padding-top:12px;flex-wrap:wrap">
+          <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="5">
+            <button onClick="{{ tab.onSelect }}" style="{{ tab.style }}">
+              <sc-if value="{{ tab.isLedger }}" hint-placeholder-val="{{ false }}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+              </sc-if>
+              <sc-if value="{{ tab.isReport }}" hint-placeholder-val="{{ false }}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+              </sc-if>
+              <sc-if value="{{ tab.isBudget }}" hint-placeholder-val="{{ false }}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+              </sc-if>
+              <sc-if value="{{ tab.isVendors }}" hint-placeholder-val="{{ false }}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              </sc-if>
+              <sc-if value="{{ tab.isCashflow }}" hint-placeholder-val="{{ false }}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path></svg>
+              </sc-if>
+              <span>{{ tab.label }}</span>
+            </button>
+          </sc-for>
+        </nav>
+      </sc-if>
+    </div>
+  </header>
+
+  <main style="{{ styles.main }}">
+    <sc-if value="{{ isLedgerView }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="margin-bottom:20px">
+          <h4 style="{{ styles.sectionLabelBlue }}">Tổng Quan Ngân Sách Dự Án (BVA)</h4>
+          <div style="{{ styles.bvaPanel }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+              <div style="{{ styles.statCard }}">
+                <p style="{{ styles.statLabel }}">Tổng Chi Phí Thực Tế</p>
+                <h3 style="{{ styles.statValueMain }}">{{ fmtTotalSpent }}</h3>
+                <p style="{{ styles.statSub }}">{{ expenseCount }} giao dịch</p>
+              </div>
+              <div style="{{ styles.statCardBlue }}">
+                <p style="{{ styles.statLabel }}">Dự Toán Ngân Sách</p>
+                <h3 style="{{ styles.statValueBlue }}">{{ fmtTotalBudget }}</h3>
+                <p style="{{ styles.statSub }}">Hạn mức 9 hạng mục</p>
+              </div>
+              <div style="{{ styles.statCardRemaining }}">
+                <p style="{{ styles.statLabel }}">Ngân Sách Còn Lại</p>
+                <h3 style="{{ styles.remainingValueStyle }}">{{ fmtRemaining }}</h3>
+                <p style="{{ styles.remainingSubStyle }}">{{ remainingStatusText }}</p>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:12px">
+              <div style="{{ styles.fundRow }}">
+                <span style="{{ styles.fundLabel }}">Số Dư Ngân Hàng</span>
+                <span style="{{ styles.fundValue }}">{{ fmtBankAvailable }}</span>
+              </div>
+              <div style="{{ styles.fundRowGreen }}">
+                <span style="{{ styles.fundLabelGreen }}">Số Dư Tiền Mặt</span>
+                <span style="{{ styles.fundValue }}">{{ fmtCashAvailable }}</span>
+              </div>
+              <div style="{{ styles.fundRowStrong }}">
+                <span style="{{ styles.fundLabelStrong }}">Tổng Số Dư</span>
+                <span style="{{ styles.fundValueStrong }}">{{ fmtTotalFunds }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:22px">
+          <h4 style="{{ styles.sectionLabelDim }}">Hạng Mục Chính &amp; Trạng Thái</h4>
+          <div style="{{ styles.categoryPanel }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+
+              <div style="{{ styles.miniCard1 }}">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <p style="{{ styles.miniLabel }}">Phần Thô — Vật Tư</p>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ t.chartBlue }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4Z"></path><path d="M3 7v10l9 4 9-4V7"></path></svg>
+                </div>
+                <h3 style="{{ styles.miniValueBlue }}">{{ fmtCatMaterials }}</h3>
+                <p style="{{ styles.miniSub }}">Sắt, cát, xi măng</p>
+              </div>
+
+              <div style="{{ styles.miniCard2 }}">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <p style="{{ styles.miniLabel }}">Phần Thô — Nhân Công</p>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ t.chartGreen }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18v-2a8 8 0 0 1 16 0v2"></path><path d="M2 18h20"></path><path d="M12 2v4"></path></svg>
+                </div>
+                <h3 style="{{ styles.miniValueGreen }}">{{ fmtCatLabor }}</h3>
+                <p style="{{ styles.miniSubGreen }}">Lương thợ</p>
+              </div>
+
+              <div style="{{ styles.miniCard3 }}">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <p style="{{ styles.miniLabel }}">Hoàn Thiện — Vật Tư</p>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ t.primary }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s6 7 6 11a6 6 0 1 1-12 0c0-4 6-11 6-11Z"></path></svg>
+                </div>
+                <h3 style="{{ styles.miniValueCyan }}">{{ fmtCatFinishes }}</h3>
+                <p style="{{ styles.miniSub }}">Sơn, gạch, thiết bị</p>
+              </div>
+
+              <div style="{{ styles.miniCard4 }}">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <p style="{{ styles.miniLabel }}">Nội Thất (FF&amp;E)</p>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ t.textDim }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="7" rx="2"></rect><path d="M4 17v3M20 17v3M6 10V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4"></path></svg>
+                </div>
+                <h3 style="{{ styles.miniValueAmber }}">{{ fmtCatFFE }}</h3>
+                <p style="{{ styles.miniSub }}">Tủ kệ, máy lạnh</p>
+              </div>
+
+              <div style="{{ styles.miniCardReview }}">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <p style="{{ styles.miniLabel }}">Cần Rà Soát</p>
+                  <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ true }}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ t.textDim }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+                  </sc-if>
+                </div>
+                <h3 style="{{ styles.miniValueReview }}">{{ pendingCount }} mục</h3>
+                <p style="{{ styles.miniSub }}">Chưa xác minh</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div style="{{ styles.toolbar }}">
+          <div style="position:relative">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ t.textMuted }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+            <input type="text" placeholder="Tìm GPXD, sắt thép, minh ngọc, 18.5M..." value="{{ searchTerm }}" onChange="{{ onSearchChange }}" style="{{ styles.searchInput }}">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <select value="{{ statusFilter }}" onChange="{{ onStatusChange }}" style="{{ styles.select }}">
+              <option value="all">Tất cả trạng thái</option>
+              <option value="đã_xác_minh">Đã xác minh</option>
+              <option value="cần_kiểm_tra">Cần kiểm tra lại</option>
+            </select>
+            <button onClick="{{ toggleAdvanced }}" style="{{ advancedBtnStyle }}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3Z"></path></svg>
+              <span>{{ advancedLabel }}</span>
+            </button>
+            <button onClick="{{ onResetFilters }}" title="Đặt lại bộ lọc" style="{{ styles.iconBtn }}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"></path><path d="M3 3v5h5"></path></svg>
+            </button>
+            <button onClick="{{ openUploadToast }}" style="{{ styles.btnExport }}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v6h6"></path></svg>
+              <span>Xuất Sheets / Excel ({{ filteredCount }})</span>
+            </button>
+          </div>
+
+          <sc-if value="{{ showAdvanced }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ styles.advancedPanel }}">
+              <div>
+                <label style="{{ styles.fieldLabel }}">Từ Ngày</label>
+                <input type="date" style="{{ styles.dateInput }}">
+              </div>
+              <div>
+                <label style="{{ styles.fieldLabel }}">Đến Ngày</label>
+                <input type="date" style="{{ styles.dateInput }}">
+              </div>
+              <div>
+                <label style="{{ styles.fieldLabelGreen }}">Tiền Min (VND)</label>
+                <input type="number" placeholder="Min" style="{{ styles.amountInput }}">
+              </div>
+              <div>
+                <label style="{{ styles.fieldLabelGreen }}">Tiền Max (VND)</label>
+                <input type="number" placeholder="Max" style="{{ styles.amountInput }}">
+              </div>
+            </div>
+          </sc-if>
+
+          <div>
+            <p style="{{ styles.fieldLabel }}">Danh Mục Công Trình:</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">
+              <button onClick="{{ onSelectAllCategory }}" style="{{ allCategoryStyle }}">Tất cả ({{ expenseCount }})</button>
+              <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="9">
+                <button onClick="{{ cat.onSelect }}" style="{{ cat.chipStyle }}">{{ cat.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ styles.selectionBar }}">
+            <span style="{{ styles.selectionText }}">Đã chọn {{ selectedCount }} mục</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onClick="{{ onBatchVerify }}" style="{{ styles.btnVerify }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><path d="M22 4 12 14.01l-3-3"></path></svg>
+                <span>Xác Minh</span>
+              </button>
+              <button onClick="{{ onBatchDelete }}" style="{{ styles.btnDeleteSel }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <span>Xóa Đã Chọn</span>
+              </button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px">
+          <p style="{{ styles.resultText }}">Tìm thấy <strong style="{{ styles.resultStrong }}">{{ filteredCount }}</strong> giao dịch</p>
+        </div>
+
+        <div style="{{ styles.listPanel }}">
+          <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px;padding:10px">
+                  <sc-for list="{{ filteredExpenses }}" as="item" hint-placeholder-count="6">
+                    <div onClick="{{ item.onOpen }}" style="{{ styles.mobileCard }}">
+                      <div style="{{ item.thumbStyle }}">{{ item.thumbInitial }}</div>
+                      <div style="flex:1;min-width:0">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                          <span style="{{ styles.cardAmount }}">{{ item.fmtAmount }}</span>
+                          <span style="{{ styles.cardDate }}">{{ item.date }}</span>
+                        </div>
+                        <p style="{{ styles.cardMerchant }}">{{ item.merchant }}</p>
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap">
+                          <span style="{{ item.catBadgeStyle }}">{{ item.catLabel }}</span>
+                          <sc-if value="{{ item.hasQty }}" hint-placeholder-val="{{ false }}">
+                            <span style="{{ styles.qtyText }}">{{ item.qtyText }}</span>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+                <div style="overflow-x:auto">
+                  <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.75rem">
+                    <thead>
+                      <tr style="{{ styles.theadRow }}">
+                        <th style="{{ styles.th }}">
+                          <input type="checkbox" checked="{{ allSelected }}" onChange="{{ onSelectAll }}" style="cursor:pointer">
+                        </th>
+                        <th style="{{ styles.th }}">Hóa Đơn</th>
+                        <th style="{{ styles.th }}">Ngày</th>
+                        <th style="{{ styles.th }}">Số Lượng</th>
+                        <th style="{{ styles.th }}">Đơn Giá</th>
+                        <th style="{{ styles.th }}">Số Tiền</th>
+                        <th style="{{ styles.th }}">Danh Mục</th>
+                        <th style="{{ styles.th }}">Đơn Vị / Thợ</th>
+                        <th style="{{ styles.th }}">Thanh Toán</th>
+                        <th style="{{ styles.th }}">Trạng Thái</th>
+                        <th style="{{ styles.thRight }}">Thao Tác</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <sc-for list="{{ filteredExpenses }}" as="item" hint-placeholder-count="6">
+                        <tr style="{{ item.rowStyle }}">
+                          <td style="{{ styles.td }}">
+                            <input type="checkbox" checked="{{ item.isSelected }}" onChange="{{ item.onToggle }}" style="cursor:pointer">
+                          </td>
+                          <td style="{{ styles.td }}">
+                            <div onClick="{{ item.onOpen }}" style="{{ item.thumbStyleSm }}">{{ item.thumbInitial }}</div>
+                          </td>
+                          <td style="{{ styles.tdMuted }}">{{ item.date }}</td>
+                          <td style="{{ item.qtyCellStyle }}">{{ item.qtyCellText }}</td>
+                          <td style="{{ item.unitCostCellStyle }}">{{ item.fmtUnitCost }}</td>
+                          <td style="{{ styles.tdAmount }}">{{ item.fmtAmount }}</td>
+                          <td style="{{ styles.td }}">
+                            <span style="{{ item.catBadgeStyle }}">{{ item.catLabel }}</span>
+                          </td>
+                          <td style="{{ styles.tdStrong }}">{{ item.merchant }}</td>
+                          <td style="{{ styles.tdMuted }}">{{ item.paymentLabel }}</td>
+                          <td style="{{ styles.td }}">
+                            <span style="{{ item.statusBadgeStyle }}">{{ item.statusLabel }}</span>
+                          </td>
+                          <td style="padding:14px 16px;text-align:right">
+                            <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px">
+                              <button onClick="{{ item.onOpen }}" style="{{ styles.rowBtn }}">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                              </button>
+                              <button onClick="{{ item.onDelete }}" style="{{ styles.rowBtnDanger }}">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </sc-for>
+                    </tbody>
+                  </table>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasNoResults }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;padding:60px 20px">
+              <p style="{{ styles.emptyText }}">Chưa có hóa đơn nào khớp với bộ lọc</p>
+              <button onClick="{{ onResetFilters }}" style="{{ styles.btnPrimary }}">Đặt Lại Bộ Lọc</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isReportView }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="{{ styles.bannerReport }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <span style="{{ styles.periodBadge }}">{{ reportPeriodLabel }}</span>
+                <span style="{{ styles.bannerNote }}">Tự động tổng hợp cho {{ projectName }}</span>
+              </div>
+              <h2 style="{{ styles.bannerTitle }}">Báo Cáo Phân Tích Ngân Sách &amp; Chi Phí (BVA)</h2>
+              <p style="{{ styles.bannerSub }}">So sánh hạn mức dự toán vs. thực chi, rà soát biến động &amp; tiến độ dự án</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid {{ t.border }};padding-top:14px;margin-top:14px">
+            <span style="{{ styles.fieldLabel }}">Kỳ Báo Cáo:</span>
+            <button onClick="{{ setPeriodWeekly }}" style="{{ periodBtnWeekly }}">Tuần</button>
+            <button onClick="{{ setPeriodMonthly }}" style="{{ periodBtnMonthly }}">Tháng</button>
+            <button onClick="{{ setPeriodQuarterly }}" style="{{ periodBtnQuarterly }}">Quý</button>
+            <button onClick="{{ setPeriodAll }}" style="{{ periodBtnAll }}">Toàn Bộ Dự Án</button>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasOverBudget }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ styles.alertDanger }}">
+            <h3 style="{{ styles.alertDangerTitle }}">Cảnh báo: {{ overBudgetCount }} hạng mục chi vượt ngân sách dự toán</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+              <sc-for list="{{ overBudgetRows }}" as="row" hint-placeholder-count="2">
+                <div style="{{ styles.alertRow }}">
+                  <span style="{{ styles.alertRowLabel }}">{{ row.label }}</span>
+                  <span style="{{ styles.alertRowValue }}">Thực chi {{ row.fmtActual }} / Dự toán {{ row.fmtBudget }} (Vượt {{ row.fmtOver }})</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasFlagged }}" hint-placeholder-val="{{ true }}">
+          <div style="{{ styles.alertWarn }}">
+            <h3 style="{{ styles.alertWarnTitle }}">Các mục cần rà soát lại ({{ flaggedCount }} mục)</h3>
+            <p style="{{ styles.alertWarnSub }}">Hãy xem lại hóa đơn hoặc ghi chú bên dưới trong kỳ báo cáo này</p>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+              <sc-for list="{{ flaggedExpenses }}" as="item" hint-placeholder-count="3">
+                <div onClick="{{ item.onOpen }}" style="{{ styles.flaggedRow }}">
+                  <div style="{{ item.thumbStyleSm }}">{{ item.thumbInitial }}</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                      <span style="{{ styles.flaggedAmount }}">{{ item.fmtAmount }}</span>
+                      <span style="{{ styles.flaggedDate }}">{{ item.date }}</span>
+                    </div>
+                    <p style="{{ styles.flaggedMerchant }}">{{ item.merchant }} ({{ item.catLabel }})</p>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="{{ styles.aiCard }}">
+          <h3 style="{{ styles.aiTitle }}">Tóm Tắt Tổng Quan</h3>
+          <p style="{{ styles.aiText }}">{{ aiSummary }}</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:22px">
+          <div style="{{ styles.statCard }}">
+            <p style="{{ styles.statLabel }}">Tổng Chi Tiêu Thực Tế</p>
+            <h3 style="{{ styles.statValueMain }}">{{ fmtTotalSpent }}</h3>
+            <p style="{{ styles.statSub }}">{{ expenseCount }} hóa đơn &amp; giao dịch</p>
+          </div>
+          <div style="{{ styles.statCardBlue }}">
+            <p style="{{ styles.statLabel }}">Hạng Mục Chi Nhiều Nhất</p>
+            <h3 style="{{ styles.statValueBlue }}">{{ topCategoryLabel }}</h3>
+            <p style="{{ styles.statSub }}">{{ fmtTopCategoryAmount }} ({{ topCategoryPct }}%)</p>
+          </div>
+          <div style="{{ styles.statCard }}">
+            <p style="{{ styles.statLabel }}">Số Công Thợ Đã Ghi Nhận</p>
+            <h3 style="{{ styles.statValueMain }}">{{ totalManDays }} Công Thợ</h3>
+            <p style="{{ styles.statSub }}">Phần thô &amp; Hoàn thiện</p>
+          </div>
+        </div>
+
+        <div style="{{ styles.sectionCard }}">
+          <h3 style="{{ styles.sectionTitle }}">Chi Tiết Dự Toán vs Thực Chi</h3>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-top:16px">
+            <sc-for list="{{ reportRows }}" as="row" hint-placeholder-count="9">
+              <div style="{{ row.wrapStyle }}">
+                <div style="{{ row.headerStyle }}">
+                  <div onClick="{{ row.onToggle }}" style="display:flex;align-items:center;gap:12px;flex:1;min-width:220px;cursor:pointer">
+                    <div style="{{ row.dotStyle }}"></div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                        <span style="{{ styles.accordionLabel }}">{{ row.label }}</span>
+                        <sc-if value="{{ row.isOver }}" hint-placeholder-val="{{ false }}">
+                          <span style="{{ styles.overBadge }}">Vượt {{ row.fmtOverAmount }}</span>
+                        </sc-if>
+                      </div>
+                      <p style="{{ styles.accordionMeta }}">Dự toán: <strong style="{{ styles.accordionMetaStrong }}">{{ row.fmtBudget }}</strong> · Còn lại: <strong style="{{ row.remainingStrongStyle }}">{{ row.fmtRemaining }}</strong></p>
+                    </div>
+                  </div>
+                  <div style="{{ styles.reportAmountBlock }}">
+                    <div style="text-align:right">
+                      <p style="{{ row.actualValueStyle }}">{{ row.fmtActual }}</p>
+                      <p style="{{ styles.accordionPctText }}">Đã dùng {{ row.pct }}% dự toán</p>
+                    </div>
+                    <button onClick="{{ row.onToggle }}" style="{{ styles.rowBtn }}">
+                      <sc-if value="{{ row.expanded }}" hint-placeholder-val="{{ false }}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"></path></svg>
+                      </sc-if>
+                      <sc-if value="{{ row.collapsed }}" hint-placeholder-val="{{ true }}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+                      </sc-if>
+                    </button>
+                  </div>
+                </div>
+                <div style="{{ row.barTrackStyle }}">
+                  <div style="{{ row.barFillStyle }}"></div>
+                </div>
+                <sc-if value="{{ row.expanded }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ styles.expandedPanel }}">
+                    <sc-if value="{{ row.hasTx }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;flex-direction:column;gap:8px">
+                        <sc-for list="{{ row.transactions }}" as="tx" hint-placeholder-count="2">
+                          <div onClick="{{ tx.onOpen }}" style="{{ styles.txRow }}">
+                            <div>
+                              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                                <span style="{{ styles.txAmount }}">{{ tx.fmtAmount }}</span>
+                                <span style="{{ styles.txDate }}">{{ tx.date }}</span>
+                              </div>
+                              <p style="{{ styles.txMerchant }}">{{ tx.merchant }}</p>
+                            </div>
+                            <span style="{{ styles.txLink }}">Xem chi tiết</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ row.hasNoTx }}" hint-placeholder-val="{{ false }}">
+                      <p style="{{ styles.emptyItalic }}">Chưa có giao dịch nào trong danh mục này.</p>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isBudgetView }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="{{ styles.bannerBudget }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <span style="{{ styles.budgetBadge }}">Chi Phí vs Ngân Sách</span>
+                <span style="{{ styles.bannerNote }}">Dự án {{ projectName }}</span>
+              </div>
+              <h2 style="{{ styles.bannerTitle }}">Dự Toán Ngân Sách</h2>
+              <p style="{{ styles.bannerSub }}">Quản lý hạn mức dự toán, theo dõi chênh lệch &amp; kiểm soát vượt trần chi phí 9 hạng mục</p>
+            </div>
+            <div style="display:flex;gap:10px">
+              <sc-if value="{{ budgetsEditing }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ saveBudgets }}" style="{{ styles.btnPrimary }}">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8M7 3v5h8"></path></svg>
+                  <span>Lưu Hạn Mức Mới</span>
+                </button>
+              </sc-if>
+              <sc-if value="{{ budgetsNotEditing }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ startEditingBudgets }}" style="{{ styles.btnSecondary }}">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"></path></svg>
+                  <span>Chỉnh Sửa Dự Toán</span>
+                </button>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{ savedToast }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ styles.savedBanner }}">Đã cập nhật hạn mức dự toán ngân sách thành công.</div>
+        </sc-if>
+
+        <sc-if value="{{ hasBudgetOverBudget }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ styles.alertDanger }}">
+            <h3 style="{{ styles.alertDangerTitle }}">Cảnh báo: {{ budgetOverBudgetCount }} hạng mục chi vượt ngân sách dự toán</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+              <sc-for list="{{ budgetOverRows }}" as="row" hint-placeholder-count="2">
+                <div style="{{ styles.alertRow }}">
+                  <span style="{{ styles.alertRowLabel }}">{{ row.label }}</span>
+                  <span style="{{ styles.alertRowValue }}">Thực chi {{ row.fmtActual }} / Dự toán {{ row.fmtBudget }} (Vượt {{ row.fmtOver }})</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:22px">
+          <div style="{{ styles.statCardBlue }}">
+            <p style="{{ styles.statLabel }}">Tổng Ngân Sách Dự Toán</p>
+            <h3 style="{{ styles.statValueBlue }}">{{ fmtTotalBudgetAll }}</h3>
+            <p style="{{ styles.statSub }}">Tất cả 9 hạng mục công trình</p>
+          </div>
+          <div style="{{ styles.statCard }}">
+            <p style="{{ styles.statLabel }}">Tổng Thực Chi Đến Nay</p>
+            <h3 style="{{ styles.statValueMain }}">{{ fmtTotalActualAll }}</h3>
+            <p style="{{ styles.statSub }}">Đã dùng {{ totalPctUsedAll }}% tổng dự toán</p>
+          </div>
+          <div style="{{ styles.statCardRemainingAll }}">
+            <p style="{{ styles.statLabel }}">Ngân Sách Còn Lại</p>
+            <h3 style="{{ styles.remainingAllValueStyle }}">{{ fmtTotalRemainingAll }}</h3>
+            <p style="{{ styles.remainingAllSubStyle }}">{{ remainingAllStatusText }}</p>
+          </div>
+        </div>
+
+        <div style="{{ styles.sectionCard }}">
+          <h3 style="{{ styles.sectionTitle }}">Hạn Mức Ngân Sách</h3>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-top:16px">
+            <sc-for list="{{ budgetRows }}" as="row" hint-placeholder-count="9">
+              <div style="{{ row.wrapStyle }}">
+                <div style="{{ row.headerStyle }}">
+                  <div onClick="{{ row.onToggle }}" style="display:flex;align-items:center;gap:12px;flex:1;min-width:220px;cursor:pointer">
+                    <div style="{{ row.dotStyle }}"></div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                        <span style="{{ styles.accordionLabel }}">{{ row.label }}</span>
+                        <sc-if value="{{ row.isOver }}" hint-placeholder-val="{{ false }}">
+                          <span style="{{ styles.overBadge }}">Vượt {{ row.fmtOverAmount }}</span>
+                        </sc-if>
+                      </div>
+                      <p style="{{ styles.accordionMeta }}">{{ row.subMetaText }}</p>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+                    <div style="text-align:right">
+                      <p style="{{ styles.miniFieldLabel }}">{{ row.budgetFieldLabel }}</p>
+                      <sc-if value="{{ row.showInput }}" hint-placeholder-val="{{ false }}">
+                        <input type="text" value="{{ row.draftDisplay }}" onChange="{{ row.onDraftChange }}" style="{{ styles.budgetEditInput }}">
+                      </sc-if>
+                      <sc-if value="{{ row.showStatic }}" hint-placeholder-val="{{ true }}">
+                        <p style="{{ styles.miniFieldValueBlue }}">{{ row.fmtBudget }}</p>
+                      </sc-if>
+                    </div>
+                    <div style="text-align:right">
+                      <p style="{{ styles.miniFieldLabel }}">Thực Chi</p>
+                      <p style="{{ styles.miniFieldValueCyan }}">{{ row.fmtActual }}</p>
+                    </div>
+                    <div style="text-align:right;min-width:110px">
+                      <p style="{{ styles.miniFieldLabel }}">Còn Lại</p>
+                      <p style="{{ row.remainingStrongStyle }}">{{ row.fmtRemaining }}</p>
+                    </div>
+                    <button onClick="{{ row.onToggle }}" style="{{ styles.rowBtn }}">
+                      <sc-if value="{{ row.expanded }}" hint-placeholder-val="{{ false }}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"></path></svg>
+                      </sc-if>
+                      <sc-if value="{{ row.collapsed }}" hint-placeholder-val="{{ true }}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+                      </sc-if>
+                    </button>
+                  </div>
+                </div>
+                <div style="{{ row.barTrackStyle }}">
+                  <div style="{{ row.barFillStyle }}"></div>
+                </div>
+                <sc-if value="{{ row.expanded }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ styles.expandedPanel }}">
+                    <sc-if value="{{ row.hasQuotes }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-bottom:16px">
+                        <p style="{{ styles.subHeading }}">Báo Giá &amp; Hợp Đồng ({{ row.quoteCount }})</p>
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                          <sc-for list="{{ row.quotes }}" as="q" hint-placeholder-count="1">
+                            <div style="{{ styles.quoteRow }}">
+                              <div>
+                                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                                  <span style="{{ styles.quoteVendor }}">{{ q.vendorName }}</span>
+                                  <span style="{{ q.statusBadgeStyle }}">{{ q.statusLabel }}</span>
+                                </div>
+                                <p style="{{ styles.quoteTitle }}">{{ q.title }}</p>
+                              </div>
+                              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                                <div style="text-align:right"><p style="{{ styles.miniFieldLabel }}">Giá Trị</p><p style="{{ styles.quoteAmount }}">{{ q.fmtAmount }}</p></div>
+                                <div style="text-align:right"><p style="{{ styles.miniFieldLabel }}">Đã Chi</p><p style="{{ styles.quotePaid }}">{{ q.fmtPaid }}</p></div>
+                                <div style="text-align:right"><p style="{{ styles.miniFieldLabel }}">Còn Lại HĐ</p><p style="{{ q.remainingStyle }}">{{ q.fmtRemaining }}</p></div>
+                              </div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
+                    <p style="{{ styles.subHeading }}">Hóa Đơn Đã Ghi Nhận ({{ row.txCount }})</p>
+                    <sc-if value="{{ row.hasTx }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;flex-direction:column;gap:8px">
+                        <sc-for list="{{ row.transactions }}" as="tx" hint-placeholder-count="2">
+                          <div onClick="{{ tx.onOpen }}" style="{{ styles.txRow }}">
+                            <div>
+                              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                                <span style="{{ styles.txAmount }}">{{ tx.fmtAmount }}</span>
+                                <span style="{{ styles.txDate }}">{{ tx.date }}</span>
+                              </div>
+                              <p style="{{ styles.txMerchant }}">{{ tx.merchant }}</p>
+                            </div>
+                            <span style="{{ styles.txLink }}">Xem chi tiết</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ row.hasNoTx }}" hint-placeholder-val="{{ false }}">
+                      <p style="{{ styles.emptyItalic }}">Chưa có hóa đơn nào thuộc hạng mục này.</p>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isVendorsView }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="{{ styles.bannerVendors }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <span style="{{ styles.periodBadge }}">Danh Mục Đối Tác</span>
+                <span style="{{ styles.bannerNote }}">Dự án {{ projectName }}</span>
+              </div>
+              <h2 style="{{ styles.bannerTitle }}">Nhà Cung Cấp &amp; Thợ</h2>
+              <p style="{{ styles.bannerSub }}">Quản lý tổng tiền đã chi trả, số công thợ &amp; quyết toán theo 4 nhóm đối tác</p>
+            </div>
+            <button onClick="{{ openUploadToast }}" style="{{ styles.btnExport }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v6h6"></path></svg>
+              <span>Xuất Nhà Cung Cấp</span>
+            </button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid {{ t.border }};padding-top:14px;margin-top:14px">
+            <sc-for list="{{ vendorFilters }}" as="vf" hint-placeholder-count="5">
+              <button onClick="{{ vf.onSelect }}" style="{{ vf.style }}">{{ vf.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px">
+          <div style="{{ styles.statCard }}">
+            <p style="{{ styles.statLabel }}">Tổng Tiền Đã Thanh Toán</p>
+            <h3 style="{{ styles.statValueMain }}">{{ fmtTotalPaidVendors }}</h3>
+            <p style="{{ styles.statSub }}">Qua {{ vendorCount }} nhà cung cấp / tổ thợ</p>
+          </div>
+          <div style="{{ styles.statCardBlue }}">
+            <p style="{{ styles.statLabel }}">Tổng Số Công Thợ</p>
+            <h3 style="{{ styles.statValueBlue }}">{{ totalManDaysVendors }} Công Thợ</h3>
+            <p style="{{ styles.statSub }}">Phần thô &amp; Hoàn thiện</p>
+          </div>
+        </div>
+
+        <div style="{{ styles.toolbar }}">
+          <div style="position:relative">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ t.textMuted }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+            <input type="text" placeholder="Tìm kiếm theo tên tổ thợ, đơn vị cung cấp..." value="{{ vendorSearch }}" onChange="{{ onVendorSearchChange }}" style="{{ styles.searchInput }}">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
+          <sc-for list="{{ vendors }}" as="v" hint-placeholder-count="6">
+            <div style="{{ v.cardStyle }}">
+              <div onClick="{{ v.onToggle }}" style="cursor:pointer">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                  <span style="{{ v.badgeStyle }}">{{ v.typeLabel }}</span>
+                  <span style="{{ styles.vendorTxCount }}">{{ v.txCountLabel }}</span>
+                </div>
+                <h3 style="{{ styles.vendorName }}">{{ v.name }}</h3>
+                <sc-if value="{{ v.hasContract }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ styles.contractBox }}">
+                    <div style="{{ styles.contractRow }}"><span style="{{ styles.contractLabel }}">Giá trị hợp đồng</span><span style="{{ styles.contractValueIndigo }}">{{ v.fmtQuoted }}</span></div>
+                    <div style="{{ styles.contractRow }}"><span style="{{ styles.contractLabelDim }}">Đã chi thanh toán</span><span style="{{ styles.contractValueCyan }}">{{ v.fmtPaid }}</span></div>
+                    <div style="{{ styles.contractRowDash }}"><span style="{{ styles.contractLabelDim }}">Còn lại thuộc HĐ</span><span style="{{ v.contractRemainingStyle }}">{{ v.fmtRemaining }}</span></div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ v.noContract }}" hint-placeholder-val="{{ true }}">
+                  <p style="{{ styles.vendorTotalPaid }}">{{ v.fmtPaid }}</p>
+                </sc-if>
+                <sc-if value="{{ v.hasManDays }}" hint-placeholder-val="{{ false }}">
+                  <p style="{{ styles.vendorManDays }}">{{ v.manDaysLabel }}</p>
+                </sc-if>
+                <div style="{{ styles.vendorFooter }}">
+                  <span style="{{ styles.vendorFooterText }}">{{ v.expandHint }}</span>
+                  <sc-if value="{{ v.expanded }}" hint-placeholder-val="{{ false }}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"></path></svg>
+                  </sc-if>
+                  <sc-if value="{{ v.collapsed }}" hint-placeholder-val="{{ true }}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+                  </sc-if>
+                </div>
+              </div>
+              <sc-if value="{{ v.expanded }}" hint-placeholder-val="{{ false }}">
+                <div style="{{ styles.vendorHistory }}">
+                  <sc-for list="{{ v.transactions }}" as="tx" hint-placeholder-count="2">
+                    <div onClick="{{ tx.onOpenStop }}" style="{{ styles.txRow }}">
+                      <div>
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                          <span style="{{ styles.txAmount }}">{{ tx.fmtAmount }}</span>
+                          <span style="{{ styles.txDate }}">{{ tx.date }}</span>
+                        </div>
+                        <p style="{{ styles.txMerchant }}">{{ tx.merchant }}</p>
+                      </div>
+                      <span style="{{ styles.txLink }}">Sửa</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isCashflowView }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="{{ styles.bannerCash }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="{{ styles.cashIconWrap }}">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ t.chartBlue }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path></svg>
+              </div>
+              <div>
+                <h2 style="{{ styles.bannerTitle }}">Quản Lý Dòng Tiền &amp; Tiền Mặt Công Trình</h2>
+                <p style="{{ styles.bannerSub }}">{{ projectName }} — Theo dõi số dư Ngân hàng, Ví Tiền Mặt &amp; dự báo khả năng thanh toán</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <button onClick="{{ openUploadToast }}" style="{{ styles.btnPrimary }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                <span>Nạp Vốn Mới</span>
+              </button>
+              <button onClick="{{ openUploadToast }}" style="{{ styles.btnSecondary }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H7V7"></path><path d="M17 7 7 17"></path></svg>
+                <span>Rút Tiền Mặt</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:22px">
+          <div style="{{ styles.statCard }}">
+            <p style="{{ styles.statLabel }}">Số Dư Ngân Hàng</p>
+            <h3 style="{{ styles.bankBalanceStyle }}">{{ fmtBankBalance }}</h3>
+            <p style="{{ styles.statSub }}">Đã chuyển khoản: {{ fmtBankSpentAll }}</p>
+          </div>
+          <div style="{{ styles.statCard }}">
+            <p style="{{ styles.statLabel }}">Ví Tiền Mặt Site</p>
+            <h3 style="{{ styles.cashBalanceStyle }}">{{ fmtCashBalance }}</h3>
+            <p style="{{ styles.statSub }}">Đã chi tiền mặt: {{ fmtCashSpentAll }}</p>
+          </div>
+          <div style="{{ styles.statCardIndigo }}">
+            <p style="{{ styles.statLabel }}">Tổng Tiền Khả Dụng</p>
+            <h3 style="{{ styles.liquidValueStyle }}">{{ fmtTotalLiquid }}</h3>
+            <p style="{{ styles.liquidSubStyle }}">{{ liquidStatusText }}</p>
+          </div>
+          <div style="{{ styles.statCard }}">
+            <p style="{{ styles.statLabel }}">Dự Báo Duy Trì Vốn</p>
+            <h3 style="{{ styles.statValueAmber }}">~{{ weeksRemainingLabel }} Tuần</h3>
+            <p style="{{ styles.statSub }}">Tốc độ chi: {{ fmtAvgWeeklyOutflow }} / tuần</p>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:22px">
+          <div style="{{ styles.sectionCard }}">
+            <h3 style="{{ styles.sectionTitleSm }}">Tỷ Lệ Chi Trả Ngân Hàng vs Tiền Mặt</h3>
+            <div style="margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:6px;font-weight:700">
+                <span style="{{ styles.bankPctLabel }}">Chuyển Khoản ({{ bankPct }}%)</span>
+                <span style="{{ styles.txAmount }}">{{ fmtBankSpentAll }}</span>
+              </div>
+              <div style="{{ styles.barTrackWide }}"><div style="{{ bankBarFillStyle }}"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:6px;font-weight:700">
+                <span style="{{ styles.cashPctLabel }}">Tiền Mặt ({{ cashPct }}%)</span>
+                <span style="{{ styles.txAmount }}">{{ fmtCashSpentAll }}</span>
+              </div>
+              <div style="{{ styles.barTrackWide }}"><div style="{{ cashBarFillStyle }}"></div></div>
+            </div>
+          </div>
+
+          <div style="{{ styles.sectionCard }}">
+            <h3 style="{{ styles.sectionTitleAmber }}">Dự Báo Tiền Lương Thợ Thứ 7</h3>
+            <div style="{{ styles.laborBox }}">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="{{ styles.laborLabel }}">Lương thợ chưa thanh toán</span>
+                <span style="{{ styles.laborAmount }}">{{ fmtPendingLabor }}</span>
+              </div>
+              <p style="{{ styles.laborSub }}">Gồm {{ pendingLaborCount }} phiếu ghi nhận công chưa duyệt</p>
+            </div>
+            <sc-if value="{{ lowCashWarning }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ styles.lowCashAlert }}">Cảnh báo: Ví tiền mặt còn dưới 15 triệu. Nên rút sẵn tiền mặt từ ngân hàng trước Thứ 7.</div>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="{{ styles.sectionCard }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <h3 style="{{ styles.sectionTitle }}">Nhật Ký Nạp Vốn &amp; Rút Tiền Mặt</h3>
+            <span style="{{ styles.statSub }}">{{ capitalCount }} lượt giao dịch</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ capitalLog }}" as="tx" hint-placeholder-count="3">
+              <div style="{{ styles.capitalRow }}">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="{{ tx.iconWrapStyle }}">
+                    <sc-if value="{{ tx.isDeposit }}" hint-placeholder-val="{{ true }}">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ t.success }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                    </sc-if>
+                    <sc-if value="{{ tx.isWithdrawal }}" hint-placeholder-val="{{ false }}">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ t.chartBlue }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H7V7"></path><path d="M17 7 7 17"></path></svg>
+                    </sc-if>
+                  </div>
+                  <div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                      <span style="{{ tx.typeLabelStyle }}">{{ tx.typeLabel }}</span>
+                      <span style="{{ styles.txDate }}">{{ tx.date }}</span>
+                    </div>
+                    <p style="{{ styles.txMerchant }}">{{ tx.note }}</p>
+                  </div>
+                </div>
+                <span style="{{ tx.amountStyle }}">{{ tx.fmtAmount }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <nav style="{{ styles.bottomBar }}">
+      <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="5">
+        <button onClick="{{ tab.onSelect }}" style="{{ tab.mobileStyle }}">
+          <sc-if value="{{ tab.isLedger }}" hint-placeholder-val="{{ false }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+          </sc-if>
+          <sc-if value="{{ tab.isReport }}" hint-placeholder-val="{{ false }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+          </sc-if>
+          <sc-if value="{{ tab.isBudget }}" hint-placeholder-val="{{ false }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+          </sc-if>
+          <sc-if value="{{ tab.isVendors }}" hint-placeholder-val="{{ false }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+          </sc-if>
+          <sc-if value="{{ tab.isCashflow }}" hint-placeholder-val="{{ false }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path></svg>
+          </sc-if>
+          <span style="{{ tab.mobileLabelStyle }}">{{ tab.shortLabel }}</span>
+        </button>
+      </sc-for>
+    </nav>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const VND = new Intl.NumberFormat('vi-VN');
+function fmt(n) { return VND.format(Math.round(n || 0)) + ' đ'; }
+
+const CATS = [
+  { key: 'pháp_lý', label: 'Pháp lý', base: '#6366f1', darkText: '#818cf8', lightText: '#4338ca' },
+  { key: 'tư_vấn_thiết_kế', label: 'Tư vấn & Thiết kế', base: '#8b5cf6', darkText: '#a78bfa', lightText: '#6d28d9' },
+  { key: 'phần_thô_nhân_công', label: 'Phần Thô — Nhân Công', base: '#10b981', darkText: '#34d399', lightText: '#047857' },
+  { key: 'phần_thô_vật_tư', label: 'Phần Thô — Vật Tư', base: '#3b82f6', darkText: '#60a5fa', lightText: '#1d4ed8' },
+  { key: 'hoàn_thiện_nhân_công', label: 'Hoàn Thiện — Nhân Công', base: '#14b8a6', darkText: '#2dd4bf', lightText: '#0f766e' },
+  { key: 'hoàn_thiện_vật_tư', label: 'Hoàn Thiện — Vật Tư', base: '#06b6d4', darkText: '#22d3ee', lightText: '#0e7490' },
+  { key: 'nội_thất_thiết_bị', label: 'Thiết Bị Nội Thất', base: '#f59e0b', darkText: '#fbbf24', lightText: '#b45309' },
+  { key: 'quản_lý_dự_án', label: 'Quản Lý Dự Án', base: '#ec4899', darkText: '#f472b6', lightText: '#be185d' },
+  { key: 'chi_phí_khác', label: 'Chi Phí Khác', base: '#94a3b8', darkText: '#cbd5e1', lightText: '#475569' }
+];
+function catMeta(key) { return CATS.find(c => c.key === key) || CATS[CATS.length - 1]; }
+
+const SAMPLE = [
+  { id: '1', date: '2026-07-02', amount: 185000000, quantity: 12, unit: 'tấn', category: 'phần_thô_vật_tư', merchant: 'Cty TNHH Thép Miền Nam', paymentMethod: 'chuyển_khoản', status: 'đã_xác_minh' },
+  { id: '2', date: '2026-07-04', amount: 62000000, manDays: 8, category: 'phần_thô_nhân_công', merchant: 'Thợ Anh Tuấn (Nhân công)', paymentMethod: 'tiền_mặt', status: 'đã_xác_minh' },
+  { id: '3', date: '2026-07-06', amount: 34500000, quantity: 90, unit: 'thùng', category: 'hoàn_thiện_vật_tư', merchant: 'Cty Sơn Dulux Việt Nam', paymentMethod: 'chuyển_khoản', status: 'cần_kiểm_tra' },
+  { id: '4', date: '2026-07-09', amount: 148000000, quantity: 2, unit: 'bộ', category: 'nội_thất_thiết_bị', merchant: 'Điện Máy Xanh — Daikin', paymentMethod: 'chuyển_khoản', status: 'đã_xác_minh' },
+  { id: '5', date: '2026-07-11', amount: 45000000, category: 'pháp_lý', merchant: 'UBND Quận — Phí GPXD', paymentMethod: 'chuyển_khoản', status: 'đã_xác_minh' },
+  { id: '6', date: '2026-07-13', amount: 96000000, category: 'tư_vấn_thiết_kế', merchant: 'Cty TVGS An Phát', paymentMethod: 'chuyển_khoản', status: 'đã_xác_minh' },
+  { id: '7', date: '2026-07-15', amount: 28500000, quantity: 40, unit: 'm2', category: 'hoàn_thiện_vật_tư', merchant: 'Cty Gạch Đồng Tâm', paymentMethod: 'tiền_mặt', status: 'cần_kiểm_tra' },
+  { id: '8', date: '2026-07-17', amount: 54000000, manDays: 5, category: 'hoàn_thiện_nhân_công', merchant: 'Thợ điện nước Bình', paymentMethod: 'tiền_mặt', status: 'đã_xác_minh' },
+  { id: '9', date: '2026-07-19', amount: 210000000, quantity: 18, unit: 'tấn', category: 'phần_thô_vật_tư', merchant: 'Vật liệu XD Minh Ngọc', paymentMethod: 'chuyển_khoản', status: 'đã_xác_minh' },
+  { id: '10', date: '2026-07-21', amount: 18000000, category: 'quản_lý_dự_án', merchant: 'Bảo vệ site — Anh Hòa', paymentMethod: 'tiền_mặt', status: 'đã_xác_minh' },
+  { id: '11', date: '2026-07-23', amount: 76500000, quantity: 6, unit: 'bộ', category: 'nội_thất_thiết_bị', merchant: 'Cửa nhôm kính Việt Pháp', paymentMethod: 'chuyển_khoản', status: 'đã_xác_minh' },
+  { id: '12', date: '2026-07-24', amount: 5200000, category: 'chi_phí_khác', merchant: 'Tiếp khách công trình', paymentMethod: 'tiền_mặt', status: 'đã_xác_minh' },
+  { id: '13', date: '2026-07-26', amount: 88000000, manDays: 12, category: 'phần_thô_nhân_công', merchant: 'Tổ thợ xây tô — Anh Long', paymentMethod: 'tiền_mặt', status: 'đã_xác_minh' },
+  { id: '14', date: '2026-07-28', amount: 41000000, quantity: 3, unit: 'bộ', category: 'nội_thất_thiết_bị', merchant: 'Nội Thất Kim Anh', paymentMethod: 'chuyển_khoản', status: 'cần_kiểm_tra' }
+];
+
+const CATEGORY_BUDGETS = {
+  pháp_lý: 60000000, tư_vấn_thiết_kế: 180000000, phần_thô_nhân_công: 420000000, phần_thô_vật_tư: 650000000,
+  hoàn_thiện_nhân_công: 300000000, hoàn_thiện_vật_tư: 480000000, nội_thất_thiết_bị: 340000000,
+  quản_lý_dự_án: 120000000, chi_phí_khác: 40000000
+};
+const INITIAL_BANK = 1800000000;
+const INITIAL_CASH = 300000000;
+
+const QUOTATIONS = [
+  { id: 'q1', vendorName: 'Cty TNHH Thép Miền Nam', title: 'Hợp đồng cung cấp thép xây dựng', category: 'phần_thô_vật_tư', amount: 420000000, status: 'signed' },
+  { id: 'q2', vendorName: 'Tổ thợ xây tô — Anh Long', title: 'Hợp đồng nhân công xây tô', category: 'phần_thô_nhân_công', amount: 180000000, status: 'signed' },
+  { id: 'q3', vendorName: 'Nội Thất Kim Anh', title: 'Báo giá tủ bếp & tủ áo', category: 'nội_thất_thiết_bị', amount: 150000000, status: 'draft' }
+];
+
+const CAPITAL_TX = [
+  { id: 'c1', date: '2026-06-01', type: 'deposit', amount: 1800000000, note: 'Nạp vốn ban đầu vào ngân hàng' },
+  { id: 'c2', date: '2026-07-01', type: 'withdrawal', amount: 100000000, note: 'Rút tiền mặt đưa chỉ huy công trình' },
+  { id: 'c3', date: '2026-07-20', type: 'deposit', amount: 200000000, note: 'Nạp vốn bổ sung từ chủ đầu tư' }
+];
+
+const VENDOR_TYPES = {
+  thợ_thi_công: { label: 'Thợ Thi Công', base: '#10b981', darkText: '#34d399', lightText: '#047857' },
+  cung_cấp_vlxd: { label: 'Cung Cấp VLXD', base: '#3b82f6', darkText: '#60a5fa', lightText: '#1d4ed8' },
+  cung_cấp_thiết_bị_nội_thất: { label: 'Cung Cấp Thiết Bị Nội Thất', base: '#f59e0b', darkText: '#fbbf24', lightText: '#b45309' },
+  cung_cấp_dịch_vụ_khác: { label: 'Cung Cấp Dịch Vụ Khác', base: '#8b5cf6', darkText: '#a78bfa', lightText: '#6d28d9' }
+};
+function classifyVendorType(cat) {
+  if (cat === 'phần_thô_nhân_công' || cat === 'hoàn_thiện_nhân_công') return 'thợ_thi_công';
+  if (cat === 'phần_thô_vật_tư' || cat === 'hoàn_thiện_vật_tư') return 'cung_cấp_vlxd';
+  if (cat === 'nội_thất_thiết_bị') return 'cung_cấp_thiết_bị_nội_thất';
+  return 'cung_cấp_dịch_vụ_khác';
+}
+
+const VIEWS = [
+  { key: 'ledger', label: 'Chi Phí', short: 'Sổ Chi', icon: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', accent: '#3b82f6' },
+  { key: 'saturday_report', label: 'Báo Cáo', short: 'Báo Cáo', icon: null, accent: '#10b981' },
+  { key: 'bva_budget', label: 'Ngân Sách', short: 'BVA', icon: null, accent: '#6366f1' },
+  { key: 'vendors', label: 'Nhà Cung Cấp & Thợ', short: 'Nhà CC', icon: null, accent: '#14b8a6' },
+  { key: 'cash_flow', label: 'Dòng Tiền & Quỹ', short: 'Dòng Tiền', icon: null, accent: '#818cf8' }
+];
+
+function svgIcon(path2, viewBoxPaths, color) {
+  return null;
+}
+
+const THEMES = {
+  light: {
+    bg: '#f3f5f8', card: '#ffffff', cardAlt: '#eef1f6', input: '#ffffff',
+    border: '#d5dbe3', borderStrong: '#b8c2ce',
+    textMain: '#0f172a', textMuted: '#475569', textDim: '#64748b',
+    primary: '#2563eb', primaryHover: '#1d4ed8',
+    success: '#047857', danger: '#dc2626',
+    headerBg: 'rgba(255,255,255,0.96)',
+    chartBlue: '#1d4ed8', chartGreen: '#047857'
+  },
+  dark: {
+    bg: '#0b0f19', card: 'rgba(23,32,54,0.9)', cardAlt: 'rgba(255,255,255,0.06)', input: '#131b2e',
+    border: 'rgba(255,255,255,0.14)', borderStrong: 'rgba(255,255,255,0.24)',
+    textMain: '#f8fafc', textMuted: '#94a3b8', textDim: '#64748b',
+    primary: '#3b82f6', primaryHover: '#2563eb',
+    success: '#34d399', danger: '#f87171',
+    headerBg: 'rgba(15,20,33,0.9)',
+    chartBlue: '#60a5fa', chartGreen: '#34d399'
+  }
+};
+
+class Component extends DCLogic {
+  state = {
+    theme: 'light',
+    isMobile: false,
+    activeView: 'ledger',
+    searchTerm: '',
+    statusFilter: 'all',
+    categoryFilter: 'all',
+    showAdvanced: false,
+    selectedIds: [],
+    toast: null,
+    reportPeriod: 'all',
+    expandedReportCat: null,
+    budgetsEditing: false,
+    budgetsDraft: { ...CATEGORY_BUDGETS },
+    savedToast: false,
+    expandedBudgetCat: null,
+    vendorFilterType: 'all',
+    vendorSearch: '',
+    expandedVendor: null
+  };
+
+  componentDidMount() {
+    this.checkWidth();
+    this._onResize = () => this.checkWidth();
+    window.addEventListener('resize', this._onResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+  }
+
+  checkWidth() {
+    const mobile = window.innerWidth < 860;
+    if (mobile !== this.state.isMobile) this.setState({ isMobile: mobile });
+  }
+
+  toggleTheme = () => this.setState(s => ({ theme: s.theme === 'light' ? 'dark' : 'light' }));
+  setView = (key) => this.setState({ activeView: key, selectedIds: [] });
+  backToLedger = () => this.setState({ activeView: 'ledger' });
+  toggleAdvanced = () => this.setState(s => ({ showAdvanced: !s.showAdvanced }));
+  onSearchChange = (e) => this.setState({ searchTerm: e.target.value });
+  onStatusChange = (e) => this.setState({ statusFilter: e.target.value });
+  setCategory = (key) => this.setState({ categoryFilter: key });
+  onResetFilters = () => this.setState({ searchTerm: '', statusFilter: 'all', categoryFilter: 'all' });
+  dismissToast = () => this.setState({ toast: null });
+  openUploadToast = () => {
+    this.setState({ toast: 'Tính năng này sẽ hoạt động đầy đủ trong bản dựng tiếp theo.' });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: null }), 3200);
+  };
+
+  toggleSelect = (id) => this.setState(s => ({
+    selectedIds: s.selectedIds.includes(id) ? s.selectedIds.filter(x => x !== id) : [...s.selectedIds, id]
+  }));
+  selectAll = (checked, ids) => this.setState({ selectedIds: checked ? ids : [] });
+  clearSelectionToast = (msg) => {
+    this.setState({ selectedIds: [], toast: msg });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: null }), 3200);
+  };
+
+  setReportPeriod = (p) => this.setState({ reportPeriod: p });
+  toggleReportCat = (key) => this.setState(s => ({ expandedReportCat: s.expandedReportCat === key ? null : key }));
+  startEditingBudgets = () => this.setState({ budgetsEditing: true });
+  onBudgetDraftChange = (key, val) => {
+    const parsed = parseFloat(val.replace(/,/g, '')) || 0;
+    this.setState(s => ({ budgetsDraft: { ...s.budgetsDraft, [key]: parsed } }));
+  };
+  saveBudgets = () => {
+    this.setState({ budgetsEditing: false, savedToast: true });
+    clearTimeout(this._st);
+    this._st = setTimeout(() => this.setState({ savedToast: false }), 2200);
+  };
+  toggleBudgetCat = (key) => this.setState(s => ({ expandedBudgetCat: s.expandedBudgetCat === key ? null : key }));
+  setVendorFilter = (key) => this.setState({ vendorFilterType: key });
+  onVendorSearchChange = (e) => this.setState({ vendorSearch: e.target.value });
+  toggleVendor = (name) => this.setState(s => ({ expandedVendor: s.expandedVendor === name ? null : name }));
+
+  renderVals() {
+    const s = this.state;
+    const t = THEMES[s.theme];
+    const isLight = s.theme === 'light';
+
+    const expenses = SAMPLE;
+    const totalSpent = expenses.reduce((sum, i) => sum + i.amount, 0);
+    const pendingCount = expenses.filter(i => i.status === 'cần_kiểm_tra').length;
+    const bankSpent = expenses.filter(i => i.paymentMethod === 'chuyển_khoản').reduce((a, i) => a + i.amount, 0);
+    const cashSpent = expenses.filter(i => i.paymentMethod === 'tiền_mặt').reduce((a, i) => a + i.amount, 0);
+    const bankAvailable = INITIAL_BANK - bankSpent;
+    const cashAvailable = INITIAL_CASH - cashSpent;
+    const catStats = expenses.reduce((acc, i) => { acc[i.category] = (acc[i.category] || 0) + i.amount; return acc; }, {});
+    const totalBudget = Object.values(CATEGORY_BUDGETS).reduce((a, b) => a + (b || 0), 0);
+    const remaining = totalBudget - totalSpent;
+
+    const filtered = expenses.filter(i => {
+      if (s.statusFilter !== 'all' && i.status !== s.statusFilter) return false;
+      if (s.categoryFilter !== 'all' && i.category !== s.categoryFilter) return false;
+      if (s.searchTerm) {
+        const q = s.searchTerm.toLowerCase();
+        if (!i.merchant.toLowerCase().includes(q) && !catMeta(i.category).label.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+    const filteredIds = filtered.map(i => i.id);
+
+    // shared style fragments
+    const cardBase = { background: t.card, border: `1px solid ${t.border}`, borderRadius: '16px' };
+    const btnBase = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: s.isMobile ? '5px' : '8px', padding: s.isMobile ? '8px 9px' : '10px 16px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '10px', border: '1px solid transparent', cursor: 'pointer', whiteSpace: 'nowrap' };
+
+    const styles = {
+      page: { minHeight: '100vh', background: t.bg, color: t.textMain, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", paddingBottom: s.isMobile ? '78px' : '0' },
+      header: { position: 'sticky', top: 0, zIndex: 50, background: t.headerBg, borderBottom: `1px solid ${t.border}`, backdropFilter: isLight ? 'none' : 'blur(14px)' },
+      headerInner: { maxWidth: '1400px', margin: '0 auto', padding: s.isMobile ? '8px 12px' : '14px 20px' },
+      logoBox: { width: s.isMobile ? '28px' : '42px', height: s.isMobile ? '28px' : '42px', borderRadius: s.isMobile ? '8px' : '12px', background: 'linear-gradient(135deg,#3b82f6 0%,#1d4ed8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 14px rgba(37,99,235,0.35)', flex: 'none' },
+      headerBtnRow: { display: 'flex', alignItems: 'center', gap: s.isMobile ? '6px' : '10px', marginTop: s.isMobile ? '6px' : '14px', flexWrap: s.isMobile ? 'nowrap' : 'wrap', overflowX: s.isMobile ? 'auto' : 'visible' },
+      brandTitle: { fontSize: '0.95rem', fontWeight: 800, letterSpacing: '-0.01em', margin: 0, color: t.textMain },
+      brandSubtitle: { fontSize: '0.75rem', color: t.textMuted, margin: '2px 0 0' },
+      aiBadge: { fontSize: '0.75rem', fontWeight: 700, padding: '3px 9px', borderRadius: '999px', background: isLight ? 'rgba(37,99,235,0.1)' : 'rgba(59,130,246,0.15)', color: isLight ? '#1d4ed8' : '#60a5fa', border: `1px solid ${isLight ? 'rgba(37,99,235,0.25)' : 'rgba(59,130,246,0.3)'}` },
+      metricBox: { display: 'flex', alignItems: 'center', gap: '16px', background: t.cardAlt, padding: '8px 16px', borderRadius: '12px', border: `1px solid ${t.border}` },
+      metricLabel: { fontSize: '0.75rem', color: t.textDim, textTransform: 'uppercase', fontWeight: 700, margin: 0 },
+      metricValueSuccess: { fontSize: '0.95rem', fontWeight: 800, color: t.success, margin: '2px 0 0' },
+      metricValuePending: { fontSize: '0.95rem', fontWeight: 800, color: pendingCount > 0 ? t.textMain : t.textMuted, margin: '2px 0 0' },
+      iconBtn: { ...btnBase, padding: s.isMobile ? '7px' : '9px', background: t.cardAlt, color: t.textMuted, border: `1px solid ${t.border}` },
+      iconBtnWarn: { ...btnBase, padding: s.isMobile ? '7px' : '9px', background: isLight ? 'rgba(220,38,38,0.08)' : 'rgba(244,63,94,0.12)', color: t.danger, border: `1px solid ${t.border}` },
+      btnPrimary: { ...btnBase, background: `linear-gradient(135deg, ${t.primary} 0%, ${t.primaryHover} 100%)`, color: '#ffffff', boxShadow: isLight ? '0 2px 8px rgba(37,99,235,0.25)' : '0 4px 14px rgba(59,130,246,0.35)' },
+      btnSecondary: { ...btnBase, background: t.cardAlt, color: t.textMain, border: `1px solid ${t.border}` },
+      btnSecondaryIndigo: { ...btnBase, background: isLight ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.15)', color: isLight ? t.primaryHover : t.primary, border: `1px solid ${isLight ? 'rgba(37,99,235,0.25)' : 'rgba(99,102,241,0.3)'}` },
+      main: { maxWidth: '1400px', width: '100%', margin: '0 auto', padding: s.isMobile ? '16px' : '24px' },
+      sectionLabelBlue: { fontSize: '0.75rem', fontWeight: 800, color: isLight ? '#1d4ed8' : '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' },
+      sectionLabelDim: { fontSize: '0.75rem', fontWeight: 800, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' },
+      bvaPanel: { background: isLight ? 'rgba(37,99,235,0.04)' : 'rgba(99,102,241,0.06)', padding: '16px', borderRadius: '16px', border: `1px solid ${isLight ? 'rgba(37,99,235,0.15)' : 'rgba(99,102,241,0.25)'}` },
+      statCard: { ...cardBase, padding: '16px', borderLeft: `4px solid ${t.primary}` },
+      statCardBlue: { ...cardBase, padding: '16px', borderLeft: `4px solid ${isLight ? '#1d4ed8' : '#60a5fa'}` },
+      statCardRemaining: { ...cardBase, padding: '16px', borderLeft: `4px solid ${remaining < 0 ? t.danger : t.success}` },
+      statLabel: { fontSize: '0.75rem', fontWeight: 700, color: t.textDim, textTransform: 'uppercase', margin: 0 },
+      statValueMain: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, margin: '4px 0 0' },
+      statValueBlue: { fontSize: '0.95rem', fontWeight: 800, color: isLight ? '#1d4ed8' : '#60a5fa', margin: '4px 0 0' },
+      statSub: { fontSize: '0.75rem', color: t.textMuted, margin: '2px 0 0' },
+      remainingValueStyle: { fontSize: '0.95rem', fontWeight: 800, color: remaining < 0 ? t.danger : t.success, margin: '4px 0 0' },
+      remainingSubStyle: { fontSize: '0.75rem', fontWeight: 700, color: remaining < 0 ? t.danger : t.success, margin: '2px 0 0' },
+      fundRow: { background: isLight ? 'rgba(37,99,235,0.06)' : 'rgba(59,130,246,0.12)', border: `1px solid ${isLight ? 'rgba(37,99,235,0.18)' : 'rgba(59,130,246,0.25)'}`, padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+      fundLabel: { fontSize: '0.75rem', fontWeight: 700, color: isLight ? '#1d4ed8' : '#93c5fd' },
+      fundRowGreen: { background: isLight ? 'rgba(4,120,87,0.06)' : 'rgba(16,185,129,0.12)', border: `1px solid ${isLight ? 'rgba(4,120,87,0.18)' : 'rgba(16,185,129,0.25)'}`, padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+      fundLabelGreen: { fontSize: '0.75rem', fontWeight: 700, color: isLight ? '#047857' : '#6ee7b7' },
+      fundValue: { fontSize: '0.75rem', fontWeight: 800, color: t.textMain },
+      fundRowStrong: { background: isLight ? 'rgba(67,56,202,0.08)' : 'rgba(99,102,241,0.18)', border: `1px solid ${isLight ? 'rgba(67,56,202,0.25)' : 'rgba(99,102,241,0.35)'}`, padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+      fundLabelStrong: { fontSize: '0.75rem', fontWeight: 800, color: isLight ? t.primaryHover : t.primary },
+      fundValueStrong: { fontSize: '0.95rem', fontWeight: 900, color: t.success },
+      categoryPanel: { background: t.cardAlt, padding: '16px', borderRadius: '16px', border: `1px solid ${t.border}` },
+      miniCard1: { ...cardBase, padding: '10px 12px', borderLeft: `4px solid ${t.chartBlue}` },
+      miniCard2: { ...cardBase, padding: '10px 12px', borderLeft: `4px solid ${t.chartGreen}` },
+      miniCard3: { ...cardBase, padding: '10px 12px', borderLeft: `4px solid ${t.primary}` },
+      miniCard4: { ...cardBase, padding: '10px 12px', borderLeft: `4px solid ${t.borderStrong}` },
+      miniCardReview: { ...cardBase, padding: '10px 12px', borderLeft: `4px solid ${pendingCount > 0 ? t.borderStrong : t.success}` },
+      miniLabel: { fontSize: '0.75rem', fontWeight: 700, color: t.textDim, textTransform: 'uppercase' },
+      miniValueBlue: { fontSize: '0.95rem', fontWeight: 800, color: t.chartBlue, margin: '4px 0 0' },
+      miniValueGreen: { fontSize: '0.95rem', fontWeight: 800, color: t.chartGreen, margin: '4px 0 0' },
+      miniValueCyan: { fontSize: '0.95rem', fontWeight: 800, color: t.primary, margin: '4px 0 0' },
+      miniValueAmber: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, margin: '4px 0 0' },
+      miniValueReview: { fontSize: '0.95rem', fontWeight: 800, color: pendingCount > 0 ? t.textMain : t.success, margin: '4px 0 0' },
+      miniSub: { fontSize: '0.75rem', color: t.textMuted, margin: '2px 0 0' },
+      miniSubGreen: { fontSize: '0.75rem', color: t.chartGreen, fontWeight: 700, margin: '2px 0 0' },
+      toolbar: { ...cardBase, padding: '18px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px' },
+      searchInput: { width: '100%', padding: '10px 12px 10px 38px', background: t.input, border: `1px solid ${t.border}`, borderRadius: '10px', color: t.textMain, fontSize: '0.75rem', outline: 'none' },
+      select: { padding: '10px 12px', background: t.input, border: `1px solid ${t.border}`, borderRadius: '10px', color: t.textMain, fontSize: '0.75rem', outline: 'none' },
+      advancedPanel: { background: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(0,0,0,0.25)', border: `1px solid ${t.border}`, borderRadius: '14px', padding: '14px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' },
+      fieldLabel: { fontSize: '0.75rem', fontWeight: 700, color: t.textDim, display: 'block', marginBottom: '6px', textTransform: 'uppercase' },
+      fieldLabelGreen: { fontSize: '0.75rem', fontWeight: 700, color: t.success, display: 'block', marginBottom: '6px' },
+      dateInput: { width: '100%', padding: '8px', background: t.input, border: `1px solid ${t.border}`, borderRadius: '8px', color: t.textMain, fontSize: '0.75rem' },
+      amountInput: { width: '100%', padding: '8px', background: t.input, border: `1px solid ${t.border}`, borderRadius: '8px', color: t.success, fontSize: '0.75rem', fontWeight: 700 },
+      btnExport: { ...btnBase, background: isLight ? 'rgba(4,120,87,0.08)' : 'rgba(16,185,129,0.15)', color: t.success, border: `1px solid ${isLight ? 'rgba(4,120,87,0.25)' : 'rgba(16,185,129,0.3)'}` },
+      selectionBar: { background: isLight ? 'rgba(37,99,235,0.08)' : 'linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(37,99,235,0.2) 100%)', border: `1px solid ${isLight ? 'rgba(37,99,235,0.3)' : 'rgba(59,130,246,0.4)'}`, borderRadius: '14px', padding: '12px 18px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' },
+      selectionText: { fontSize: '0.75rem', fontWeight: 700, color: t.textMain },
+      btnVerify: { ...btnBase, padding: '7px 13px', fontSize: '0.75rem', background: isLight ? '#047857' : 'linear-gradient(135deg,#10b981,#059669)', color: '#ffffff' },
+      btnDeleteSel: { ...btnBase, padding: '7px 13px', fontSize: '0.75rem', background: isLight ? 'rgba(220,38,38,0.1)' : 'rgba(244,63,94,0.15)', color: t.danger, border: `1px solid ${isLight ? 'rgba(220,38,38,0.3)' : 'rgba(244,63,94,0.3)'}` },
+      resultText: { fontSize: '0.75rem', color: t.textMuted },
+      resultStrong: { color: t.success },
+      listPanel: { ...cardBase, overflow: 'hidden' },
+      mobileCard: { background: t.cardAlt, border: `1px solid ${t.border}`, borderRadius: '16px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'center', cursor: 'pointer' },
+      cardAmount: { fontWeight: 800, color: t.success, fontSize: '0.95rem' },
+      cardDate: { fontSize: '0.75rem', color: t.textDim },
+      cardMerchant: { fontSize: '0.75rem', fontWeight: 700, color: t.textMain, margin: '2px 0 0' },
+      qtyText: { fontSize: '0.75rem', color: t.textDim, fontWeight: 700 },
+      theadRow: { background: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(0,0,0,0.2)', borderBottom: `1px solid ${t.border}`, color: t.textDim, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.04em' },
+      th: { padding: '13px 16px' },
+      thRight: { padding: '13px 16px', textAlign: 'right' },
+      td: { padding: '13px 16px' },
+      tdMuted: { padding: '13px 16px', fontWeight: 600, color: t.textMuted },
+      tdStrong: { padding: '13px 16px', fontWeight: 700, color: t.textMain },
+      tdAmount: { padding: '13px 16px', fontWeight: 800, color: t.success, fontSize: '0.95rem' },
+      rowBtn: { ...btnBase, padding: '6px 8px', background: t.cardAlt, color: t.textMuted, border: `1px solid ${t.border}` },
+      rowBtnDanger: { ...btnBase, padding: '6px 8px', background: isLight ? 'rgba(220,38,38,0.08)' : 'rgba(244,63,94,0.15)', color: t.danger, border: `1px solid ${isLight ? 'rgba(220,38,38,0.25)' : 'rgba(244,63,94,0.3)'}` },
+      emptyText: { fontSize: '0.95rem', fontWeight: 700, color: t.textMuted, marginBottom: '16px' },
+      bottomBar: { position: 'fixed', bottom: 0, left: 0, right: 0, height: '62px', background: t.headerBg, borderTop: `1px solid ${t.border}`, display: 'flex', zIndex: 60, backdropFilter: isLight ? 'none' : 'blur(14px)' },
+      placeholderWrap: { textAlign: 'center', padding: '80px 20px', ...cardBase },
+      placeholderIcon: { fontSize: '0.95rem', marginBottom: '10px' },
+      placeholderTitle: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, marginBottom: '6px' },
+      placeholderText: { fontSize: '0.75rem', color: t.textMuted, marginBottom: '18px' },
+      toast: { position: 'fixed', top: '14px', left: '50%', transform: 'translateX(-50%)', zIndex: 200, background: isLight ? '#0f172a' : '#1e293b', color: '#f8fafc', padding: '10px 14px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(0,0,0,0.25)', maxWidth: '90vw', animation: 'fadeSlide 0.2s ease-out' },
+      toastClose: { background: 'transparent', border: 'none', color: '#cbd5e1', cursor: 'pointer', display: 'flex', padding: 0 },
+
+      bannerReport: { ...cardBase, padding: '22px', marginBottom: '20px', background: isLight ? 'rgba(4,120,87,0.04)' : 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(59,130,246,0.12) 100%)', border: `1px solid ${isLight ? 'rgba(4,120,87,0.18)' : 'rgba(16,185,129,0.3)'}` },
+      bannerBudget: { ...cardBase, padding: '22px', marginBottom: '20px', background: isLight ? 'rgba(67,56,202,0.04)' : 'linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(59,130,246,0.12) 100%)', border: `1px solid ${isLight ? 'rgba(67,56,202,0.18)' : 'rgba(99,102,241,0.3)'}` },
+      bannerVendors: { ...cardBase, padding: '22px', marginBottom: '20px', background: isLight ? 'rgba(4,120,87,0.04)' : 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(59,130,246,0.12) 100%)', border: `1px solid ${isLight ? 'rgba(4,120,87,0.18)' : 'rgba(16,185,129,0.3)'}` },
+      bannerCash: { ...cardBase, padding: '22px', marginBottom: '20px', background: isLight ? 'rgba(67,56,202,0.04)' : 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(16,185,129,0.15) 100%)', border: `1px solid ${isLight ? 'rgba(67,56,202,0.18)' : 'rgba(99,102,241,0.3)'}` },
+      cashIconWrap: { padding: '10px', background: isLight ? 'rgba(67,56,202,0.1)' : 'rgba(99,102,241,0.2)', borderRadius: '12px', display: 'flex' },
+      periodBadge: { display: 'inline-flex', padding: '5px 12px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '999px', background: `linear-gradient(135deg, ${t.success} 0%, ${isLight ? '#065f46' : '#059669'} 100%)`, color: '#ffffff' },
+      budgetBadge: { display: 'inline-flex', padding: '5px 12px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '999px', background: `linear-gradient(135deg, ${t.primary} 0%, ${t.primaryHover} 100%)`, color: '#ffffff' },
+      bannerNote: { fontSize: '0.75rem', color: t.textMuted },
+      bannerTitle: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, margin: '10px 0 0' },
+      bannerSub: { fontSize: '0.75rem', color: t.textMuted, margin: '4px 0 0' },
+      alertDanger: { ...cardBase, padding: '18px 22px', marginBottom: '20px', background: isLight ? 'rgba(220,38,38,0.05)' : 'rgba(239,68,68,0.1)', border: `2px solid ${isLight ? 'rgba(220,38,38,0.35)' : 'rgba(239,68,68,0.5)'}` },
+      alertDangerTitle: { fontSize: '0.95rem', fontWeight: 800, color: t.danger, margin: 0 },
+      alertRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px', background: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(0,0,0,0.2)', padding: '10px 14px', borderRadius: '10px' },
+      alertRowLabel: { fontSize: '0.75rem', fontWeight: 700, color: t.textMain },
+      alertRowValue: { fontSize: '0.75rem', fontWeight: 800, color: t.danger },
+      alertWarn: { ...cardBase, padding: '20px 22px', marginBottom: '20px', border: `2px solid ${t.borderStrong}`, background: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(245,158,11,0.06)' },
+      alertWarnTitle: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, margin: 0 },
+      alertWarnSub: { fontSize: '0.75rem', color: t.textMuted, margin: '4px 0 0' },
+      flaggedRow: { background: t.cardAlt, border: `1px solid ${t.border}`, borderRadius: '14px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' },
+      flaggedAmount: { fontWeight: 800, color: t.textMain, fontSize: '0.95rem' },
+      flaggedDate: { fontSize: '0.75rem', color: t.textMuted },
+      flaggedMerchant: { fontSize: '0.75rem', fontWeight: 700, color: t.textMain, margin: '2px 0 0' },
+      aiCard: { ...cardBase, padding: '18px 22px', marginBottom: '20px', borderLeft: `4px solid ${t.success}` },
+      aiTitle: { fontSize: '0.95rem', fontWeight: 800, color: t.success, margin: '0 0 8px' },
+      aiText: { fontSize: '0.75rem', color: t.textMain, lineHeight: 1.6, margin: 0 },
+      sectionCard: { ...cardBase, padding: '22px', marginBottom: '20px' },
+      sectionTitle: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, margin: 0 },
+      sectionTitleSm: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, margin: '0 0 14px' },
+      sectionTitleAmber: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, margin: '0 0 14px' },
+      accordionLabel: { fontWeight: 800, fontSize: '0.95rem', color: t.textMain },
+      overBadge: { display: 'inline-flex', padding: '3px 9px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800, background: isLight ? 'rgba(220,38,38,0.1)' : 'rgba(239,68,68,0.2)', color: t.danger },
+      accordionMeta: { fontSize: '0.75rem', color: t.textDim, margin: '3px 0 0' },
+      reportAmountBlock: { display: 'flex', alignItems: 'center', gap: '16px', marginLeft: s.isMobile ? '23px' : '0' },
+      accordionMetaStrong: { color: t.textMain },
+      accordionPctText: { fontSize: '0.75rem', color: t.textMuted, margin: 0 },
+      expandedPanel: { padding: '16px 20px', borderTop: `1px solid ${t.border}`, background: isLight ? 'rgba(0,0,0,0.015)' : 'rgba(0,0,0,0.15)' },
+      txRow: { background: t.card, border: `1px solid ${t.border}`, borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', cursor: 'pointer', flexWrap: 'wrap' },
+      txAmount: { fontWeight: 800, color: t.success, fontSize: '0.75rem' },
+      txDate: { fontSize: '0.75rem', color: t.textDim },
+      txMerchant: { fontSize: '0.75rem', fontWeight: 700, color: t.textMain, margin: '2px 0 0' },
+      txLink: { fontSize: '0.75rem', color: t.primary, fontWeight: 700 },
+      emptyItalic: { fontSize: '0.75rem', color: t.textDim, fontStyle: 'italic' },
+      savedBanner: { background: isLight ? 'rgba(4,120,87,0.08)' : 'rgba(16,185,129,0.15)', border: `1px solid ${isLight ? 'rgba(4,120,87,0.25)' : 'rgba(16,185,129,0.4)'}`, color: t.success, padding: '12px 16px', borderRadius: '12px', marginBottom: '18px', fontWeight: 700, textAlign: 'center' },
+      statCardRemainingAll: { ...cardBase, padding: '18px', borderLeft: `4px solid ${remaining < 0 ? t.danger : t.success}` },
+      remainingAllValueStyle: { fontSize: '0.95rem', fontWeight: 800, margin: '6px 0 0' },
+      remainingAllSubStyle: { fontSize: '0.75rem', fontWeight: 700, margin: '4px 0 0' },
+      miniFieldLabel: { fontSize: '0.75rem', color: t.textDim, textTransform: 'uppercase', fontWeight: 700, margin: 0 },
+      miniFieldValueBlue: { fontSize: '0.95rem', fontWeight: 800, color: t.chartBlue, margin: 0 },
+      miniFieldValueCyan: { fontSize: '0.95rem', fontWeight: 800, color: t.primary, margin: 0 },
+      budgetEditInput: { width: '140px', padding: '6px 10px', background: t.input, border: `1px solid ${t.primary}`, borderRadius: '8px', color: t.primary, fontSize: '0.75rem', fontWeight: 800, textAlign: 'right' },
+      subHeading: { fontSize: '0.75rem', fontWeight: 800, color: t.textMain, margin: '0 0 10px' },
+      quoteRow: { background: t.card, border: `1px solid ${isLight ? 'rgba(67,56,202,0.2)' : 'rgba(99,102,241,0.3)'}`, borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' },
+      quoteVendor: { fontSize: '0.75rem', fontWeight: 800, color: t.textMain },
+      quoteTitle: { fontSize: '0.75rem', color: isLight ? t.primaryHover : t.primary, fontWeight: 700, margin: '2px 0 0' },
+      quoteAmount: { fontSize: '0.75rem', fontWeight: 800, color: isLight ? t.primaryHover : t.primary, margin: 0 },
+      quotePaid: { fontSize: '0.75rem', fontWeight: 800, color: t.success, margin: 0 },
+      vendorTxCount: { fontSize: '0.75rem', color: t.textDim, fontWeight: 600 },
+      vendorName: { fontSize: '0.95rem', fontWeight: 800, color: t.textMain, margin: '0 0 10px' },
+      contractBox: { background: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(0,0,0,0.25)', border: `1px solid ${isLight ? 'rgba(67,56,202,0.2)' : 'rgba(99,102,241,0.3)'}`, borderRadius: '10px', padding: '10px', marginBottom: '8px' },
+      contractRow: { display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' },
+      contractRowDash: { display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', borderTop: `1px dashed ${t.border}`, paddingTop: '4px' },
+      contractLabel: { color: isLight ? t.primaryHover : t.primary, fontWeight: 700 },
+      contractLabelDim: { color: t.textDim },
+      contractValueIndigo: { color: isLight ? t.primaryHover : t.primary, fontWeight: 800 },
+      contractValueCyan: { color: t.success, fontWeight: 800 },
+      vendorTotalPaid: { fontSize: '0.95rem', fontWeight: 800, color: t.success, margin: '0 0 8px' },
+      vendorManDays: { fontSize: '0.75rem', color: t.primary, fontWeight: 700, margin: '0 0 8px' },
+      vendorFooter: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `1px solid ${t.border}`, paddingTop: '10px', marginTop: '10px', color: t.textDim },
+      vendorFooterText: { fontSize: '0.75rem', color: t.textDim },
+      vendorHistory: { marginTop: '14px', borderTop: `1px solid ${t.border}`, paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' },
+      bankBalanceStyle: { fontSize: '0.95rem', fontWeight: 900, color: t.textMain, margin: '6px 0 0' },
+      cashBalanceStyle: { fontSize: '0.95rem', fontWeight: 900, color: t.textMain, margin: '6px 0 0' },
+      statCardIndigo: { ...cardBase, padding: '18px', borderLeft: `4px solid ${t.primary}`, background: isLight ? 'rgba(37,99,235,0.03)' : 'rgba(59,130,246,0.08)' },
+      liquidValueStyle: { fontSize: '0.95rem', fontWeight: 900, color: t.success, margin: '6px 0 0' },
+      liquidSubStyle: { fontSize: '0.75rem', fontWeight: 700, color: t.success, margin: '4px 0 0' },
+      statValueAmber: { fontSize: '0.95rem', fontWeight: 900, color: t.danger, margin: '6px 0 0' },
+      bankPctLabel: { color: t.primary },
+      cashPctLabel: { color: t.success },
+      barTrackWide: { height: '10px', background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)', borderRadius: '6px', overflow: 'hidden' },
+      laborBox: { background: isLight ? 'rgba(220,38,38,0.05)' : 'rgba(248,113,113,0.1)', padding: '14px', borderRadius: '12px', marginBottom: '14px' },
+      laborLabel: { fontSize: '0.75rem', color: t.danger, fontWeight: 700 },
+      laborAmount: { fontSize: '0.95rem', fontWeight: 800, color: t.danger },
+      laborSub: { fontSize: '0.75rem', color: t.textMuted, margin: '4px 0 0' },
+      lowCashAlert: { fontSize: '0.75rem', color: t.danger, background: isLight ? 'rgba(220,38,38,0.06)' : 'rgba(248,113,113,0.15)', padding: '10px 12px', borderRadius: '10px', border: `1px solid ${isLight ? 'rgba(220,38,38,0.2)' : 'rgba(248,113,113,0.3)'}` },
+      capitalRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', padding: '12px 16px', background: t.cardAlt, border: `1px solid ${t.border}`, borderRadius: '12px' }
+    };
+
+    const tabs = VIEWS.map(v => {
+      const active = s.activeView === v.key;
+      return {
+        key: v.key, label: v.label, shortLabel: v.short,
+        isLedger: v.key === 'ledger', isReport: v.key === 'saturday_report', isBudget: v.key === 'bva_budget',
+        isVendors: v.key === 'vendors', isCashflow: v.key === 'cash_flow',
+        onSelect: () => this.setView(v.key),
+        style: { ...btnBase, padding: '9px 16px', fontWeight: 700, fontSize: '0.75rem', border: 'none', background: active ? v.accent : 'transparent', color: active ? '#ffffff' : t.textMuted },
+        mobileStyle: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', background: 'transparent', border: 'none', cursor: 'pointer', color: active ? v.accent : t.textDim },
+        mobileLabelStyle: { fontSize: '0.75rem', fontWeight: 700 }
+      };
+    });
+
+    const categories = CATS.map(c => {
+      const active = s.categoryFilter === c.key;
+      const textColor = isLight ? c.lightText : c.darkText;
+      return {
+        key: c.key, label: c.label,
+        onSelect: () => this.setCategory(c.key),
+        chipStyle: { ...btnBase, padding: '8px 10px', fontSize: '0.75rem', justifyContent: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis',
+          background: active ? c.base : t.cardAlt, borderColor: active ? c.base : t.border, color: active ? '#ffffff' : textColor }
+      };
+    });
+
+    const enrich = (item) => {
+      const meta = catMeta(item.category);
+      const uCost = item.unitCost || (item.quantity ? Math.round(item.amount / item.quantity) : undefined);
+      const catColor = isLight ? meta.lightText : meta.darkText;
+      const catBg = isLight ? `${meta.base}14` : `${meta.base}26`;
+      const verified = item.status === 'đã_xác_minh';
+      const isSelected = s.selectedIds.includes(item.id);
+      return {
+        ...item,
+        fmtAmount: fmt(item.amount),
+        fmtUnitCost: uCost ? fmt(uCost) : '—',
+        catLabel: meta.label,
+        catBadgeStyle: { display: 'inline-flex', padding: '4px 8px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '999px', background: catBg, color: catColor },
+        hasQty: !!item.quantity,
+        qtyText: item.quantity ? `${item.quantity} ${item.unit || ''}` : '',
+        qtyCellText: item.quantity ? `${item.quantity} ${item.unit || ''}` : '—',
+        qtyCellStyle: { padding: '13px 16px', fontWeight: 700, color: item.quantity ? t.textMain : t.textDim },
+        unitCostCellStyle: { padding: '13px 16px', fontWeight: 700, color: uCost ? t.textMain : t.textDim },
+        paymentLabel: item.paymentMethod === 'chuyển_khoản' ? 'Chuyển khoản' : 'Tiền mặt',
+        statusLabel: verified ? 'Đã xác minh' : 'Cần kiểm tra',
+        statusBadgeStyle: { display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '999px',
+          background: verified ? (isLight ? 'rgba(4,120,87,0.1)' : 'rgba(16,185,129,0.15)') : (isLight ? 'rgba(100,116,139,0.12)' : 'rgba(148,163,184,0.15)'),
+          color: verified ? t.success : t.textDim },
+        thumbInitial: meta.label.charAt(0),
+        thumbStyle: { width: '52px', height: '52px', borderRadius: '12px', background: catBg, color: catColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.95rem', flex: 'none' },
+        thumbStyleSm: { width: '40px', height: '40px', borderRadius: '10px', background: catBg, color: catColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' },
+        isSelected,
+        rowStyle: { borderBottom: `1px solid ${t.border}`, background: isSelected ? (isLight ? 'rgba(37,99,235,0.05)' : 'rgba(59,130,246,0.08)') : 'transparent' },
+        onOpen: () => this.setState({ toast: `Xem chi tiết: ${item.merchant}` }),
+        onToggle: () => this.toggleSelect(item.id),
+        onDelete: () => this.clearSelectionToast(`Đã xóa (giả lập): ${item.merchant}`)
+      };
+    };
+
+    const filteredExpenses = filtered.map(enrich);
+
+    // ---- Report & Budget accordion rows ----
+    const periodBtnStyle = (key) => ({ ...btnBase, padding: '7px 14px', fontSize: '0.75rem', background: s.reportPeriod === key ? t.primary : t.cardAlt, color: s.reportPeriod === key ? '#ffffff' : t.textMain, border: `1px solid ${s.reportPeriod === key ? t.primary : t.border}` });
+
+    const reportRows = CATS.map(c => {
+      const actual = catStats[c.key] || 0;
+      const budget = CATEGORY_BUDGETS[c.key] || 0;
+      const rem = budget - actual;
+      const pct = budget > 0 ? Math.round((actual / budget) * 100) : 0;
+      const isOver = budget > 0 && actual > budget;
+      const barColor = isOver ? t.danger : t.success;
+      const expanded = s.expandedReportCat === c.key;
+      const transactions = expenses.filter(i => i.category === c.key).map(enrich);
+      return {
+        key: c.key, label: c.label, isOver, expanded, collapsed: !expanded,
+        fmtBudget: fmt(budget), fmtActual: fmt(actual), fmtRemaining: fmt(rem), fmtOverAmount: fmt(actual - budget), pct,
+        onToggle: () => this.toggleReportCat(c.key),
+        wrapStyle: { ...cardBase, overflow: 'hidden', border: `1px solid ${isOver ? t.danger : t.border}` },
+        headerStyle: { padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' },
+        dotStyle: { width: '11px', height: '11px', borderRadius: '50%', background: isLight ? c.lightText : c.darkText, flex: 'none' },
+        remainingStrongStyle: { color: rem < 0 ? t.danger : t.success },
+        actualValueStyle: { fontSize: '0.95rem', fontWeight: 800, color: barColor, margin: 0 },
+        barTrackStyle: { width: '100%', height: '6px', background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)' },
+        barFillStyle: { width: `${Math.min(100, pct)}%`, height: '100%', background: barColor },
+        hasTx: transactions.length > 0, hasNoTx: transactions.length === 0, transactions
+      };
+    });
+    const overBudgetRows = reportRows.filter(r => r.isOver).map(r => ({ label: r.label, fmtActual: r.fmtActual, fmtBudget: r.fmtBudget, fmtOver: r.fmtOverAmount }));
+
+    const sortedCats = CATS.map(c => ({ label: c.label, amt: catStats[c.key] || 0 })).sort((a, b) => b.amt - a.amt);
+    const topCategoryAmt = sortedCats[0] ? sortedCats[0].amt : 0;
+    const totalManDays = expenses.reduce((sum, i) => sum + (i.manDays || 0), 0);
+    const pendingItemsAll = expenses.filter(i => i.status === 'cần_kiểm_tra').map(enrich);
+
+    // ---- Budget view rows ----
+    const budgetRows = CATS.map(c => {
+      const actual = catStats[c.key] || 0;
+      const quotesRaw = QUOTATIONS.filter(q => q.category === c.key);
+      const quotes = quotesRaw.map(q => {
+        const paid = expenses.filter(i => i.merchant.trim().toLowerCase() === q.vendorName.trim().toLowerCase()).reduce((sum, i) => sum + i.amount, 0);
+        const qRemaining = q.amount - paid;
+        return {
+          ...q, fmtAmount: fmt(q.amount), fmtPaid: fmt(paid), fmtRemaining: fmt(qRemaining),
+          statusLabel: q.status === 'signed' ? 'Hợp Đồng Đã Ký' : 'Báo Giá Dự Thảo',
+          statusBadgeStyle: { display: 'inline-flex', padding: '3px 9px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700, background: q.status === 'signed' ? (isLight ? 'rgba(4,120,87,0.12)' : 'rgba(16,185,129,0.2)') : (isLight ? 'rgba(100,116,139,0.12)' : 'rgba(148,163,184,0.2)'), color: q.status === 'signed' ? t.success : t.textDim },
+          remainingStyle: { fontWeight: 800, color: qRemaining < 0 ? t.danger : t.success }
+        };
+      });
+      const signedTotal = quotes.filter(q => q.status === 'signed').reduce((sum, q) => sum + q.amount, 0);
+      const manualBudget = s.budgetsEditing ? (s.budgetsDraft[c.key] ?? CATEGORY_BUDGETS[c.key]) : CATEGORY_BUDGETS[c.key];
+      const budget = signedTotal > 0 ? signedTotal : manualBudget;
+      const rem = budget - actual;
+      const pct = budget > 0 ? Math.round((actual / budget) * 100) : 0;
+      const isOver = budget > 0 && actual > budget;
+      const barColor = isOver ? t.danger : t.success;
+      const expanded = s.expandedBudgetCat === c.key;
+      const transactions = expenses.filter(i => i.category === c.key).map(enrich);
+      const showInput = s.budgetsEditing && signedTotal === 0;
+      return {
+        key: c.key, label: c.label, isOver, expanded, collapsed: !expanded, budgetRaw: budget, actualRaw: actual,
+        fmtBudget: fmt(budget), fmtActual: fmt(actual), fmtRemaining: fmt(rem), fmtOverAmount: fmt(actual - budget), pct,
+        subMetaText: `${transactions.length} hóa đơn ghi nhận${quotes.length ? ` · ${quotes.length} hợp đồng` : ''}`,
+        budgetFieldLabel: signedTotal > 0 ? 'Dự Toán (Theo HĐ)' : 'Hạn Mức Dự Toán',
+        showInput, showStatic: !showInput,
+        draftDisplay: String(s.budgetsDraft[c.key] ?? CATEGORY_BUDGETS[c.key]),
+        onDraftChange: (e) => this.onBudgetDraftChange(c.key, e.target.value),
+        onToggle: () => this.toggleBudgetCat(c.key),
+        wrapStyle: { ...cardBase, overflow: 'hidden', border: `1px solid ${isOver ? t.danger : t.border}` },
+        headerStyle: { padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' },
+        dotStyle: { width: '11px', height: '11px', borderRadius: '50%', background: isLight ? c.lightText : c.darkText, flex: 'none' },
+        remainingStrongStyle: { color: rem < 0 ? t.danger : t.success, fontWeight: 800 },
+        barTrackStyle: { width: '100%', height: '6px', background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)' },
+        barFillStyle: { width: `${Math.min(100, pct)}%`, height: '100%', background: barColor },
+        hasQuotes: quotes.length > 0, quoteCount: quotes.length, quotes, txCount: transactions.length,
+        hasTx: transactions.length > 0, hasNoTx: transactions.length === 0, transactions
+      };
+    });
+    const budgetOverRows = budgetRows.filter(r => r.isOver).map(r => ({ label: r.label, fmtActual: r.fmtActual, fmtBudget: r.fmtBudget, fmtOver: r.fmtOverAmount }));
+    const totalBudgetAll = budgetRows.reduce((sum, r) => sum + r.budgetRaw, 0);
+    const totalActualAll = budgetRows.reduce((sum, r) => sum + r.actualRaw, 0);
+    const totalRemainingAll = totalBudgetAll - totalActualAll;
+
+    // ---- Vendors view ----
+    const vendorMap = {};
+    expenses.forEach(item => {
+      const name = item.merchant;
+      const type = classifyVendorType(item.category);
+      if (!vendorMap[name]) vendorMap[name] = { name, type, totalPaid: 0, count: 0, manDays: 0, transactions: [] };
+      const v = vendorMap[name];
+      v.totalPaid += item.amount; v.count += 1; v.manDays += (item.manDays || 0);
+      if (type === 'thợ_thi_công') v.type = 'thợ_thi_công';
+      v.transactions.push(item);
+    });
+    let vendorsList = Object.values(vendorMap).sort((a, b) => b.totalPaid - a.totalPaid);
+    const allVendorCount = vendorsList.length;
+    if (s.vendorFilterType !== 'all') vendorsList = vendorsList.filter(v => v.type === s.vendorFilterType);
+    if (s.vendorSearch) { const q = s.vendorSearch.toLowerCase(); vendorsList = vendorsList.filter(v => v.name.toLowerCase().includes(q)); }
+
+    const vendorFilters = [{ key: 'all', label: `Tất Cả (${allVendorCount})` }, ...Object.entries(VENDOR_TYPES).map(([k, m]) => ({ key: k, label: m.label }))].map(f => ({
+      key: f.key, label: f.label, onSelect: () => this.setVendorFilter(f.key),
+      style: { ...btnBase, padding: '8px 14px', fontSize: '0.75rem', background: s.vendorFilterType === f.key ? (f.key === 'all' ? t.primary : VENDOR_TYPES[f.key].base) : t.cardAlt, color: s.vendorFilterType === f.key ? '#ffffff' : t.textMain, border: `1px solid ${s.vendorFilterType === f.key ? (f.key === 'all' ? t.primary : VENDOR_TYPES[f.key].base) : t.border}` }
+    }));
+
+    const vendors = vendorsList.map(v => {
+      const meta = VENDOR_TYPES[v.type];
+      const textColor = isLight ? meta.lightText : meta.darkText;
+      const bg = isLight ? `${meta.base}14` : `${meta.base}26`;
+      const vendorQuotes = QUOTATIONS.filter(q => q.vendorName.trim().toLowerCase() === v.name.trim().toLowerCase());
+      const quotedTotal = vendorQuotes.filter(q => q.status === 'signed').reduce((sum, q) => sum + q.amount, 0);
+      const remainingContract = quotedTotal - v.totalPaid;
+      const expanded = s.expandedVendor === v.name;
+      return {
+        name: v.name, typeLabel: meta.label,
+        badgeStyle: { display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800, background: bg, color: textColor },
+        txCountLabel: `${v.count} hóa đơn`,
+        hasContract: quotedTotal > 0, noContract: quotedTotal === 0,
+        fmtQuoted: fmt(quotedTotal), fmtPaid: fmt(v.totalPaid), fmtRemaining: fmt(remainingContract),
+        contractRemainingStyle: { fontWeight: 800, color: remainingContract < 0 ? t.danger : t.success },
+        hasManDays: v.manDays > 0, manDaysLabel: `${v.manDays} công thợ đã ghi nhận`,
+        expanded, collapsed: !expanded, expandHint: expanded ? 'Đóng chi tiết' : 'Xem lịch sử giao dịch',
+        onToggle: () => this.toggleVendor(v.name),
+        cardStyle: { ...cardBase, padding: '20px', border: expanded ? `2px solid ${textColor}` : `1px solid ${t.border}` },
+        transactions: v.transactions.map(item => ({ ...enrich(item), onOpenStop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ toast: `Xem chi tiết: ${item.merchant}` }); } }))
+      };
+    });
+    const totalPaidVendors = vendorsList.reduce((sum, v) => sum + v.totalPaid, 0);
+    const totalManDaysVendors = vendorsList.reduce((sum, v) => sum + v.manDays, 0);
+
+    // ---- Cash flow view ----
+    const capitalDeposits = CAPITAL_TX.filter(tx => tx.type === 'deposit').reduce((sum, tx) => sum + tx.amount, 0);
+    const cashWithdrawals = CAPITAL_TX.filter(tx => tx.type === 'withdrawal').reduce((sum, tx) => sum + tx.amount, 0);
+    const currentBankBalance = (INITIAL_BANK + capitalDeposits) - cashWithdrawals - bankSpent;
+    const currentCashBalance = (INITIAL_CASH + cashWithdrawals) - cashSpent;
+    const totalLiquid = currentBankBalance + currentCashBalance;
+    const timestamps = expenses.map(e => new Date(e.date).getTime()).filter(n => !isNaN(n));
+    const minT = Math.min(...timestamps), maxT = Math.max(...timestamps);
+    const diffDays = Math.max(1, (maxT - minT) / 86400000);
+    const weeksCount = Math.max(1, Math.ceil(diffDays / 7));
+    const totalSpentAll = bankSpent + cashSpent;
+    const avgWeeklyOutflow = totalSpentAll / weeksCount;
+    const weeksRemaining = avgWeeklyOutflow > 0 ? Math.max(0, Math.floor(totalLiquid / avgWeeklyOutflow)) : 999;
+    const laborExpenses = expenses.filter(i => i.category === 'phần_thô_nhân_công' || i.category === 'hoàn_thiện_nhân_công');
+    const pendingLaborCount = laborExpenses.filter(i => i.status === 'cần_kiểm_tra').length;
+    const pendingLaborAmount = laborExpenses.filter(i => i.status === 'cần_kiểm_tra').reduce((sum, i) => sum + i.amount, 0);
+    const bankPct = totalSpentAll > 0 ? Math.round((bankSpent / totalSpentAll) * 100) : 0;
+    const cashPct = totalSpentAll > 0 ? Math.round((cashSpent / totalSpentAll) * 100) : 0;
+    const lowCash = currentCashBalance < 15000000;
+
+    const capitalLog = CAPITAL_TX.map(tx => ({
+      ...tx, isDeposit: tx.type === 'deposit', isWithdrawal: tx.type !== 'deposit',
+      typeLabel: tx.type === 'deposit' ? 'Nạp Vốn Ngân Hàng' : 'Rút Ngân Hàng → Nhập Quỹ Tiền Mặt',
+      typeLabelStyle: { fontWeight: 800, fontSize: '0.75rem', color: tx.type === 'deposit' ? t.success : t.chartBlue },
+      fmtAmount: (tx.type === 'deposit' ? '+' : '') + fmt(tx.amount),
+      amountStyle: { fontSize: '0.95rem', fontWeight: 800, color: tx.type === 'deposit' ? t.success : t.chartBlue },
+      iconWrapStyle: { padding: '8px', borderRadius: '10px', background: tx.type === 'deposit' ? (isLight ? 'rgba(4,120,87,0.1)' : 'rgba(16,185,129,0.2)') : (isLight ? 'rgba(37,99,235,0.1)' : 'rgba(59,130,246,0.2)') }
+    }));
+
+    return {
+      t, isLight, isDark: !isLight, styles,
+      projectName: 'Nhà Phố Quận 7',
+      isMobile: s.isMobile, isDesktop: !s.isMobile,
+      logoGap: s.isMobile ? '8px' : '12px', logoIconSize: s.isMobile ? '15' : '22',
+      isLedgerView: s.activeView === 'ledger',
+      isReportView: s.activeView === 'saturday_report',
+      isBudgetView: s.activeView === 'bva_budget',
+      isVendorsView: s.activeView === 'vendors',
+      isCashflowView: s.activeView === 'cash_flow',
+      toggleTheme: this.toggleTheme, backToLedger: this.backToLedger,
+
+      reportPeriodLabel: ({ weekly: 'Tuần Này', monthly: 'Tháng Này', quarterly: 'Quý Này', all: 'Toàn Bộ Dự Án' })[s.reportPeriod],
+      setPeriodWeekly: () => this.setReportPeriod('weekly'), setPeriodMonthly: () => this.setReportPeriod('monthly'),
+      setPeriodQuarterly: () => this.setReportPeriod('quarterly'), setPeriodAll: () => this.setReportPeriod('all'),
+      periodBtnWeekly: periodBtnStyle('weekly'), periodBtnMonthly: periodBtnStyle('monthly'), periodBtnQuarterly: periodBtnStyle('quarterly'), periodBtnAll: periodBtnStyle('all'),
+      hasOverBudget: overBudgetRows.length > 0, overBudgetCount: overBudgetRows.length, overBudgetRows,
+      hasFlagged: pendingItemsAll.length > 0, flaggedCount: pendingItemsAll.length, flaggedExpenses: pendingItemsAll,
+      aiSummary: 'Chi phí tuần này tập trung chủ yếu vào vật tư phần thô (sắt thép, xi măng) và nhân công xây tô. Ngân sách tổng thể vẫn trong hạn mức, ngoại trừ một vài hạng mục hoàn thiện đang cần theo dõi sát do đã dùng gần hết dự toán.',
+      topCategoryLabel: sortedCats[0] ? sortedCats[0].label : 'Không có', fmtTopCategoryAmount: fmt(topCategoryAmt),
+      topCategoryPct: totalSpent > 0 ? Math.round((topCategoryAmt / totalSpent) * 100) : 0,
+      totalManDays, reportRows,
+
+      budgetsEditing: s.budgetsEditing, budgetsNotEditing: !s.budgetsEditing, startEditingBudgets: this.startEditingBudgets, saveBudgets: this.saveBudgets,
+      savedToast: s.savedToast,
+      hasBudgetOverBudget: budgetOverRows.length > 0, budgetOverBudgetCount: budgetOverRows.length, budgetOverRows,
+      fmtTotalBudgetAll: fmt(totalBudgetAll), fmtTotalActualAll: fmt(totalActualAll),
+      totalPctUsedAll: totalBudgetAll > 0 ? Math.round((totalActualAll / totalBudgetAll) * 100) : 0,
+      fmtTotalRemainingAll: fmt(totalRemainingAll), remainingAllStatusText: totalRemainingAll < 0 ? 'Vượt Tổng Dự Toán' : 'Ngân Sách An Toàn',
+      budgetRows,
+
+      vendorFilters, fmtTotalPaidVendors: fmt(totalPaidVendors), vendorCount: vendorsList.length, totalManDaysVendors,
+      vendorSearch: s.vendorSearch, onVendorSearchChange: this.onVendorSearchChange, vendors,
+
+      fmtBankBalance: fmt(currentBankBalance), fmtBankSpentAll: fmt(bankSpent), fmtCashBalance: fmt(currentCashBalance), fmtCashSpentAll: fmt(cashSpent),
+      fmtTotalLiquid: fmt(totalLiquid), liquidStatusText: totalLiquid < 0 ? 'Thiếu hụt dòng tiền' : 'Khả năng thanh toán tốt',
+      weeksRemainingLabel: weeksRemaining === 999 ? '∞' : weeksRemaining, fmtAvgWeeklyOutflow: fmt(avgWeeklyOutflow),
+      bankPct, cashPct,
+      bankBarFillStyle: { height: '100%', width: `${bankPct}%`, background: t.chartBlue },
+      cashBarFillStyle: { height: '100%', width: `${cashPct}%`, background: t.chartGreen },
+      fmtPendingLabor: fmt(pendingLaborAmount), pendingLaborCount, lowCashWarning: lowCash,
+      capitalCount: CAPITAL_TX.length, capitalLog,
+      toast: s.toast, dismissToast: this.dismissToast, openUploadToast: this.openUploadToast,
+      tabs, categories, allCategoryStyle: { ...btnBase, padding: '8px 10px', fontSize: '0.75rem', justifyContent: 'center', width: '100%', background: s.categoryFilter === 'all' ? t.primary : t.cardAlt, borderColor: s.categoryFilter === 'all' ? t.primary : t.border, color: s.categoryFilter === 'all' ? '#ffffff' : t.textMain },
+      onSelectAllCategory: () => this.setCategory('all'),
+      fmtTotalSpent: fmt(totalSpent), fmtTotalBudget: fmt(totalBudget), fmtRemaining: fmt(remaining),
+      remainingStatusText: remaining < 0 ? 'Đã Vượt Ngân Sách' : 'Khả Dụng',
+      fmtBankAvailable: fmt(bankAvailable), fmtCashAvailable: fmt(cashAvailable), fmtTotalFunds: fmt(bankAvailable + cashAvailable),
+      fmtCatMaterials: fmt(catStats['phần_thô_vật_tư'] || 0), fmtCatLabor: fmt(catStats['phần_thô_nhân_công'] || 0),
+      fmtCatFinishes: fmt(catStats['hoàn_thiện_vật_tư'] || 0), fmtCatFFE: fmt(catStats['nội_thất_thiết_bị'] || 0),
+      hasPending: pendingCount > 0, pendingCount, expenseCount: expenses.length, catCount: CATS.length,
+      searchTerm: s.searchTerm, onSearchChange: this.onSearchChange,
+      statusFilter: s.statusFilter, onStatusChange: this.onStatusChange,
+      showAdvanced: s.showAdvanced, toggleAdvanced: this.toggleAdvanced,
+      advancedLabel: s.showAdvanced ? 'Ẩn Bộ Lọc' : 'Bộ Lọc...',
+      advancedBtnStyle: { ...btnBase, background: s.showAdvanced ? t.primary : t.cardAlt, color: s.showAdvanced ? '#ffffff' : t.textMain, border: `1px solid ${s.showAdvanced ? t.primary : t.border}` },
+      onResetFilters: this.onResetFilters,
+      filteredCount: filtered.length, filteredExpenses,
+      hasResults: filtered.length > 0, hasNoResults: filtered.length === 0,
+      hasSelection: s.selectedIds.length > 0, selectedCount: s.selectedIds.length,
+      onBatchVerify: () => this.clearSelectionToast('Đã xác minh (giả lập) các mục đã chọn.'),
+      onBatchDelete: () => this.clearSelectionToast('Đã xóa (giả lập) các mục đã chọn.'),
+      allSelected: s.selectedIds.length === filteredIds.length && filteredIds.length > 0,
+      onSelectAll: (e) => this.selectAll(e.target.checked, filteredIds)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

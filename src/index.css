@@ -3,12 +3,12 @@
 :root,
 html[data-theme="dark"] {
   --bg-main: #0b0f19;
-  --bg-card: rgba(23, 32, 54, 0.7);
+  --bg-card: rgba(23, 32, 54, 0.9);
   --bg-card-hover: rgba(30, 41, 69, 0.85);
-  --bg-card-alt: rgba(255, 255, 255, 0.03);
+  --bg-card-alt: rgba(255, 255, 255, 0.06);
   --bg-input: #131b2e;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-color: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.24);
   --border-glow: rgba(59, 130, 246, 0.3);
   --header-bg: rgba(15, 20, 33, 0.9);
 
@@ -58,10 +58,10 @@ html[data-theme="light"] {
   --bg-main: #f3f5f8;
   --bg-card: #ffffff;
   --bg-card-hover: #f8fafc;
-  --bg-card-alt: #f8fafc;
+  --bg-card-alt: #eef1f6;
   --bg-input: #ffffff;
-  --border-color: #dfe4ea;
-  --border-strong: #c7cfd9;
+  --border-color: #d5dbe3;
+  --border-strong: #b8c2ce;
   --border-glow: rgba(37, 99, 235, 0.25);
   --header-bg: rgba(255, 255, 255, 0.96);
 
@@ -157,15 +157,39 @@ html[data-theme="light"] .glass-card:hover {
   transform: none;
 }
 
+/* Typography System - Exactly 2 sizes app-wide */
+.text-heading {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.text-body {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.text-body-emphasized {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.text-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+}
+
 /* Custom Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 18px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  padding: 10px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
@@ -320,6 +344,11 @@ html[data-theme="light"] .badge-pending {
   padding-bottom: 78px;
 }
 
+/* Show/hide utilities for responsive design */
+.desktop-only {
+  display: none !important;
+}
+
 @media (min-width: 860px) {
   .mobile-only-cards {
     display: none !important;
@@ -332,6 +361,9 @@ html[data-theme="light"] .badge-pending {
   }
   .desktop-only-nav {
     display: flex !important;
+  }
+  .desktop-only {
+    display: revert !important;
   }
   .app-main {
     padding: 24px;
