@@ -135,10 +135,10 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
         {/* Modal Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span className="badge" style={{ background: CATEGORY_METADATA[category]?.bg, color: CATEGORY_METADATA[category]?.color, fontSize: '0.85rem', padding: '6px 12px' }}>
+            <span className="badge" style={{ background: CATEGORY_METADATA[category]?.bg, color: CATEGORY_METADATA[category]?.color, fontSize: '0.75rem', padding: '6px 12px' }}>
               {CATEGORY_METADATA[category]?.label}
             </span>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>
               ID: {item.id}
             </span>
           </div>
@@ -171,7 +171,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                       href={item.imageUrl}
                       target="_blank"
                       rel="noreferrer"
-                      style={{ fontSize: '0.78rem', color: '#60a5fa', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                      style={{ fontSize: '0.75rem', color: '#60a5fa', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
                       <span>Xem ảnh phóng to</span>
                       <ExternalLink size={14} />
@@ -180,7 +180,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                 </div>
               ) : (
                 <div style={{ padding: '40px 20px', textAlign: 'center', background: 'var(--bg-input)', borderRadius: '16px', border: '1px dashed var(--border-color)', marginBottom: '16px', color: 'var(--text-dim)' }}>
-                  <p style={{ fontSize: '0.88rem' }}>Không có ảnh đính kèm (Hóa đơn thủ công)</p>
+                  <p style={{ fontSize: '0.75rem' }}>Không có ảnh đính kèm (Hóa đơn thủ công)</p>
                 </div>
               )}
 
@@ -191,7 +191,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                     <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '5px' }}><Sparkles size={12} /> ĐỘ TIN CẬY AI VISION</span>
                     <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>{item.confidenceScore}% Match</span>
                   </div>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
                     {item.aiReasoning}
                   </p>
                 </div>
@@ -203,7 +203,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               
               {/* Total Paid Amount (Authoritative Anchor) */}
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                   <DollarSign size={14} />
                   <span>SỐ TIỀN THANH TOÁN (VND) — THỰC CHI</span>
                 </label>
@@ -219,7 +219,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                     border: '2px solid rgba(52, 211, 153, 0.4)',
                     borderRadius: '12px',
                     color: '#34d399',
-                    fontSize: '1.25rem',
+                    fontSize: '0.95rem',
                     fontWeight: 800,
                     outline: 'none'
                   }}
@@ -239,14 +239,14 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                       placeholder="VD: 50"
                       value={quantity !== undefined ? quantity : ''}
                       onChange={e => handleQuantityChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                      style={{ width: '60%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.88rem', fontWeight: 700 }}
+                      style={{ width: '60%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
                     />
                     <input
                       type="text"
                       placeholder="cây, m3, công..."
                       value={unit}
                       onChange={e => setUnit(e.target.value)}
-                      style={{ width: '40%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem' }}
+                      style={{ width: '40%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
                     />
                   </div>
                 </div>
@@ -261,7 +261,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                     placeholder="VD: 370,000"
                     value={unitCostStr}
                     onChange={e => handleUnitCostChange(e.target.value)}
-                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fbbf24', fontSize: '0.88rem', fontWeight: 700 }}
+                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fbbf24', fontSize: '0.75rem', fontWeight: 700 }}
                   />
                 </div>
               </div>
@@ -282,7 +282,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                 <select
                   value={category}
                   onChange={e => setCategory(e.target.value as ExpenseCategory)}
-                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.88rem', fontWeight: 700 }}
+                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
                 >
                   {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => (
                     <option key={catKey} value={catKey}>
@@ -304,7 +304,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                   value={subCategory}
                   list="subcategory-suggestions-detail"
                   onChange={e => setSubCategory(e.target.value)}
-                  style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700 }}
+                  style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#60a5fa', fontSize: '0.75rem', fontWeight: 700 }}
                 />
                 <datalist id="subcategory-suggestions-detail">
                   {existingSubCategories.map(s => (
@@ -325,7 +325,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                     required
                     value={date}
                     onChange={e => setDate(e.target.value)}
-                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
                   />
                 </div>
 
@@ -340,7 +340,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                     value={merchant}
                     list="vendor-suggestions-detail"
                     onChange={e => setMerchant(e.target.value)}
-                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem', fontWeight: 700 }}
+                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
                   />
                   <datalist id="vendor-suggestions-detail">
                     {existingVendors.map(v => (
@@ -360,7 +360,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                   <select
                     value={paymentMethod}
                     onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
-                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
                   >
                     <option value="chuyển_khoản">Chuyển khoản</option>
                     <option value="tiền_mặt">Tiền mặt</option>
@@ -374,7 +374,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                   <select
                     value={status}
                     onChange={e => setStatus(e.target.value as VerificationStatus)}
-                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: status === 'đã_xác_minh' ? '#34d399' : '#fbbf24', fontSize: '0.85rem', fontWeight: 800 }}
+                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: status === 'đã_xác_minh' ? '#34d399' : '#fbbf24', fontSize: '0.75rem', fontWeight: 800 }}
                   >
                     <option value="đã_xác_minh">Đã xác minh</option>
                     <option value="cần_kiểm_tra">Cần kiểm tra lại</option>
@@ -391,7 +391,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                   rows={2}
                   value={note}
                   onChange={e => setNote(e.target.value)}
-                  style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem', resize: 'vertical' }}
+                  style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', resize: 'vertical' }}
                 />
               </div>
 

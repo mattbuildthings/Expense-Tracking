@@ -47,17 +47,17 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span className="badge" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.85rem' }}>
+              <span className="badge" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.75rem' }}>
                 <Calendar size={14} /> {report.periodLabel}
               </span>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Tự động tổng hợp cho {projectName}
               </span>
             </div>
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
+            <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
               Báo Cáo Phân Tích Ngân Sách & Chi Phí (BVA)
             </h2>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               So sánh hạn mức dự toán vs. thực chi, rà soát biến động & tiến độ 12 tháng dự án
             </p>
           </div>
@@ -76,7 +76,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
 
         {/* Period Selector Tabs Bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Filter size={14} /> Kỳ Báo Cáo:
           </span>
 
@@ -116,17 +116,17 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
         <div className="glass-card" style={{ padding: '20px 24px', marginBottom: '24px', background: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.5)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
             <AlertCircle size={24} color="var(--danger)" />
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--danger)' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--danger)' }}>
               Cảnh Báo: Phát Hiện {overBudgetCategories.length} Hạng Mục Chi Vượt Ngân Sách Dự Toán!
             </h3>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {overBudgetCategories.map(c => (
               <div key={c.category} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-card-alt)', padding: '10px 14px', borderRadius: '10px' }}>
-                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
                   {c.label}
                 </span>
-                <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--danger)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--danger)' }}>
                   Thực chi: {formatVND(c.totalAmount)} / Dự toán: {formatVND(c.targetBudget || 0)} (Vượt {formatVND(c.totalAmount - (c.targetBudget || 0))})
                 </span>
               </div>
@@ -144,10 +144,10 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                 <AlertTriangle color="var(--warning)" size={24} />
               </div>
               <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--warning)' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--warning)' }}>
                   Các Mục Cần Rà Soát Lại ({report.flaggedExpenses.length} mục)
                 </h3>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Hãy xem lại hóa đơn hoặc ghi chú bên dưới trong kỳ báo cáo này
                 </p>
               </div>
@@ -181,22 +181,22 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                   )}
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 800, color: 'var(--warning)', fontSize: '1.05rem' }}>{formatVND(item.amount)}</span>
+                      <span style={{ fontWeight: 800, color: 'var(--warning)', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
                       {item.quantity && (
-                        <span style={{ fontSize: '0.8rem', background: 'var(--bg-card-alt)', padding: '2px 8px', borderRadius: '6px', color: 'var(--text-main)', fontWeight: 700 }}>
+                        <span style={{ fontSize: '0.75rem', background: 'var(--bg-card-alt)', padding: '2px 8px', borderRadius: '6px', color: 'var(--text-main)', fontWeight: 700 }}>
                           SL: {item.quantity} {item.unit || ''}
                         </span>
                       )}
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>• {item.date}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {item.date}</span>
                     </div>
-                    <p style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '3px' }}>
+                    <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '3px' }}>
                       {item.merchant} ({CATEGORY_METADATA[item.category]?.label})
                     </p>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>Ghi chú: {item.note}</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Ghi chú: {item.note}</p>
                   </div>
                 </div>
 
-                <div className="no-print" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--chart-blue)', fontSize: '0.85rem', fontWeight: 700 }}>
+                <div className="no-print" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--chart-blue)', fontSize: '0.75rem', fontWeight: 700 }}>
                   <span>Rà soát & Sửa</span>
                   <ExternalLink size={16} />
                 </div>
@@ -212,7 +212,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
           <div style={{ padding: '8px', background: 'rgba(16, 185, 129, 0.2)', borderRadius: '10px', color: 'var(--success)' }}>
             <Sparkles size={20} />
           </div>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--success)' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)' }}>
             Tóm Tắt Tổng Quan ({report.periodLabel})
           </h3>
         </div>
@@ -225,10 +225,10 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '20px' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Tiêu Thực Tế</p>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--success)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)', marginTop: '6px' }}>
             {formatVND(report.totalAmount)}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>{report.itemCount} hóa đơn & giao dịch</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{report.itemCount} hóa đơn & giao dịch</p>
         </div>
 
         <div className="glass-card" style={{ padding: '20px' }}>
@@ -236,7 +236,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
           <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '6px' }}>
             {report.categoryBreakdown[0]?.label || 'Không có'}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             {formatVND(report.categoryBreakdown[0]?.totalAmount || 0)} ({report.categoryBreakdown[0]?.percentage}%)
           </p>
         </div>
@@ -246,7 +246,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
           <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--success)', marginTop: '6px' }}>
             {report.totalManDaysRecorded} Công Thợ
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Phần thô & Hoàn thiện</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Phần thô & Hoàn thiện</p>
         </div>
       </div>
 
@@ -254,10 +254,10 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
       <div className="glass-card" style={{ padding: '24px', marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Target size={18} /> Chi Tiết Ngân Sách Dự Toán vs. Thực Chi (BVA)
             </h3>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Theo dõi biến động chi phí, ngân sách còn lại & tỷ lệ hoàn thành 9 hạng mục
             </p>
           </div>
@@ -317,7 +317,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                           </span>
                         )}
                       </div>
-                      <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '3px' }}>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '3px' }}>
                         Dự toán: <strong style={{ color: 'var(--text-main)' }}>{formatVND(targetB)}</strong> • Còn lại: <strong style={{ color: remaining < 0 ? 'var(--danger)' : 'var(--success)' }}>{formatVND(remaining)}</strong>
                       </p>
                     </div>
@@ -325,7 +325,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 800, color: progressColor }}>
+                      <p style={{ fontSize: '0.95rem', fontWeight: 800, color: progressColor }}>
                         {formatVND(catSummary.totalAmount)}
                       </p>
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -347,7 +347,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                 {isExpanded && (
                   <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', background: 'var(--bg-card-alt)' }}>
                     {categoryTransactions.length === 0 ? (
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
                         Chưa có giao dịch nào trong danh mục này.
                       </p>
                     ) : (
@@ -369,14 +369,14 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                                 }}
                               >
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                  <span style={{ fontWeight: 800, color: 'var(--success)', fontSize: '1rem' }}>{formatVND(item.amount)}</span>
+                                  <span style={{ fontWeight: 800, color: 'var(--success)', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
                                   <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{item.date}</span>
                                 </div>
-                                <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
+                                <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
                                   {item.merchant} {item.subCategory ? `(↳ ${item.subCategory})` : ''}
                                 </p>
                                 {item.quantity && (
-                                  <p style={{ fontSize: '0.78rem', color: 'var(--warning)', fontWeight: 700, marginTop: '2px' }}>
+                                  <p style={{ fontSize: '0.75rem', color: 'var(--warning)', fontWeight: 700, marginTop: '2px' }}>
                                     SL: {item.quantity} {item.unit || ''} {uCost ? `(${formatVND(uCost)}/đv)` : ''}
                                   </p>
                                 )}
@@ -387,7 +387,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
 
                         {/* Desktop Table View for Accordion */}
                         <div className="desktop-only-table" style={{ overflowX: 'auto' }}>
-                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', textAlign: 'left' }}>
                             <thead>
                               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-dim)', fontSize: '0.72rem', textTransform: 'uppercase' }}>
                                 <th style={{ padding: '8px' }}>Mã / Ngày</th>
@@ -432,7 +432,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                                     <button
                                       className="btn btn-secondary btn-sm"
                                       onClick={() => onSelectExpense(item)}
-                                      style={{ padding: '4px 10px', fontSize: '0.78rem' }}
+                                      style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                                     >
                                       Xem & Sửa
                                     </button>

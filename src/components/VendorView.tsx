@@ -133,17 +133,17 @@ export const VendorView: React.FC<VendorViewProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span className="badge" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.85rem' }}>
+              <span className="badge" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.75rem' }}>
                 <Users size={14} /> Danh Mục Đối Tác
               </span>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Dự án {projectName}
               </span>
             </div>
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
+            <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
               Danh Sách Thợ Thi Công & Nhà Cung Cấp
             </h2>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Quản lý tổng tiền đã chi trả, số công thợ & bảng kê quyết toán theo 4 nhóm đối tác chuẩn
             </p>
           </div>
@@ -193,18 +193,18 @@ export const VendorView: React.FC<VendorViewProps> = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--success)' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Tiền Đã Thanh Toán</p>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--success)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)', marginTop: '6px' }}>
             {formatVND(totalPaidInFilter)}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Qua {totalVendorsCount} nhà cung cấp / tổ thợ</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Qua {totalVendorsCount} nhà cung cấp / tổ thợ</p>
         </div>
 
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--chart-blue)' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Số Công Thợ</p>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <HardHat size={18} /> {totalManDaysInFilter} Công Thợ
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Phần thô & Hoàn thiện</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Phần thô & Hoàn thiện</p>
         </div>
       </div>
 
@@ -260,48 +260,48 @@ export const VendorView: React.FC<VendorViewProps> = ({
                   <IconComp size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
                   {typeMeta.label}
                 </span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 600 }}>
                   {vendor.transactionCount} hóa đơn
                 </span>
               </div>
 
               {/* Vendor Name */}
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>
                 {vendor.name}
               </h3>
 
               {/* Contract vs Paid Numbers */}
               {quotedTotal > 0 ? (
                 <div style={{ background: 'var(--bg-card-alt)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '10px', padding: '10px', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
                     <span style={{ color: '#818cf8', fontWeight: 700 }}>Giá trị hợp đồng:</span>
                     <span style={{ color: '#818cf8', fontWeight: 800 }}>{formatVND(quotedTotal)}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
                     <span style={{ color: 'var(--text-dim)' }}>Đã chi thanh toán:</span>
                     <span style={{ color: 'var(--chart-cyan)', fontWeight: 800 }}>{formatVND(vendor.totalPaid)}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', borderTop: '1px dashed var(--border-color)', paddingTop: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', borderTop: '1px dashed var(--border-color)', paddingTop: '4px' }}>
                     <span style={{ color: 'var(--text-dim)' }}>Còn lại thuộc HĐ:</span>
                     <span style={{ color: remainingContract < 0 ? 'var(--danger)' : 'var(--success)', fontWeight: 800 }}>{formatVND(remainingContract)}</span>
                   </div>
                 </div>
               ) : (
-                <p style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--success)', marginBottom: '8px' }}>
+                <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)', marginBottom: '8px' }}>
                   {formatVND(vendor.totalPaid)}
                 </p>
               )}
 
               {/* Man days info if applicable */}
               {vendor.totalManDays > 0 && (
-                <p style={{ fontSize: '0.82rem', color: 'var(--chart-blue)', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <HardHat size={13} /> Tổng {vendor.totalManDays} công thợ đã ghi nhận
                 </p>
               )}
 
               {/* Expand Hint Footer */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '10px', marginTop: '10px' }}>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
                   {isSelected ? 'Đóng chi tiết' : 'Xem lịch sử giao dịch'}
                 </span>
                 {isSelected ? <ChevronUp size={16} color={typeMeta.color} /> : <ChevronDown size={16} color="var(--text-dim)" />}
@@ -310,7 +310,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
               {/* Expanded Vendor Transaction History */}
               {isSelected && (
                 <div style={{ marginTop: '14px', borderTop: '1px solid var(--border-color)', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--chart-blue)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--chart-blue)', textTransform: 'uppercase', marginBottom: '4px' }}>
                     Lịch Sử Chi Trả Cho {vendor.name}:
                   </h4>
                   {vendor.transactions.map(tx => (
@@ -333,10 +333,10 @@ export const VendorView: React.FC<VendorViewProps> = ({
                     >
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontWeight: 800, color: 'var(--success)', fontSize: '0.9rem' }}>{formatVND(tx.amount)}</span>
+                          <span style={{ fontWeight: 800, color: 'var(--success)', fontSize: '0.75rem' }}>{formatVND(tx.amount)}</span>
                           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {tx.date}</span>
                         </div>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
                           {tx.note} {tx.subCategory ? `(↳ ${tx.subCategory})` : ''}
                         </p>
                       </div>

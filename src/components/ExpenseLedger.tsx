@@ -113,13 +113,13 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
       
       {/* GROUP 1: OVERALL PROJECT BUDGET SUMMARY (BVA) */}
       <div style={{ marginBottom: '20px' }}>
-        <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Target size={14} /> Tổng Quan Ngân Sách Dự Án (BVA)
         </h4>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', background: 'rgba(99, 102, 241, 0.06)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(99, 102, 241, 0.25)' }}>
           <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid var(--primary)', background: 'var(--bg-card)' }}>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Phí Thực Tế</p>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
               {formatVND(totalSpent)}
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -129,7 +129,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
           <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid var(--chart-blue)', background: 'var(--bg-card)' }}>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Dự Toán Ngân Sách</p>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '4px' }}>
               {formatVND(totalTargetBudget)}
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -139,7 +139,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
           <div className="glass-card" style={{ padding: '16px', borderLeft: `4px solid ${totalRemainingBudget < 0 ? 'var(--danger)' : 'var(--success)'}`, background: 'var(--bg-card)' }}>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Ngân Sách Còn Lại</p>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: totalRemainingBudget < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: totalRemainingBudget < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '4px' }}>
               {formatVND(totalRemainingBudget)}
             </h3>
             <p style={{ fontSize: '0.75rem', color: totalRemainingBudget < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '2px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -160,7 +160,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
           </div>
           <div style={{ background: 'rgba(99, 102, 241, 0.18)', border: '1px solid rgba(99, 102, 241, 0.35)', padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '5px' }}><DollarSign size={13} /> Tổng Dòng Tiền Khả Dụng:</span>
-            <span style={{ fontSize: '1rem', fontWeight: 900, color: totalFundsAvailable < 0 ? 'var(--danger)' : 'var(--success)' }}>{formatVND(totalFundsAvailable)}</span>
+            <span style={{ fontSize: '0.95rem', fontWeight: 900, color: totalFundsAvailable < 0 ? 'var(--danger)' : 'var(--success)' }}>{formatVND(totalFundsAvailable)}</span>
           </div>
         </div>
       </div>
@@ -168,11 +168,11 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
       {/* GROUP 2: CATEGORY BREAKDOWN & STATUS */}
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
-          <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <HardHat size={14} /> Chi Phí Hạng Mục Chính & Trạng Thái
           </h4>
           {totalManDays > 0 && (
-            <span style={{ fontSize: '0.78rem', color: 'var(--chart-blue)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '5px' }}>
               <HardHat size={13} /> Tổng {totalManDays} công thợ ghi nhận
             </span>
           )}
@@ -183,7 +183,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
               <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Phần Thô — Vật Tư</p>
               <Boxes size={14} color="var(--cat-shell-material)" />
             </div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--cat-shell-material)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--cat-shell-material)', marginTop: '4px' }}>
               {formatVND(categoryStats['phần_thô_vật_tư'] || 0)}
             </h3>
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Sắt, cát, xi măng</p>
@@ -194,7 +194,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
               <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Phần Thô — Nhân Công</p>
               <HardHat size={14} color="var(--cat-shell-labor)" />
             </div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--cat-shell-labor)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--cat-shell-labor)', marginTop: '4px' }}>
               {formatVND(categoryStats['phần_thô_nhân_công'] || 0)}
             </h3>
             <p style={{ fontSize: '0.72rem', color: 'var(--cat-shell-labor)', fontWeight: 700, marginTop: '2px' }}>
@@ -207,7 +207,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
               <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Hoàn Thiện — Vật Tư</p>
               <Paintbrush size={14} color="var(--cat-finish-material)" />
             </div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--cat-finish-material)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--cat-finish-material)', marginTop: '4px' }}>
               {formatVND(categoryStats['hoàn_thiện_vật_tư'] || 0)}
             </h3>
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Sơn, gạch, thiết bị</p>
@@ -218,7 +218,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
               <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Nội Thất (FF&E)</p>
               <Armchair size={14} color="var(--cat-furniture)" />
             </div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--cat-furniture)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--cat-furniture)', marginTop: '4px' }}>
               {formatVND(categoryStats['nội_thất_thiết_bị'] || 0)}
             </h3>
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Tủ kệ, máy lạnh</p>
@@ -229,7 +229,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
               <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Cần Rà Soát</p>
               {pendingItems.length > 0 ? <AlertTriangle size={14} color="var(--warning)" /> : <ShieldCheck size={14} color="var(--success)" />}
             </div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: pendingItems.length > 0 ? 'var(--warning)' : 'var(--success)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: pendingItems.length > 0 ? 'var(--warning)' : 'var(--success)', marginTop: '4px' }}>
               {pendingItems.length} mục
             </h3>
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Chưa xác minh</p>
@@ -259,7 +259,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                   border: '1px solid var(--border-color)',
                   borderRadius: '10px',
                   color: 'var(--text-main)',
-                  fontSize: '0.88rem',
+                  fontSize: '0.75rem',
                   outline: 'none'
                 }}
               />
@@ -277,7 +277,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                 border: '1px solid var(--border-color)',
                 borderRadius: '10px',
                 color: 'var(--text-main)',
-                fontSize: '0.85rem',
+                fontSize: '0.75rem',
                 outline: 'none',
                 cursor: 'pointer'
               }}
@@ -340,7 +340,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                   type="date"
                   value={filters.startDate || ''}
                   onChange={e => { setFilters({ ...filters, startDate: e.target.value }); setCurrentPage(1); }}
-                  style={{ width: '100%', padding: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-main)', fontSize: '0.82rem' }}
+                  style={{ width: '100%', padding: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-main)', fontSize: '0.75rem' }}
                 />
               </div>
 
@@ -352,7 +352,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                   type="date"
                   value={filters.endDate || ''}
                   onChange={e => { setFilters({ ...filters, endDate: e.target.value }); setCurrentPage(1); }}
-                  style={{ width: '100%', padding: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-main)', fontSize: '0.82rem' }}
+                  style={{ width: '100%', padding: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-main)', fontSize: '0.75rem' }}
                 />
               </div>
 
@@ -365,7 +365,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                   placeholder="Min"
                   value={filters.minAmount || ''}
                   onChange={e => { setFilters({ ...filters, minAmount: parseFloat(e.target.value) || undefined }); setCurrentPage(1); }}
-                  style={{ width: '100%', padding: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--success)', fontSize: '0.82rem', fontWeight: 700 }}
+                  style={{ width: '100%', padding: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--success)', fontSize: '0.75rem', fontWeight: 700 }}
                 />
               </div>
 
@@ -378,7 +378,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                   placeholder="Max"
                   value={filters.maxAmount || ''}
                   onChange={e => { setFilters({ ...filters, maxAmount: parseFloat(e.target.value) || undefined }); setCurrentPage(1); }}
-                  style={{ width: '100%', padding: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--success)', fontSize: '0.82rem', fontWeight: 700 }}
+                  style={{ width: '100%', padding: '8px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--success)', fontSize: '0.75rem', fontWeight: 700 }}
                 />
               </div>
             </div>
@@ -435,7 +435,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
           flexWrap: 'wrap',
           gap: '10px'
         }}>
-          <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
             Đã chọn {selectedIds.length} mục
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -461,13 +461,13 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
       {/* Header Result Counter */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', padding: '0 4px' }}>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
           Tìm thấy <strong style={{ color: 'var(--success)' }}>{filteredExpenses.length}</strong> giao dịch
         </p>
 
         {totalPages > 1 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
               Trang {validCurrentPage} / {totalPages}
             </span>
             <div style={{ display: 'flex', gap: '4px' }}>
@@ -494,7 +494,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
       <div className="glass-panel" style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
         {paginatedExpenses.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <p style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-muted)' }}>Chưa có hóa đơn nào khớp với bộ lọc</p>
+            <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-muted)' }}>Chưa có hóa đơn nào khớp với bộ lọc</p>
             <button className="btn btn-primary" onClick={onOpenUpload} style={{ marginTop: '16px' }}>
               <Plus size={18} />
               <span>Tải Lên Hóa Đơn Đầu Tiên</span>
@@ -532,10 +532,10 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                     )}
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontWeight: 800, color: 'var(--success)', fontSize: '1.05rem' }}>{formatVND(item.amount)}</span>
+                        <span style={{ fontWeight: 800, color: 'var(--success)', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{item.date}</span>
                       </div>
-                      <p style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
+                      <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
                         {item.merchant}
                       </p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
@@ -556,7 +556,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
             {/* 2. Desktop Table View (Full Column View) */}
             <div className="desktop-only-table" style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.75rem' }}>
                 <thead>
                   <tr style={{ background: 'var(--bg-card-alt)', borderBottom: '1px solid var(--border-color)', color: 'var(--text-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.04em' }}>
                     <th style={{ padding: '14px 16px', width: '40px' }}>
@@ -661,7 +661,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                             {categoryMeta.label}
                           </span>
                           {item.subCategory && (
-                            <p style={{ fontSize: '0.78rem', color: 'var(--chart-blue)', fontWeight: 700, marginTop: '3px' }}>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 700, marginTop: '3px' }}>
                               ↳ {item.subCategory}
                             </p>
                           )}
@@ -725,7 +725,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
         {totalPages > 1 && (
           <div style={{ padding: '16px 20px', background: 'var(--bg-card-alt)', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Trang <strong style={{ color: 'var(--text-main)' }}>{validCurrentPage}</strong> / {totalPages}
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>

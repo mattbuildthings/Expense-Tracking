@@ -197,7 +197,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f8fafc' }}>
                 {getContextTitle()}
               </h2>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Chọn 1 trong 4 định dạng xuất dữ liệu bên dưới
               </p>
             </div>
@@ -210,10 +210,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         {/* Paste Instruction Alert Box */}
         {showPasteGuide && (
           <div style={{ background: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.4)', borderRadius: '14px', padding: '14px', marginBottom: '16px' }}>
-            <p style={{ fontSize: '0.88rem', fontWeight: 800, color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
               <Info size={18} /> Đã copy dữ liệu vào Clipboard!
             </p>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Trang Google Sheets vừa được mở trong tab mới. Hãy nhấp vào ô <strong>A1</strong> và nhấn <strong>Ctrl + V</strong> (hoặc <strong>Cmd + V</strong>) để dán dữ liệu vào ngay!
             </p>
           </div>
@@ -244,7 +244,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   Copy & Mở Google Sheets (Bấm Ctrl+V Để Dán)
                 </h3>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
                 Copy dữ liệu (đã định dạng phẩy phân cách ngàn) & mở Google Sheets. Bấm <strong>Ctrl+V</strong> để dán!
               </p>
             </div>
@@ -271,11 +271,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FileText size={20} color="var(--text-muted)" />
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)' }}>
                   Tải File CSV Cho Google Drive
                 </h3>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
                 Tải file `.csv` có định dạng dấu phẩy phân cách ngàn để kéo thả vào Google Drive
               </p>
             </div>
@@ -302,11 +302,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FileSpreadsheet size={20} color="var(--success)" />
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#34d399' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>
                   Tải File Microsoft Excel (.xlsx)
                 </h3>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
                 Xuất file Excel chuẩn hóa có tiêu đề, màu sắc & độ rộng cột tự động
               </p>
             </div>
@@ -333,11 +333,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Printer size={20} color="var(--warning)" />
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fbbf24' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#fbbf24' }}>
                   In Báo Cáo / Xuất File PDF
                 </h3>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
                 Mở giao diện in ẩn các nút điều khiển, sẵn sàng lưu thành file PDF hoặc in giấy
               </p>
             </div>

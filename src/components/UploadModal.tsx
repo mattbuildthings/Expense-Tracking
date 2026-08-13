@@ -191,8 +191,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
               <Sparkles size={24} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc' }}>Tải Ảnh / Screenshot Hóa Đơn Từ Zalo</h2>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>AI Vision tự động trích xuất số tiền thực chi, đơn giá, số lượng & nhà cung cấp</p>
+              <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>Tải Ảnh / Screenshot Hóa Đơn Từ Zalo</h2>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>AI Vision tự động trích xuất số tiền thực chi, đơn giá, số lượng & nhà cung cấp</p>
             </div>
           </div>
           <button className="btn btn-secondary btn-sm" onClick={onClose} style={{ borderRadius: '50%', padding: '8px' }}>
@@ -202,7 +202,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
 
         {/* Error Alert Box */}
         {errorMessage && (
-          <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <AlertTriangle size={18} />
             <span>{errorMessage}</span>
           </div>
@@ -239,17 +239,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
               <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
                 <UploadCloud size={30} color="#60a5fa" />
               </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f8fafc' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
                 Kéo thả ảnh hóa đơn hoặc Click để chọn file
               </h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                 Hỗ trợ ảnh chụp màn hình Zalo, Vietcombank, biên nhận viết tay (PNG, JPG, WEBP)
               </p>
             </div>
 
             {/* Test Sample Invoices */}
             <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '10px' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '10px' }}>
                 Hoặc thử nghiệm nhanh với 3 ảnh mẫu công trình:
               </p>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -274,10 +274,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
         {isProcessing && (
           <div style={{ textAlign: 'center', padding: '50px 20px' }}>
             <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '3px solid rgba(59, 130, 246, 0.3)', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc', marginTop: '16px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc', marginTop: '16px' }}>
               AI Vision đang đọc & trích xuất hóa đơn...
             </h3>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Đang nhận diện số tiền thực chi, đơn giá, số lượng và nhà cung cấp
             </p>
           </div>
@@ -287,7 +287,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
         {extractedItems.length > 0 && !isProcessing && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Check size={18} /> AI Đã Đọc Thành Công ({extractedItems.length} Giao Dịch)
               </h3>
               <button className="btn btn-secondary btn-sm" onClick={() => setExtractedItems([])}>
@@ -311,7 +311,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                           type="text"
                           value={item.merchant || ''}
                           onChange={e => handleItemChange(idx, 'merchant', e.target.value)}
-                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.88rem', fontWeight: 700 }}
+                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
                         />
                       </div>
                       <div>
@@ -335,7 +335,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                         <select
                           value={item.category}
                           onChange={e => handleItemChange(idx, 'category', e.target.value)}
-                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.82rem', fontWeight: 700 }}
+                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
                         >
                           {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => (
                             <option key={catKey} value={catKey} style={{ background: '#1e293b', color: '#fff' }}>
@@ -352,7 +352,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                           type="text"
                           value={item.note || ''}
                           onChange={e => handleItemChange(idx, 'note', e.target.value)}
-                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.82rem' }}
+                          style={{ width: '100%', padding: '6px 10px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
                         />
                       </div>
                     </div>

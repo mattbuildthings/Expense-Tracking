@@ -116,10 +116,10 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
               <FilePlus size={22} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc' }}>
+              <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
                 Tạo Hóa Đơn Thủ Công
               </h2>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Thêm giao dịch khi không có ảnh hóa đơn đính kèm
               </p>
             </div>
@@ -133,7 +133,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
           
           {/* Total Paid Amount */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+            <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
               <DollarSign size={14} />
               <span>SỐ TIỀN THANH TOÁN (VND) — THỰC CHI *</span>
             </label>
@@ -150,7 +150,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
                 border: '2px solid rgba(52, 211, 153, 0.4)',
                 borderRadius: '12px',
                 color: '#34d399',
-                fontSize: '1.25rem',
+                fontSize: '0.95rem',
                 fontWeight: 800,
                 outline: 'none'
               }}
@@ -169,14 +169,14 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
                   placeholder="VD: 50"
                   value={quantity !== undefined ? quantity : ''}
                   onChange={e => handleQuantityChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                  style={{ width: '60%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.88rem', fontWeight: 700 }}
+                  style={{ width: '60%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
                 />
                 <input
                   type="text"
                   placeholder="cây, m3..."
                   value={unit}
                   onChange={e => setUnit(e.target.value)}
-                  style={{ width: '40%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem' }}
+                  style={{ width: '40%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
                 />
               </div>
             </div>
@@ -190,7 +190,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
                 placeholder="VD: 370,000"
                 value={unitCostStr}
                 onChange={e => handleUnitCostChange(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fbbf24', fontSize: '0.88rem', fontWeight: 700 }}
+                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fbbf24', fontSize: '0.75rem', fontWeight: 700 }}
               />
             </div>
           </div>
@@ -204,7 +204,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
             <select
               value={category}
               onChange={e => setCategory(e.target.value as ExpenseCategory)}
-              style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.88rem', fontWeight: 700 }}
+              style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
             >
               {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => (
                 <option key={catKey} value={catKey}>
@@ -226,7 +226,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
               value={subCategory}
               list="subcategory-suggestions-manual"
               onChange={e => setSubCategory(e.target.value)}
-              style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700 }}
+              style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#60a5fa', fontSize: '0.75rem', fontWeight: 700 }}
             />
             <datalist id="subcategory-suggestions-manual">
               {existingSubCategories.map(s => (
@@ -247,7 +247,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
                 required
                 value={date}
                 onChange={e => setDate(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem' }}
+                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
               />
             </div>
 
@@ -263,7 +263,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
                 value={merchant}
                 list="vendor-suggestions-manual"
                 onChange={e => setMerchant(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem', fontWeight: 700 }}
+                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
               />
               <datalist id="vendor-suggestions-manual">
                 {existingVendors.map(v => (
@@ -283,7 +283,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
               <select
                 value={paymentMethod}
                 onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
-                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem' }}
+                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
               >
                 <option value="chuyển_khoản">Chuyển khoản</option>
                 <option value="tiền_mặt">Tiền mặt</option>
@@ -297,7 +297,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value as VerificationStatus)}
-                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: status === 'đã_xác_minh' ? '#34d399' : '#fbbf24', fontSize: '0.85rem', fontWeight: 800 }}
+                style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: status === 'đã_xác_minh' ? '#34d399' : '#fbbf24', fontSize: '0.75rem', fontWeight: 800 }}
               >
                 <option value="cần_kiểm_tra">Cần kiểm tra lại</option>
                 <option value="đã_xác_minh">Đã xác minh</option>
@@ -315,7 +315,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
               placeholder="Ghi chú thêm về nội dung thanh toán..."
               value={note}
               onChange={e => setNote(e.target.value)}
-              style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem', resize: 'vertical' }}
+              style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', resize: 'vertical' }}
             />
           </div>
 

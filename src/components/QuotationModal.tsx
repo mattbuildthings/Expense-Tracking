@@ -79,10 +79,10 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
               <FileText size={22} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc' }}>
+              <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
                 Nhập Báo Giá / Hợp Đồng Nhà Cung Cấp
               </h2>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Tạo hạn mức dự toán chi tiết & liên kết số nợ với Nhà cung cấp
               </p>
             </div>
@@ -108,7 +108,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
                 value={vendorName}
                 list="vendor-quote-suggestions"
                 onChange={e => setVendorName(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.88rem', fontWeight: 700 }}
+                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
               />
               <datalist id="vendor-quote-suggestions">
                 {existingVendors.map(v => (
@@ -126,7 +126,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
                 placeholder="VD: Báo giá thép sàn móng..."
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#60a5fa', fontSize: '0.88rem', fontWeight: 700 }}
+                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#60a5fa', fontSize: '0.75rem', fontWeight: 700 }}
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value as ExpenseCategory)}
-                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.88rem', fontWeight: 700 }}
+                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
               >
                 {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => (
                   <option key={catKey} value={catKey}>
@@ -162,7 +162,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
                 value={subCategory}
                 list="subcat-quote-suggestions"
                 onChange={e => setSubCategory(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.88rem' }}
+                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.75rem' }}
               />
               <datalist id="subcat-quote-suggestions">
                 {existingSubCategories.map(s => (
@@ -185,7 +185,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
                 placeholder="VD: 320,000,000"
                 value={amountStr}
                 onChange={e => setAmountStr(formatFormattedNumber(e.target.value))}
-                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#34d399', fontSize: '1.1rem', fontWeight: 800 }}
+                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#34d399', fontSize: '0.95rem', fontWeight: 800 }}
               />
             </div>
 
@@ -196,7 +196,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value as QuotationStatus)}
-                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: status === 'signed' ? '#34d399' : '#fbbf24', fontSize: '0.88rem', fontWeight: 800 }}
+                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: status === 'signed' ? '#34d399' : '#fbbf24', fontSize: '0.75rem', fontWeight: 800 }}
               >
                 <option value="signed">Đã Ký Hợp Đồng</option>
                 <option value="draft">Báo Giá Dự Thảo</option>
@@ -215,7 +215,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
                 type="date"
                 value={date}
                 onChange={e => setDate(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.85rem' }}
+                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.75rem' }}
               />
             </div>
 
@@ -228,7 +228,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
                 placeholder="VD: Bao gồm vận chuyển tận bãi..."
                 value={note}
                 onChange={e => setNote(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.85rem' }}
+                style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.75rem' }}
               />
             </div>
           </div>

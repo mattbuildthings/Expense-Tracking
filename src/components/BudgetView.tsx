@@ -90,17 +90,17 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span className="badge" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.85rem' }}>
+              <span className="badge" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.75rem' }}>
                 <Target size={14} /> BVA Cost Control
               </span>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Dự án {projectName}
               </span>
             </div>
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
+            <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
               Dự Toán Ngân Sách Hạng Mục (Budget vs. Actual)
             </h2>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Quản lý hạn mức ngân sách dự toán, theo dõi chênh lệch & kiểm soát vượt trần chi phí 9 hạng mục
             </p>
           </div>
@@ -144,7 +144,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
         <div className="glass-card" style={{ padding: '20px 24px', marginBottom: '24px', background: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.5)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
             <AlertCircle size={24} color="var(--danger)" />
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--danger)' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--danger)' }}>
               Cảnh Báo: Có {overBudgetCategories.length} Hạng Mục Chi Vượt Ngân Sách Dự Toán!
             </h3>
           </div>
@@ -154,10 +154,10 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
               const overrun = c.totalAmount - target;
               return (
                 <div key={c.category} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-card-alt)', padding: '10px 14px', borderRadius: '10px' }}>
-                  <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
                     {c.label}
                   </span>
-                  <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--danger)' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--danger)' }}>
                     Thực chi: {formatVND(c.totalAmount)} / Dự toán: {formatVND(target)} (Vượt {formatVND(overrun)})
                   </span>
                 </div>
@@ -171,26 +171,26 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--chart-blue)' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Ngân Sách Dự Toán</p>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '6px' }}>
             {formatVND(totalTargetBudget)}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Tất cả 9 hạng mục công trình</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Tất cả 9 hạng mục công trình</p>
         </div>
 
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--chart-cyan)' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Thực Chi Đến Nay</p>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--chart-cyan)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-cyan)', marginTop: '6px' }}>
             {formatVND(totalActualSpent)}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Đã dùng {totalPercentageUsed}% tổng dự toán</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Đã dùng {totalPercentageUsed}% tổng dự toán</p>
         </div>
 
         <div className="glass-card" style={{ padding: '20px', borderLeft: `4px solid ${totalRemaining < 0 ? 'var(--danger)' : 'var(--success)'}` }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Ngân Sách Còn Lại</p>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: totalRemaining < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: totalRemaining < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '6px' }}>
             {formatVND(totalRemaining)}
           </h3>
-          <p style={{ fontSize: '0.78rem', color: totalRemaining < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <p style={{ fontSize: '0.75rem', color: totalRemaining < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
             {totalRemaining < 0 ? <><AlertCircle size={12} /> Vượt Tổng Dự Toán</> : <><Check size={12} /> Ngân Sách An Toàn</>}
           </p>
         </div>
@@ -199,11 +199,11 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
       {/* 9 Category Budget vs. Actual Cards List */}
       <div className="glass-card" style={{ padding: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)' }}>
             Chi Tiết Hạn Mức & Biến Động Ngân Sách 9 Hạng Mục
           </h3>
           {isEditing && (
-            <span style={{ fontSize: '0.82rem', color: 'var(--warning)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--warning)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
               <Edit2 size={13} /> Bạn đang ở chế độ chỉnh sửa hạn mức dự toán
             </span>
           )}
@@ -247,7 +247,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: accent, flexShrink: 0 }} />
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-main)' }}>{meta.label}</span>
+                        <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-main)' }}>{meta.label}</span>
                         {catQuotes.length > 0 && (
                           <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', fontSize: '0.72rem', fontWeight: 700 }}>
                             <FileText size={11} /> {catQuotes.length} Hợp đồng ({formatVND(signedQuotesTotal)})
@@ -259,7 +259,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                           </span>
                         )}
                       </div>
-                      <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
                         {meta.englishLabel} • {catSummary.count} hóa đơn
                       </p>
                     </div>
@@ -291,7 +291,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                           }}
                         />
                       ) : (
-                        <p style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--chart-blue)' }}>
+                        <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-blue)' }}>
                           {formatVND(targetB)}
                         </p>
                       )}
@@ -300,7 +300,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     {/* Actual Spent */}
                     <div style={{ textAlign: 'right' }}>
                       <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Thực Chi</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--chart-cyan)' }}>
+                      <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-cyan)' }}>
                         {formatVND(actual)}
                       </p>
                     </div>
@@ -308,7 +308,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     {/* Remaining */}
                     <div style={{ textAlign: 'right', minWidth: '120px' }}>
                       <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Còn Lại</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 800, color: remaining < 0 ? 'var(--danger)' : 'var(--success)' }}>
+                      <p style={{ fontSize: '0.95rem', fontWeight: 800, color: remaining < 0 ? 'var(--danger)' : 'var(--success)' }}>
                         {formatVND(remaining)}
                       </p>
                     </div>
@@ -349,7 +349,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                       </div>
 
                       {catQuotes.length === 0 ? (
-                        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic', background: 'var(--bg-card-alt)', padding: '12px', borderRadius: '8px' }}>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic', background: 'var(--bg-card-alt)', padding: '12px', borderRadius: '8px' }}>
                           Chưa có báo giá/hợp đồng nào được nhập cho hạng mục này. Hạn mức đang tính theo số tiền thủ công.
                         </p>
                       ) : (
@@ -383,7 +383,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {q.subCategory}</span>
                                     )}
                                   </div>
-                                  <p style={{ fontSize: '0.82rem', color: '#818cf8', fontWeight: 700, marginTop: '2px' }}>
+                                  <p style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 700, marginTop: '2px' }}>
                                     {q.title} {q.note ? `— ${q.note}` : ''}
                                   </p>
                                 </div>
@@ -425,7 +425,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                         Danh Sách Hóa Đơn Đã Ghi Nhận ({categoryTransactions.length})
                       </h4>
                       {categoryTransactions.length === 0 ? (
-                        <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
                           Chưa có hóa đơn nào thuộc hạng mục này.
                         </p>
                       ) : (
@@ -449,17 +449,17 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                   <span style={{ fontWeight: 800, color: 'var(--success)', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
                                   {item.quantity && (
-                                    <span style={{ fontSize: '0.78rem', background: 'var(--bg-card-alt)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-main)' }}>
+                                    <span style={{ fontSize: '0.75rem', background: 'var(--bg-card-alt)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-main)' }}>
                                       SL: {item.quantity} {item.unit || ''}
                                     </span>
                                   )}
-                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>• {item.date}</span>
+                                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {item.date}</span>
                                 </div>
-                                <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
+                                <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
                                   {item.merchant} {item.subCategory ? `(↳ ${item.subCategory})` : ''}
                                 </p>
                               </div>
-                              <span style={{ fontSize: '0.78rem', color: 'var(--chart-blue)', fontWeight: 700 }}>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 700 }}>
                                 Xem chi tiết ➔
                               </span>
                             </div>

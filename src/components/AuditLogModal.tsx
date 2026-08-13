@@ -36,10 +36,10 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
               <History size={22} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc' }}>
+              <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
                 Lịch Sử Thao Tác & Thùng Rác Hóa Đơn
               </h2>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Truy xuất lịch sử thêm/sửa/xóa và khôi phục các chi phí đã bị xóa
               </p>
             </div>
@@ -76,14 +76,14 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
             {deletedExpenses.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '50px 20px', color: 'var(--text-dim)' }}>
                 <ShieldCheck size={48} color="#34d399" style={{ margin: '0 auto 12px' }} />
-                <p style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>Thùng rác trống!</p>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                <p style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>Thùng rác trống!</p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Không có hóa đơn nào bị xóa gần đây. Tất cả dữ liệu chi phí của bạn đều an toàn.
                 </p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Các mục dưới đây đã bị xóa khỏi sổ chính. Bạn có thể khôi phục 1-click hoặc xóa vĩnh viễn:
                 </p>
                 {deletedExpenses.map(item => (
@@ -111,16 +111,16 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
                       )}
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontWeight: 800, color: '#f87171', fontSize: '1rem' }}>{formatVND(item.amount)}</span>
-                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>• {item.date}</span>
+                          <span style={{ fontWeight: 800, color: '#f87171', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {item.date}</span>
                           <span className="badge" style={{ background: CATEGORY_METADATA[item.category]?.bg, color: CATEGORY_METADATA[item.category]?.color, fontSize: '0.72rem' }}>
                             {CATEGORY_METADATA[item.category]?.label}
                           </span>
                         </div>
-                        <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>
+                        <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>
                           {item.merchant} ({item.subCategory || 'Vật tư'})
                         </p>
-                        <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>Ghi chú: {item.note}</p>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Ghi chú: {item.note}</p>
                       </div>
                     </div>
 
@@ -159,7 +159,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
         {activeTab === 'audit_trail' && (
           <div>
             {auditLogs.length === 0 ? (
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', textAlign: 'center', padding: '40px' }}>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textAlign: 'center', padding: '40px' }}>
                 Chưa có nhật ký thao tác nào được ghi nhận.
               </p>
             ) : (
@@ -196,7 +196,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
                           <span className="badge" style={{ background: badgeBg, color: badgeColor, fontSize: '0.72rem', fontWeight: 800 }}>
                             {log.action}
                           </span>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc' }}>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f8fafc' }}>
                             {log.description}
                           </span>
                         </div>

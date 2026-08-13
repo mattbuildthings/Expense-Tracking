@@ -181,6 +181,18 @@ html[data-theme="light"] .glass-card:hover {
   color: var(--text-dim);
 }
 
+/* Common badge styling */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
 /* Custom Buttons */
 .btn {
   display: inline-flex;
