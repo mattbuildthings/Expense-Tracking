@@ -92,10 +92,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     if (pinEnabled && pinCode.trim()) {
       await savePinCode(pinCode.trim());
     }
-
-    // Always keep client-side storage free of raw API keys
-    localStorage.removeItem('gemini_api_key');
-
+    
     // Save Supabase config
     setSupabaseConfig(supabaseUrl, supabaseAnonKey);
     resetSupabaseInstance();

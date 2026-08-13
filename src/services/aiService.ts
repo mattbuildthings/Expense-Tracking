@@ -104,18 +104,22 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
   const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-  // Try supported vision models in order of capability
-  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+  // Primary & fallback vision models in Google AI Studio
+  const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
 
   let lastError = '';
 
   for (const model of models) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     try {
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             contents: [
               {
@@ -133,10 +137,16 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
           })
         }
       );
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errJson = await response.json().catch(() => ({}));
         lastError = errJson?.error?.message || `HTTP ${response.status}`;
+        
+        // Stop immediately if key is invalid or permission denied
+        if (response.status === 400 || response.status === 401 || response.status === 403) {
+          throw new Error(`Google Gemini API Key (${response.status}): ${lastError}`);
+        }
         continue;
       }
 
@@ -149,6 +159,9 @@ async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Prom
         return formatParsedResult(parsed);
       }
     } catch (err: any) {
+      if (err.message && err.message.includes('Google Gemini API Key')) {
+        throw err;
+      }
       lastError = err.message || 'Fetch error';
     }
   }

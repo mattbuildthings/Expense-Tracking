@@ -21,7 +21,14 @@ export default async function handler(req: any, res: any) {
   const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
   const { imageBase64, userApiKey } = body || {};
 
-  const apiKey = userApiKey || process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+  const apiKey =
+    userApiKey ||
+    process.env.GEMINI_API_KEY ||
+    process.env.VITE_GEMINI_API_KEY ||
+    process.env.GEMINI_KEY ||
+    process.env.gemini_api_key ||
+    process.env.GEMINI_PRO_KEY ||
+    process.env.GOOGLE_API_KEY;
 
   if (!apiKey || !apiKey.trim()) {
     return res.status(400).json({
@@ -75,16 +82,20 @@ QUY TẮC TRÍCH XUẤT BẮT BUỘC:
 5. "note": Liệt kê tên các mặt hàng trong bảng (VD: Xi Măng Holcim, Gạch Ống, D8 142).
 `;
 
-    const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
     let lastError = '';
 
     for (const model of models) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
       try {
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal,
             body: JSON.stringify({
               contents: [
                 {
@@ -102,10 +113,21 @@ QUY TẮC TRÍCH XUẤT BẮT BUỘC:
             })
           }
         );
+        clearTimeout(timeoutId);
 
         if (!geminiRes.ok) {
           const errText = await geminiRes.text();
-          lastError = `Gemini API (${model}) Error ${geminiRes.status}: ${errText}`;
+          let errMessage = errText;
+          try {
+            const parsedErr = JSON.parse(errText);
+            errMessage = parsedErr?.error?.message || errText;
+          } catch (_) {}
+
+          lastError = `Gemini API (${model}) ${geminiRes.status}: ${errMessage}`;
+
+          if (geminiRes.status === 400 || geminiRes.status === 401 || geminiRes.status === 403) {
+            return res.status(geminiRes.status).json({ error: `Google Gemini API Key: ${errMessage}` });
+          }
           continue;
         }
 
