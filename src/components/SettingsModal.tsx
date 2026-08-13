@@ -190,17 +190,17 @@ alter table public.audit_logs disable row level security;
 
         {/* Saved Toast Alert */}
         {savedSuccess && (
-          <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#34d399', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', fontWeight: 700, textAlign: 'center' }}>
-            ✅ Đã lưu cấu hình thành công!
+          <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#34d399', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', fontWeight: 700, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <Check size={16} /> Đã lưu cấu hình thành công!
           </div>
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
+
           {/* Project Name Input */}
           <div>
             <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', display: 'block', marginBottom: '6px' }}>
-              🏗️ Tên Dự Án / Công Trình
+              Tên Dự Án / Công Trình
             </label>
             <input
               type="text"
@@ -222,7 +222,7 @@ alter table public.audit_logs disable row level security;
           {/* Initial Funds Setup (Quỹ Dòng Tiền Ban Đầu) */}
           <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '18px', padding: '20px' }}>
             <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#34d399', marginBottom: '12px' }}>
-              💵 Nguồn Vốn / Dòng Tiền Ban Đầu (Cash Flow Baseline)
+              Nguồn Vốn / Dòng Tiền Ban Đầu (Cash Flow Baseline)
             </h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '14px' }}>
               Nhập số tiền ban đầu trong Ngân hàng và Tiền mặt. Hệ thống sẽ tự động trừ dần khi bạn ghi chép hóa đơn mà KHÔNG CẦN nhập thêm thao tác kế toán nào!
@@ -230,7 +230,7 @@ alter table public.audit_logs disable row level security;
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#60a5fa', display: 'block', marginBottom: '4px' }}>
-                  🏦 Số Dư Ngân Hàng Ban Đầu (đ)
+                  Số Dư Ngân Hàng Ban Đầu (đ)
                 </label>
                 <input
                   type="text"
@@ -243,7 +243,7 @@ alter table public.audit_logs disable row level security;
 
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399', display: 'block', marginBottom: '4px' }}>
-                  💵 Số Dư Ví Tiền Mặt Ban Đầu (đ)
+                  Số Dư Ví Tiền Mặt Ban Đầu (đ)
                 </label>
                 <input
                   type="text"
@@ -262,7 +262,7 @@ alter table public.audit_logs disable row level security;
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Target size={20} color="#60a5fa" />
                 <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#60a5fa' }}>
-                  🎯 Hạn Mức Ngân Sách Dự Toán (Budget vs. Actual - BVA)
+                  Hạn Mức Ngân Sách Dự Toán (Budget vs. Actual - BVA)
                 </h3>
               </div>
               <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#34d399' }}>
@@ -315,11 +315,11 @@ alter table public.audit_logs disable row level security;
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Key size={20} color="#60a5fa" />
                 <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#60a5fa' }}>
-                  🤖 Chìa Khóa AI Đọc Hóa Đơn (Gemini Vision API Key)
+                  Chìa Khóa AI Đọc Hóa Đơn (Gemini Vision API Key)
                 </h3>
               </div>
               <span className="badge" style={{ background: geminiApiKey ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)', color: geminiApiKey ? '#34d399' : '#fbbf24' }}>
-                {geminiApiKey ? '🟢 Đã Kích Hoạt Key' : '🟡 Chưa Điền Key'}
+                {geminiApiKey ? 'Đã Kích Hoạt Key' : 'Chưa Điền Key'}
               </span>
             </div>
 
@@ -342,11 +342,11 @@ alter table public.audit_logs disable row level security;
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Database size={20} color="#34d399" />
                 <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#34d399' }}>
-                  🌐 Đồng Bộ Đám Mây Supabase (Điện Thoại ↔ Máy Tính)
+                  Đồng Bộ Đám Mây Supabase (Điện Thoại ↔ Máy Tính)
                 </h3>
               </div>
               <span className="badge" style={{ background: isSupabaseConnected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', color: isSupabaseConnected ? '#34d399' : '#f87171' }}>
-                {isSupabaseConnected ? '🟢 Đã Kết Nối' : '🔴 Chưa Điền Key'}
+                {isSupabaseConnected ? 'Đã Kết Nối' : 'Chưa Điền Key'}
               </span>
             </div>
 
@@ -385,7 +385,7 @@ alter table public.audit_logs disable row level security;
               <div style={{ marginTop: '6px' }}>
                 <button className="btn btn-secondary btn-sm" onClick={handleCopySql} style={{ width: '100%', justifyContent: 'center' }}>
                   {copiedSql ? <Check size={16} color="#34d399" /> : <Copy size={16} />}
-                  <span>{copiedSql ? 'Đã Copy SQL Setup Script!' : '📋 Copy SQL Script Tạo Bảng Cho Supabase SQL Editor'}</span>
+                  <span>{copiedSql ? 'Đã Copy SQL Setup Script!' : 'Copy SQL Script Tạo Bảng Cho Supabase SQL Editor'}</span>
                 </button>
               </div>
             </div>
@@ -435,7 +435,7 @@ alter table public.audit_logs disable row level security;
                   }}
                 />
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                  🔒 Mã PIN sẽ được mã hóa bằng chuỗi SHA-256 trước khi lưu. Không lưu dạng văn bản thuần.
+                  Mã PIN sẽ được mã hóa bằng chuỗi SHA-256 trước khi lưu. Không lưu dạng văn bản thuần.
                 </p>
               </div>
             )}
@@ -446,7 +446,7 @@ alter table public.audit_logs disable row level security;
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <Key size={18} color="#60a5fa" />
               <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#60a5fa' }}>
-                🔒 Bảo Mật Chìa Khóa Gemini AI API (Serverless Proxy)
+                Bảo Mật Chìa Khóa Gemini AI API (Serverless Proxy)
               </h3>
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>

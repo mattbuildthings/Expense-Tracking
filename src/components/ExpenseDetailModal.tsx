@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2, DollarSign, Calendar, Tag, Store, CreditCard, Layers, ExternalLink } from 'lucide-react';
+import { X, Save, Trash2, DollarSign, Calendar, Tag, Store, CreditCard, Layers, ExternalLink, Sparkles } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, ExpenseCategory, PaymentMethod, VerificationStatus } from '../types/expense';
 import { formatVND } from '../services/storageService';
@@ -188,7 +188,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               {item.aiReasoning && (
                 <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '14px', padding: '14px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#60a5fa' }}>🤖 ĐỘ TIN CẬY AI VISION</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '5px' }}><Sparkles size={12} /> ĐỘ TIN CẬY AI VISION</span>
                     <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>{item.confidenceScore}% Match</span>
                   </div>
                   <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
@@ -253,8 +253,8 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
 
                 {/* Unit Cost */}
                 <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fbbf24', display: 'block', marginBottom: '4px' }}>
-                    💰 Đơn Giá (Unit Cost)
+                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                    <DollarSign size={12} /> Đơn Giá (Unit Cost)
                   </label>
                   <input
                     type="text"
@@ -362,8 +362,8 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                     onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
                     style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem' }}
                   >
-                    <option value="chuyển_khoản">🏦 Chuyển khoản</option>
-                    <option value="tiền_mặt">💵 Tiền mặt</option>
+                    <option value="chuyển_khoản">Chuyển khoản</option>
+                    <option value="tiền_mặt">Tiền mặt</option>
                   </select>
                 </div>
 
@@ -376,8 +376,8 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                     onChange={e => setStatus(e.target.value as VerificationStatus)}
                     style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: status === 'đã_xác_minh' ? '#34d399' : '#fbbf24', fontSize: '0.85rem', fontWeight: 800 }}
                   >
-                    <option value="đã_xác_minh">🟢 Đã xác minh</option>
-                    <option value="cần_kiểm_tra">🟡 Cần kiểm tra lại</option>
+                    <option value="đã_xác_minh">Đã xác minh</option>
+                    <option value="cần_kiểm_tra">Cần kiểm tra lại</option>
                   </select>
                 </div>
               </div>

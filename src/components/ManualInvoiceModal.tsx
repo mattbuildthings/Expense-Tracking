@@ -182,8 +182,8 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
             </div>
 
             <div>
-              <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fbbf24', display: 'block', marginBottom: '4px' }}>
-                💰 Đơn Giá (Unit Cost)
+              <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                <DollarSign size={12} /> Đơn Giá (Unit Cost)
               </label>
               <input
                 type="text"
@@ -285,8 +285,8 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
                 onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
                 style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.85rem' }}
               >
-                <option value="chuyển_khoản">🏦 Chuyển khoản</option>
-                <option value="tiền_mặt">💵 Tiền mặt</option>
+                <option value="chuyển_khoản">Chuyển khoản</option>
+                <option value="tiền_mặt">Tiền mặt</option>
               </select>
             </div>
 
@@ -299,8 +299,8 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
                 onChange={e => setStatus(e.target.value as VerificationStatus)}
                 style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: status === 'đã_xác_minh' ? '#34d399' : '#fbbf24', fontSize: '0.85rem', fontWeight: 800 }}
               >
-                <option value="cần_kiểm_tra">🟡 Cần kiểm tra lại</option>
-                <option value="đã_xác_minh">🟢 Đã xác minh</option>
+                <option value="cần_kiểm_tra">Cần kiểm tra lại</option>
+                <option value="đã_xác_minh">Đã xác minh</option>
               </select>
             </div>
           </div>

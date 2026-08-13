@@ -107,7 +107,7 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
                 <Wallet size={24} color="#818cf8" />
               </div>
               <div>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc' }}>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)' }}>
                   Quản Lý Dòng Tiền & Tiền Mặt Công Trình
                 </h2>
                 <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -122,7 +122,7 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
             <button
               className="btn btn-secondary"
               onClick={() => onExportExcel ? onExportExcel() : exportCashFlowToExcel(allExpenses, projectName)}
-              style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
+              style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--success)', border: '1px solid rgba(16, 185, 129, 0.3)' }}
               title="Xuất tổng quan số dư dòng tiền & nhật ký nạp rút vốn"
             >
               <FileSpreadsheet size={18} />
@@ -135,7 +135,7 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
               style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <ArrowUpRight size={18} />
-              <span>+ Nạp Vốn Mới</span>
+              <span>Nạp Vốn Mới</span>
             </button>
 
             <button
@@ -143,8 +143,8 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
               onClick={() => { setTxType('withdrawal'); setIsModalOpen(true); }}
               style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              <ArrowDownLeft size={18} color="#60a5fa" />
-              <span>🔄 Rút Tiền Mặt</span>
+              <ArrowDownLeft size={18} color="var(--chart-blue)" />
+              <span>Rút Tiền Mặt</span>
             </button>
           </div>
         </div>
@@ -154,12 +154,12 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         
         {/* Card 1: Bank Balance */}
-        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid #3b82f6' }}>
+        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--chart-blue)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#93c5fd', textTransform: 'uppercase' }}>🏦 Số Dư Ngân Hàng</p>
-            <Landmark size={20} color="#3b82f6" />
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--chart-blue)', textTransform: 'uppercase' }}>Số Dư Ngân Hàng</p>
+            <Landmark size={20} color="var(--chart-blue)" />
           </div>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: currentBankBalance < 0 ? '#f87171' : '#ffffff', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: currentBankBalance < 0 ? 'var(--danger)' : 'var(--text-main)', marginTop: '6px' }}>
             {formatVND(currentBankBalance)}
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -168,12 +168,12 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
         </div>
 
         {/* Card 2: Cash on Hand Balance */}
-        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid #10b981' }}>
+        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--success)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6ee7b7', textTransform: 'uppercase' }}>💵 Ví Tiền Mặt Site</p>
-            <Wallet size={20} color="#10b981" />
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--success)', textTransform: 'uppercase' }}>Ví Tiền Mặt Site</p>
+            <Wallet size={20} color="var(--success)" />
           </div>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: currentCashBalance < 0 ? '#f87171' : '#ffffff', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: currentCashBalance < 0 ? 'var(--danger)' : 'var(--text-main)', marginTop: '6px' }}>
             {formatVND(currentCashBalance)}
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -184,24 +184,24 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
         {/* Card 3: Total Liquid Funds */}
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid #6366f1', background: 'rgba(99, 102, 241, 0.08)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#c7d2fe', textTransform: 'uppercase' }}>💰 Tổng Tiền Khả Dụng</p>
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#818cf8', textTransform: 'uppercase' }}>Tổng Tiền Khả Dụng</p>
             <DollarSign size={20} color="#818cf8" />
           </div>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: totalLiquidFunds < 0 ? '#f87171' : '#34d399', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: totalLiquidFunds < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '6px' }}>
             {formatVND(totalLiquidFunds)}
           </h3>
-          <p style={{ fontSize: '0.75rem', color: totalLiquidFunds < 0 ? '#f87171' : '#34d399', marginTop: '4px', fontWeight: 700 }}>
-            {totalLiquidFunds < 0 ? '⚠️ Thiếu hụt dòng tiền' : '🟢 Khả năng thanh toán tốt'}
+          <p style={{ fontSize: '0.75rem', color: totalLiquidFunds < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {totalLiquidFunds < 0 ? <><AlertTriangle size={12} /> Thiếu hụt dòng tiền</> : <>Khả năng thanh toán tốt</>}
           </p>
         </div>
 
         {/* Card 4: Burn Rate & Weeks Remaining */}
-        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid #f59e0b' }}>
+        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--warning)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fde68a', textTransform: 'uppercase' }}>⏳ Dự Báo Duy Trì Vốn</p>
-            <Clock size={20} color="#f59e0b" />
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--warning)', textTransform: 'uppercase' }}>Dự Báo Duy Trì Vốn</p>
+            <Clock size={20} color="var(--warning)" />
           </div>
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#fbbf24', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--warning)', marginTop: '6px' }}>
             ~{weeksRemaining === 999 ? '∞' : weeksRemaining} Tuần
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -216,43 +216,43 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
         
         {/* Outflow Breakdown by Payment Method */}
         <div className="glass-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#f8fafc', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <TrendingDown size={18} color="#60a5fa" />
+          <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <TrendingDown size={18} color="var(--chart-blue)" />
             Tỷ Lệ Chi Trả Ngân Hàng vs Tiền Mặt
           </h3>
 
           <div style={{ marginBottom: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '6px', fontWeight: 700 }}>
-              <span style={{ color: '#60a5fa' }}>🏦 Chuyển Khoản ({totalSpent > 0 ? Math.round((bankSpent / totalSpent) * 100) : 0}%)</span>
+              <span style={{ color: 'var(--chart-blue)', display: 'flex', alignItems: 'center', gap: '5px' }}><Landmark size={13} /> Chuyển Khoản ({totalSpent > 0 ? Math.round((bankSpent / totalSpent) * 100) : 0}%)</span>
               <span>{formatVND(bankSpent)}</span>
             </div>
-            <div style={{ height: '10px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '6px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${totalSpent > 0 ? (bankSpent / totalSpent) * 100 : 0}%`, background: '#3b82f6' }} />
+            <div style={{ height: '10px', background: 'rgba(127, 127, 127, 0.15)', borderRadius: '6px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${totalSpent > 0 ? (bankSpent / totalSpent) * 100 : 0}%`, background: 'var(--chart-blue)' }} />
             </div>
           </div>
 
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '6px', fontWeight: 700 }}>
-              <span style={{ color: '#34d399' }}>💵 Tiền Mặt ({totalSpent > 0 ? Math.round((cashSpent / totalSpent) * 100) : 0}%)</span>
+              <span style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '5px' }}><Wallet size={13} /> Tiền Mặt ({totalSpent > 0 ? Math.round((cashSpent / totalSpent) * 100) : 0}%)</span>
               <span>{formatVND(cashSpent)}</span>
             </div>
-            <div style={{ height: '10px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '6px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${totalSpent > 0 ? (cashSpent / totalSpent) * 100 : 0}%`, background: '#10b981' }} />
+            <div style={{ height: '10px', background: 'rgba(127, 127, 127, 0.15)', borderRadius: '6px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${totalSpent > 0 ? (cashSpent / totalSpent) * 100 : 0}%`, background: 'var(--success)' }} />
             </div>
           </div>
         </div>
 
         {/* Saturday Payout & Low Cash Warning */}
         <div className="glass-card" style={{ padding: '20px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fbbf24', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Calendar size={18} color="#fbbf24" />
+          <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--warning)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Calendar size={18} color="var(--warning)" />
             Dự Báo Tiền Lương Thợ Thứ 7
           </h3>
 
           <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '14px', borderRadius: '12px', marginBottom: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.82rem', color: '#fde68a', fontWeight: 700 }}>Lương thợ chưa thanh toán:</span>
-              <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fbbf24' }}>{formatVND(pendingLaborAmount)}</span>
+              <span style={{ fontSize: '0.82rem', color: 'var(--warning)', fontWeight: 700 }}>Lương thợ chưa thanh toán:</span>
+              <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--warning)' }}>{formatVND(pendingLaborAmount)}</span>
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Gồm {pendingLaborCount} phiếu ghi nhận công chưa duyệt
@@ -260,8 +260,8 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
           </div>
 
           {currentCashBalance < 15000000 && (
-            <div style={{ fontSize: '0.78rem', color: '#f87171', background: 'rgba(248, 113, 113, 0.15)', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(248, 113, 113, 0.3)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <AlertTriangle size={16} color="#f87171" />
+            <div style={{ fontSize: '0.78rem', color: 'var(--danger)', background: 'rgba(248, 113, 113, 0.15)', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(248, 113, 113, 0.3)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertTriangle size={16} color="var(--danger)" />
               <span>CẢNH BÁO: Ví tiền mặt còn dưới 15 triệu! Nên rút sẵn tiền mặt từ ngân hàng trước Thứ 7.</span>
             </div>
           )}
@@ -272,8 +272,8 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
       {/* Capital Infusion & Withdrawal History Log */}
       <div className="glass-card" style={{ padding: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            📜 Nhật Ký Nạp Vốn & Rút Tiền Mặt
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            Nhật Ký Nạp Vốn & Rút Tiền Mặt
           </h3>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             {capitalTxs.length} lượt giao dịch
@@ -295,19 +295,19 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '12px 16px',
-                  background: 'rgba(255, 255, 255, 0.03)',
+                  background: 'var(--bg-card-alt)',
                   border: '1px solid var(--border-color)',
                   borderRadius: '12px'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ padding: '8px', borderRadius: '10px', background: tx.type === 'deposit' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(59, 130, 246, 0.2)' }}>
-                    {tx.type === 'deposit' ? <ArrowUpRight size={18} color="#10b981" /> : <ArrowDownLeft size={18} color="#60a5fa" />}
+                    {tx.type === 'deposit' ? <ArrowUpRight size={18} color="var(--success)" /> : <ArrowDownLeft size={18} color="var(--chart-blue)" />}
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 800, fontSize: '0.9rem', color: tx.type === 'deposit' ? '#34d399' : '#60a5fa' }}>
-                        {tx.type === 'deposit' ? '🟢 Nạp Vốn Ngân Hàng' : '🔄 Rút Ngân Hàng ➔ Nhập Quỹ Tiền Mặt'}
+                      <span style={{ fontWeight: 800, fontSize: '0.9rem', color: tx.type === 'deposit' ? 'var(--success)' : 'var(--chart-blue)' }}>
+                        {tx.type === 'deposit' ? 'Nạp Vốn Ngân Hàng' : 'Rút Ngân Hàng ➔ Nhập Quỹ Tiền Mặt'}
                       </span>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tx.date}</span>
                     </div>
@@ -318,7 +318,7 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <span style={{ fontSize: '1.05rem', fontWeight: 800, color: tx.type === 'deposit' ? '#34d399' : '#60a5fa' }}>
+                  <span style={{ fontSize: '1.05rem', fontWeight: 800, color: tx.type === 'deposit' ? 'var(--success)' : 'var(--chart-blue)' }}>
                     {tx.type === 'deposit' ? '+' : ''}{formatVND(tx.amount)}
                   </span>
                   <button
@@ -326,7 +326,7 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', opacity: 0.6 }}
                     title="Xóa lượt giao dịch này"
                   >
-                    <Trash2 size={16} color="#f87171" />
+                    <Trash2 size={16} color="var(--danger)" />
                   </button>
                 </div>
               </div>
@@ -337,11 +337,11 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
 
       {/* Modal: New Deposit or Cash Withdrawal */}
       {isModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}>
+        <div className="modal-overlay">
           <div className="glass-card" style={{ maxWidth: '440px', width: '100%', padding: '24px', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-            
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {txType === 'deposit' ? '🟢 Ghi Nhận Nạp Vốn Ngân Hàng' : '🔄 Rút Ngân Hàng Nhập Quỹ Tiền Mặt'}
+
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {txType === 'deposit' ? 'Ghi Nhận Nạp Vốn Ngân Hàng' : 'Rút Ngân Hàng Nhập Quỹ Tiền Mặt'}
             </h3>
 
             <form onSubmit={handleCreateTx} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -355,7 +355,7 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
                   placeholder="VD: 50,000,000"
                   value={amountStr}
                   onChange={e => setAmountStr(formatFormattedNumber(e.target.value))}
-                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#34d399', fontSize: '1.1rem', fontWeight: 800 }}
+                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: 'var(--success)', fontSize: '1.1rem', fontWeight: 800 }}
                 />
               </div>
 
@@ -368,7 +368,7 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
                   required
                   value={dateStr}
                   onChange={e => setDateStr(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.88rem' }}
+                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: 'var(--text-main)', fontSize: '0.88rem' }}
                 />
               </div>
 
@@ -381,7 +381,7 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
                   placeholder={txType === 'deposit' ? 'VD: Nạp thêm vốn từ sổ tiết kiệm' : 'VD: Rút tiền mặt đưa chỉ huy công trình'}
                   value={noteStr}
                   onChange={e => setNoteStr(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.88rem' }}
+                  style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: 'var(--text-main)', fontSize: '0.88rem' }}
                 />
               </div>
 

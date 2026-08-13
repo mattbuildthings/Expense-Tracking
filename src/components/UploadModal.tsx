@@ -276,8 +276,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
         {extractedItems.length > 0 && !isProcessing && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#34d399' }}>
-                ✅ AI Đã Đọc Thành Công ({extractedItems.length} Giao Dịch)
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Check size={18} /> AI Đã Đọc Thành Công ({extractedItems.length} Giao Dịch)
               </h3>
               <button className="btn btn-secondary btn-sm" onClick={() => setExtractedItems([])}>
                 Tải Ảnh Khác
@@ -294,7 +294,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div>
                         <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
-                          🏢 Nhà Cung Cấp / Cửa Hàng
+                          Nhà Cung Cấp / Cửa Hàng
                         </label>
                         <input
                           type="text"
@@ -305,7 +305,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                       </div>
                       <div>
                         <label style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
-                          💰 Số Tiền Thực Chi (VND)
+                          Số Tiền Thực Chi (VND)
                         </label>
                         <input
                           type="number"
@@ -319,7 +319,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div>
                         <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
-                          🏗️ Hạng Mục Ngân Sách
+                          Hạng Mục Ngân Sách
                         </label>
                         <select
                           value={item.category}
@@ -335,7 +335,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                       </div>
                       <div>
                         <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
-                          📝 Ghi Chú Chi Tiết Vật Tư
+                          Ghi Chú Chi Tiết Vật Tư
                         </label>
                         <input
                           type="text"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileSpreadsheet, ExternalLink, Check, Download, Info, Printer } from 'lucide-react';
+import { X, FileSpreadsheet, ExternalLink, Check, Download, Info, Printer, FileText } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, ExpenseCategory } from '../types/expense';
 import {
@@ -239,7 +239,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🔵</span>
+                <FileSpreadsheet size={20} color="var(--chart-blue)" />
                 <h3 style={{ fontSize: '1.02rem', fontWeight: 800, color: '#60a5fa' }}>
                   Copy & Mở Google Sheets (Bấm Ctrl+V Để Dán)
                 </h3>
@@ -270,8 +270,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>📄</span>
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#f8fafc' }}>
+                <FileText size={20} color="var(--text-muted)" />
+                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)' }}>
                   Tải File CSV Cho Google Drive
                 </h3>
               </div>
@@ -301,7 +301,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🟢</span>
+                <FileSpreadsheet size={20} color="var(--success)" />
                 <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#34d399' }}>
                   Tải File Microsoft Excel (.xlsx)
                 </h3>
@@ -332,7 +332,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🖨️</span>
+                <Printer size={20} color="var(--warning)" />
                 <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fbbf24' }}>
                   In Báo Cáo / Xuất File PDF
                 </h3>

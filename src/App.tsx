@@ -41,6 +41,17 @@ export default function App() {
   const [projectName, setProjectName] = useState<string>('');
   const [activeView, setActiveView] = useState<'ledger' | 'saturday_report' | 'bva_budget' | 'vendors' | 'cash_flow'>('ledger');
   const [isLocked, setIsLocked] = useState<boolean>(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('build_theme_mode');
+    return saved === 'light' || saved === 'dark' ? saved : 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('build_theme_mode', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
 
   const existingVendors = getUniqueVendors(expenses);
   const existingSubCategories = getUniqueSubCategories(expenses);
@@ -167,6 +178,8 @@ export default function App() {
         pendingCount={pendingCount}
         activeView={activeView}
         setActiveView={setActiveView}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenManualCreate={() => setIsManualCreateOpen(true)}
         onOpenQuotationModal={() => setIsQuotationOpen(true)}
@@ -176,7 +189,7 @@ export default function App() {
       />
 
       {/* Main Content View Container */}
-      <main style={{ flex: 1, maxWidth: '1400px', width: '100%', margin: '0 auto', padding: '24px' }}>
+      <main className="app-main" style={{ flex: 1, maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
         {activeView === 'ledger' ? (
           <ExpenseLedger
             expenses={expenses}

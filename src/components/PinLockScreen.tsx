@@ -24,7 +24,7 @@ export const PinLockScreen: React.FC<PinLockScreenProps> = ({ projectName, onUnl
     if (isValid) {
       onUnlock();
     } else {
-      setErrorMsg('❌ Mã PIN không chính xác, vui lòng thử lại!');
+      setErrorMsg('Mã PIN không chính xác, vui lòng thử lại!');
       setPinInput('');
       setTimeout(() => setErrorMsg(null), 2000);
     }

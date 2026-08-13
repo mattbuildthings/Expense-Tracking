@@ -80,7 +80,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
             </div>
             <div>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc' }}>
-                📜 Nhập Báo Giá / Hợp Đồng Nhà Cung Cấp
+                Nhập Báo Giá / Hợp Đồng Nhà Cung Cấp
               </h2>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                 Tạo hạn mức dự toán chi tiết & liên kết số nợ với Nhà cung cấp
@@ -198,8 +198,8 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
                 onChange={e => setStatus(e.target.value as QuotationStatus)}
                 style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: status === 'signed' ? '#34d399' : '#fbbf24', fontSize: '0.88rem', fontWeight: 800 }}
               >
-                <option value="signed">🟢 Đã Ký Hợp Đồng</option>
-                <option value="draft">🟡 Báo Giá Dự Thảo</option>
+                <option value="signed">Đã Ký Hợp Đồng</option>
+                <option value="draft">Báo Giá Dự Thảo</option>
               </select>
             </div>
           </div>
