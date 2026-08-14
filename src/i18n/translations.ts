@@ -319,7 +319,28 @@ export const translations = {
     'manual.notePlaceholder': 'Additional note about this payment...',
     'manual.createBtn': 'Create Invoice',
     'manual.defaultVendor': 'Vendor',
-    'manual.defaultNote': 'Added manually'
+    'manual.defaultNote': 'Added manually',
+
+    // QuotationModal
+    'quote.title': "Import Vendor Quote / Contract",
+    'quote.subtitle': "Set a detailed budget limit & link outstanding balance to a vendor",
+    'quote.vendorRequired': 'Vendor / Supplier *',
+    'quote.vendorPlaceholder': 'e.g. Hong Phat Steel...',
+    'quote.quoteTitleLabel': 'Quote / Contract Title',
+    'quote.quoteTitlePlaceholder': 'e.g. Foundation slab steel quote...',
+    'quote.categoryRequired': 'Standard Construction Category *',
+    'quote.subCategoryOptional': 'Sub-detail (Optional)',
+    'quote.subCategoryPlaceholder': 'e.g. CB300 Steel, 80x80 Tile...',
+    'quote.amountRequired': 'Quote / Contract Value (VND) *',
+    'quote.amountPlaceholder': 'e.g. 320,000,000',
+    'quote.statusLabel': 'Quote Status',
+    'quote.statusSigned': 'Contract Signed',
+    'quote.statusDraft': 'Draft Quote',
+    'quote.dateLabel': 'Quote / Signing Date',
+    'quote.termsNoteLabel': 'Terms Note',
+    'quote.termsNotePlaceholder': 'e.g. Includes delivery to site...',
+    'quote.saveBtn': 'Save Quote',
+    'quote.defaultTitlePrefix': 'Quote for'
   },
   vi: {
     // Navbar
@@ -637,7 +658,28 @@ export const translations = {
     'manual.notePlaceholder': 'Ghi chú thêm về nội dung thanh toán...',
     'manual.createBtn': 'Tạo Hóa Đơn',
     'manual.defaultVendor': 'Nhà cung cấp',
-    'manual.defaultNote': 'Thêm thủ công'
+    'manual.defaultNote': 'Thêm thủ công',
+
+    // QuotationModal
+    'quote.title': 'Nhập Báo Giá / Hợp Đồng Nhà Cung Cấp',
+    'quote.subtitle': 'Tạo hạn mức dự toán chi tiết & liên kết số nợ với Nhà cung cấp',
+    'quote.vendorRequired': 'Đơn Vị / Nhà Cung Cấp *',
+    'quote.vendorPlaceholder': 'VD: Sắt Thép Hồng Phát...',
+    'quote.quoteTitleLabel': 'Tên Báo Giá / Hợp Đồng',
+    'quote.quoteTitlePlaceholder': 'VD: Báo giá thép sàn móng...',
+    'quote.categoryRequired': 'Hạng Mục Công Trình Chuẩn *',
+    'quote.subCategoryOptional': 'Chi Tiết Phụ (Tùy chọn)',
+    'quote.subCategoryPlaceholder': 'VD: Thép CB300, Gạch 80x80...',
+    'quote.amountRequired': 'Giá Trị Báo Giá / Hợp Đồng (VND) *',
+    'quote.amountPlaceholder': 'VD: 320,000,000',
+    'quote.statusLabel': 'Trạng Thái Báo Giá',
+    'quote.statusSigned': 'Đã Ký Hợp Đồng',
+    'quote.statusDraft': 'Báo Giá Dự Thảo',
+    'quote.dateLabel': 'Ngày Báo Giá / Ký HĐ',
+    'quote.termsNoteLabel': 'Ghi Chú Điều Khoản',
+    'quote.termsNotePlaceholder': 'VD: Bao gồm vận chuyển tận bãi...',
+    'quote.saveBtn': 'Lưu Báo Giá',
+    'quote.defaultTitlePrefix': 'Báo giá'
   }
 } as const;
 

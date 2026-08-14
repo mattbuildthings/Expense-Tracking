@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, FileText, Store, Layers, DollarSign, Calendar, Tag } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseCategory, VendorQuotation, QuotationStatus } from '../types/expense';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface QuotationModalProps {
   isOpen: boolean;
@@ -33,6 +34,8 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
   existingVendors = [],
   existingSubCategories = []
 }) => {
+  const { t, language } = useLanguage();
+  const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
   if (!isOpen) return null;
 
   const [vendorName, setVendorName] = useState('');
@@ -51,7 +54,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
 
     onSave({
       vendorName: vendorName.trim(),
-      title: title.trim() || `Báo giá ${vendorName.trim()}`,
+      title: title.trim() || `${t('quote.defaultTitlePrefix')} ${vendorName.trim()}`,
       category,
       subCategory: subCategory.trim() || undefined,
       amount: amt,
@@ -80,10 +83,10 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
             </div>
             <div>
               <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
-                Nhập Báo Giá / Hợp Đồng Nhà Cung Cấp
+                {t('quote.title')}
               </h2>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Tạo hạn mức dự toán chi tiết & liên kết số nợ với Nhà cung cấp
+                {t('quote.subtitle')}
               </p>
             </div>
           </div>
@@ -99,12 +102,12 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                 <Store size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                Đơn Vị / Nhà Cung Cấp *
+                {t('quote.vendorRequired')}
               </label>
               <input
                 type="text"
                 required
-                placeholder="VD: Sắt Thép Hồng Phát..."
+                placeholder={t('quote.vendorPlaceholder')}
                 value={vendorName}
                 list="vendor-quote-suggestions"
                 onChange={e => setVendorName(e.target.value)}
@@ -119,11 +122,11 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
 
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                Tên Báo Giá / Hợp Đồng
+                {t('quote.quoteTitleLabel')}
               </label>
               <input
                 type="text"
-                placeholder="VD: Báo giá thép sàn móng..."
+                placeholder={t('quote.quoteTitlePlaceholder')}
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#60a5fa', fontSize: '0.75rem', fontWeight: 700 }}
@@ -136,7 +139,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                 <Layers size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                Hạng Mục Công Trình Chuẩn *
+                {t('quote.categoryRequired')}
               </label>
               <select
                 value={category}
@@ -145,7 +148,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
               >
                 {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => (
                   <option key={catKey} value={catKey}>
-                    {meta.label}
+                    {catLabel(meta)}
                   </option>
                 ))}
               </select>
@@ -154,11 +157,11 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                 <Tag size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                Chi Tiết Phụ (Tùy chọn)
+                {t('quote.subCategoryOptional')}
               </label>
               <input
                 type="text"
-                placeholder="VD: Thép CB300, Gạch 80x80..."
+                placeholder={t('quote.subCategoryPlaceholder')}
                 value={subCategory}
                 list="subcat-quote-suggestions"
                 onChange={e => setSubCategory(e.target.value)}
@@ -177,12 +180,12 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399', display: 'block', marginBottom: '4px' }}>
                 <DollarSign size={14} style={{ display: 'inline', marginRight: '2px' }} />
-                Giá Trị Báo Giá / Hợp Đồng (VND) *
+                {t('quote.amountRequired')}
               </label>
               <input
                 type="text"
                 required
-                placeholder="VD: 320,000,000"
+                placeholder={t('quote.amountPlaceholder')}
                 value={amountStr}
                 onChange={e => setAmountStr(formatFormattedNumber(e.target.value))}
                 style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#34d399', fontSize: '0.95rem', fontWeight: 800 }}
@@ -191,15 +194,15 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
 
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                Trạng Thái Báo Giá
+                {t('quote.statusLabel')}
               </label>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value as QuotationStatus)}
                 style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: status === 'signed' ? '#34d399' : '#fbbf24', fontSize: '0.75rem', fontWeight: 800 }}
               >
-                <option value="signed">Đã Ký Hợp Đồng</option>
-                <option value="draft">Báo Giá Dự Thảo</option>
+                <option value="signed">{t('quote.statusSigned')}</option>
+                <option value="draft">{t('quote.statusDraft')}</option>
               </select>
             </div>
           </div>
@@ -209,7 +212,7 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                 <Calendar size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                Ngày Báo Giá / Ký HĐ
+                {t('quote.dateLabel')}
               </label>
               <input
                 type="date"
@@ -221,11 +224,11 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
 
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                Ghi Chú Điều Khoản
+                {t('quote.termsNoteLabel')}
               </label>
               <input
                 type="text"
-                placeholder="VD: Bao gồm vận chuyển tận bãi..."
+                placeholder={t('quote.termsNotePlaceholder')}
                 value={note}
                 onChange={e => setNote(e.target.value)}
                 style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#f8fafc', fontSize: '0.75rem' }}
@@ -236,10 +239,10 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
           {/* Form Actions */}
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose} style={{ flex: 1 }}>
-              Hủy
+              {t('common.cancel')}
             </button>
             <button type="submit" className="btn btn-primary" style={{ flex: 1, background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' }}>
-              Lưu Báo Giá
+              {t('quote.saveBtn')}
             </button>
           </div>
 
