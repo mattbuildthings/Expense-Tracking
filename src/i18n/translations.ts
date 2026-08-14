@@ -340,7 +340,26 @@ export const translations = {
     'quote.termsNoteLabel': 'Terms Note',
     'quote.termsNotePlaceholder': 'e.g. Includes delivery to site...',
     'quote.saveBtn': 'Save Quote',
-    'quote.defaultTitlePrefix': 'Quote for'
+    'quote.defaultTitlePrefix': 'Quote for',
+
+    // ExportModal
+    'export.titleBudget': 'Export Budget Limits (BVA)',
+    'export.titleVendors': 'Export Vendors & Crews List',
+    'export.titleCashFlow': 'Export Cash Flow & Funds Report',
+    'export.titleReport': 'Export Weekly / Monthly Expense Analysis Report',
+    'export.titleLedgerPrefix': 'Export Expense Data',
+    'export.transactionsSuffix': 'Transactions',
+    'export.subtitle': 'Choose 1 of the 4 export formats below',
+    'export.copiedTitle': 'Data copied to clipboard!',
+    'export.copiedBody': 'A Google Sheets tab just opened. Click cell {a1} and press {ctrlv} (or {cmdv}) to paste the data in!',
+    'export.sheetsTitle': 'Copy & Open Google Sheets (Ctrl+V to Paste)',
+    'export.sheetsSubtitle': 'Copies comma-formatted data & opens Google Sheets. Press {ctrlv} to paste!',
+    'export.csvTitle': 'Download CSV for Google Drive',
+    'export.csvSubtitle': 'Download a comma-formatted `.csv` file to drag-and-drop into Google Drive',
+    'export.xlsxTitle': 'Download Microsoft Excel (.xlsx)',
+    'export.xlsxSubtitle': 'Export a formatted Excel file with headers, colors & auto column widths',
+    'export.printTitle': 'Print Report / Export PDF',
+    'export.printSubtitle': 'Open a print-ready view with controls hidden, ready to save as PDF or print on paper'
   },
   vi: {
     // Navbar
@@ -679,7 +698,26 @@ export const translations = {
     'quote.termsNoteLabel': 'Ghi Chú Điều Khoản',
     'quote.termsNotePlaceholder': 'VD: Bao gồm vận chuyển tận bãi...',
     'quote.saveBtn': 'Lưu Báo Giá',
-    'quote.defaultTitlePrefix': 'Báo giá'
+    'quote.defaultTitlePrefix': 'Báo giá',
+
+    // ExportModal
+    'export.titleBudget': 'Xuất Hạn Mức Dự Toán Ngân Sách (BVA)',
+    'export.titleVendors': 'Xuất Danh Sách Nhà Cung Cấp & Tổ Thợ',
+    'export.titleCashFlow': 'Xuất Báo Cáo Dòng Tiền & Quỹ',
+    'export.titleReport': 'Xuất Báo Cáo Phân Tích Chi Phí Tuần / Tháng',
+    'export.titleLedgerPrefix': 'Xuất Dữ Liệu Chi Phí',
+    'export.transactionsSuffix': 'Giao Dịch',
+    'export.subtitle': 'Chọn 1 trong 4 định dạng xuất dữ liệu bên dưới',
+    'export.copiedTitle': 'Đã copy dữ liệu vào Clipboard!',
+    'export.copiedBody': 'Trang Google Sheets vừa được mở trong tab mới. Hãy nhấp vào ô {a1} và nhấn {ctrlv} (hoặc {cmdv}) để dán dữ liệu vào ngay!',
+    'export.sheetsTitle': 'Copy & Mở Google Sheets (Bấm Ctrl+V Để Dán)',
+    'export.sheetsSubtitle': 'Copy dữ liệu (đã định dạng phẩy phân cách ngàn) & mở Google Sheets. Bấm {ctrlv} để dán!',
+    'export.csvTitle': 'Tải File CSV Cho Google Drive',
+    'export.csvSubtitle': 'Tải file `.csv` có định dạng dấu phẩy phân cách ngàn để kéo thả vào Google Drive',
+    'export.xlsxTitle': 'Tải File Microsoft Excel (.xlsx)',
+    'export.xlsxSubtitle': 'Xuất file Excel chuẩn hóa có tiêu đề, màu sắc & độ rộng cột tự động',
+    'export.printTitle': 'In Báo Cáo / Xuất File PDF',
+    'export.printSubtitle': 'Mở giao diện in ẩn các nút điều khiển, sẵn sàng lưu thành file PDF hoặc in giấy'
   }
 } as const;
 

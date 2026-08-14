@@ -11,6 +11,7 @@ import {
   getInitialFunds,
   getCapitalTransactions
 } from '../services/storageService';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export type ExportContext = 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors' | 'cash_flow';
 
@@ -38,6 +39,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   projectName,
   exportContext = 'ledger'
 }) => {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   const [copied, setCopied] = useState(false);
@@ -47,16 +49,16 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   const getContextTitle = () => {
     switch (exportContext) {
       case 'bva_budget':
-        return 'Xuất Hạn Mức Dự Toán Ngân Sách (BVA)';
+        return t('export.titleBudget');
       case 'vendors':
-        return 'Xuất Danh Sách Nhà Cung Cấp & Tổ Thợ';
+        return t('export.titleVendors');
       case 'cash_flow':
-        return 'Xuất Báo Cáo Dòng Tiền & Quỹ';
+        return t('export.titleCashFlow');
       case 'saturday_report':
-        return 'Xuất Báo Cáo Phân Tích Chi Phí Tuần / Tháng';
+        return t('export.titleReport');
       case 'ledger':
       default:
-        return `Xuất Dữ Liệu Chi Phí (${expenses.length} Giao Dịch)`;
+        return `${t('export.titleLedgerPrefix')} (${expenses.length} ${t('export.transactionsSuffix')})`;
     }
   };
 
@@ -198,7 +200,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 {getContextTitle()}
               </h2>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Chọn 1 trong 4 định dạng xuất dữ liệu bên dưới
+                {t('export.subtitle')}
               </p>
             </div>
           </div>
@@ -211,10 +213,15 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         {showPasteGuide && (
           <div style={{ background: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.4)', borderRadius: '14px', padding: '14px', marginBottom: '16px' }}>
             <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-              <Info size={18} /> Đã copy dữ liệu vào Clipboard!
+              <Info size={18} /> {t('export.copiedTitle')}
             </p>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Trang Google Sheets vừa được mở trong tab mới. Hãy nhấp vào ô <strong>A1</strong> và nhấn <strong>Ctrl + V</strong> (hoặc <strong>Cmd + V</strong>) để dán dữ liệu vào ngay!
+              {t('export.copiedBody').split(/(\{a1\}|\{ctrlv\}|\{cmdv\})/).map((part, i) => {
+                if (part === '{a1}') return <strong key={i}>A1</strong>;
+                if (part === '{ctrlv}') return <strong key={i}>Ctrl + V</strong>;
+                if (part === '{cmdv}') return <strong key={i}>Cmd + V</strong>;
+                return part;
+              })}
             </p>
           </div>
         )}
@@ -241,11 +248,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FileSpreadsheet size={20} color="var(--chart-blue)" />
                 <h3 style={{ fontSize: '1.02rem', fontWeight: 800, color: '#60a5fa' }}>
-                  Copy & Mở Google Sheets (Bấm Ctrl+V Để Dán)
+                  {t('export.sheetsTitle')}
                 </h3>
               </div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
-                Copy dữ liệu (đã định dạng phẩy phân cách ngàn) & mở Google Sheets. Bấm <strong>Ctrl+V</strong> để dán!
+                {t('export.sheetsSubtitle').split(/(\{ctrlv\})/).map((part, i) => part === '{ctrlv}' ? <strong key={i}>Ctrl+V</strong> : part)}
               </p>
             </div>
             <div style={{ padding: '10px', background: 'rgba(59, 130, 246, 0.2)', borderRadius: '12px', color: '#60a5fa' }}>
@@ -272,11 +279,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FileText size={20} color="var(--text-muted)" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                  Tải File CSV Cho Google Drive
+                  {t('export.csvTitle')}
                 </h3>
               </div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
-                Tải file `.csv` có định dạng dấu phẩy phân cách ngàn để kéo thả vào Google Drive
+                {t('export.csvSubtitle')}
               </p>
             </div>
             <div style={{ padding: '10px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', color: 'var(--text-muted)' }}>
@@ -303,11 +310,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FileSpreadsheet size={20} color="var(--success)" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>
-                  Tải File Microsoft Excel (.xlsx)
+                  {t('export.xlsxTitle')}
                 </h3>
               </div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
-                Xuất file Excel chuẩn hóa có tiêu đề, màu sắc & độ rộng cột tự động
+                {t('export.xlsxSubtitle')}
               </p>
             </div>
             <div style={{ padding: '10px', background: 'rgba(16, 185, 129, 0.15)', borderRadius: '12px', color: '#34d399' }}>
@@ -334,11 +341,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Printer size={20} color="var(--primary)" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)' }}>
-                  In Báo Cáo / Xuất File PDF
+                  {t('export.printTitle')}
                 </h3>
               </div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', paddingLeft: '28px' }}>
-                Mở giao diện in ẩn các nút điều khiển, sẵn sàng lưu thành file PDF hoặc in giấy
+                {t('export.printSubtitle')}
               </p>
             </div>
             <div style={{ padding: '10px', background: 'var(--primary-glow)', borderRadius: '12px', color: 'var(--primary)' }}>
