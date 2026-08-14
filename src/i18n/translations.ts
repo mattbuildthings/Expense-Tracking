@@ -359,7 +359,25 @@ export const translations = {
     'export.xlsxTitle': 'Download Microsoft Excel (.xlsx)',
     'export.xlsxSubtitle': 'Export a formatted Excel file with headers, colors & auto column widths',
     'export.printTitle': 'Print Report / Export PDF',
-    'export.printSubtitle': 'Open a print-ready view with controls hidden, ready to save as PDF or print on paper'
+    'export.printSubtitle': 'Open a print-ready view with controls hidden, ready to save as PDF or print on paper',
+
+    // AuditLogModal
+    'audit.title': 'Activity History & Invoice Trash',
+    'audit.subtitle': 'Browse add/edit/delete history and restore deleted expenses',
+    'audit.recycleBinTab': 'Invoice Trash',
+    'audit.auditTrailTab': 'Activity Log',
+    'audit.emptyTrashTitle': 'Trash is empty!',
+    'audit.emptyTrashBody': 'No invoices have been deleted recently. All your expense data is safe.',
+    'audit.trashHint': 'The items below have been removed from the main ledger. You can restore them with one click or delete them permanently:',
+    'audit.materials': 'Materials',
+    'audit.noteLabel': 'Note:',
+    'audit.restore': 'Restore',
+    'audit.permanentDeleteConfirm': 'WARNING: Are you sure you want to PERMANENTLY DELETE this expense?\n\n(This action removes the data completely from this device & the cloud)',
+    'audit.permanentDeleteTitle': 'Permanently delete from the database',
+    'audit.permanentDelete': 'Delete Permanently',
+    'audit.noAuditLogs': 'No activity has been logged yet.',
+    'audit.invoiceIdLabel': 'Invoice ID:',
+    'audit.timeLabel': 'Time:'
   },
   vi: {
     // Navbar
@@ -717,7 +735,25 @@ export const translations = {
     'export.xlsxTitle': 'Tải File Microsoft Excel (.xlsx)',
     'export.xlsxSubtitle': 'Xuất file Excel chuẩn hóa có tiêu đề, màu sắc & độ rộng cột tự động',
     'export.printTitle': 'In Báo Cáo / Xuất File PDF',
-    'export.printSubtitle': 'Mở giao diện in ẩn các nút điều khiển, sẵn sàng lưu thành file PDF hoặc in giấy'
+    'export.printSubtitle': 'Mở giao diện in ẩn các nút điều khiển, sẵn sàng lưu thành file PDF hoặc in giấy',
+
+    // AuditLogModal
+    'audit.title': 'Lịch Sử Thao Tác & Thùng Rác Hóa Đơn',
+    'audit.subtitle': 'Truy xuất lịch sử thêm/sửa/xóa và khôi phục các chi phí đã bị xóa',
+    'audit.recycleBinTab': 'Thùng Rác Hóa Đơn',
+    'audit.auditTrailTab': 'Nhật Ký Thao Tác',
+    'audit.emptyTrashTitle': 'Thùng rác trống!',
+    'audit.emptyTrashBody': 'Không có hóa đơn nào bị xóa gần đây. Tất cả dữ liệu chi phí của bạn đều an toàn.',
+    'audit.trashHint': 'Các mục dưới đây đã bị xóa khỏi sổ chính. Bạn có thể khôi phục 1-click hoặc xóa vĩnh viễn:',
+    'audit.materials': 'Vật tư',
+    'audit.noteLabel': 'Ghi chú:',
+    'audit.restore': 'Khôi Phục',
+    'audit.permanentDeleteConfirm': 'CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN chi phí này không?\n\n(Hành động này sẽ xóa dữ liệu hoàn toàn khỏi máy tính & đám mây)',
+    'audit.permanentDeleteTitle': 'Xóa hoàn toàn khỏi cơ sở dữ liệu',
+    'audit.permanentDelete': 'Xóa Vĩnh Viễn',
+    'audit.noAuditLogs': 'Chưa có nhật ký thao tác nào được ghi nhận.',
+    'audit.invoiceIdLabel': 'ID Hóa đơn:',
+    'audit.timeLabel': 'Thời gian:'
   }
 } as const;
 

@@ -3,6 +3,7 @@ import { X, History, Trash2, RotateCcw, ShieldCheck, Clock, Trash } from 'lucide
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, AuditLogEntry } from '../types/expense';
 import { formatVND } from '../services/storageService';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface AuditLogModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
   onRestoreExpense,
   onPermanentDeleteExpense
 }) => {
+  const { t, language } = useLanguage();
+  const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
   if (!isOpen) return null;
 
   const [activeTab, setActiveTab] = useState<'recycle_bin' | 'audit_trail'>('recycle_bin');
@@ -37,10 +40,10 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
             </div>
             <div>
               <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
-                Lịch Sử Thao Tác & Thùng Rác Hóa Đơn
+                {t('audit.title')}
               </h2>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Truy xuất lịch sử thêm/sửa/xóa và khôi phục các chi phí đã bị xóa
+                {t('audit.subtitle')}
               </p>
             </div>
           </div>
@@ -57,7 +60,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
             style={{ borderRadius: '10px' }}
           >
             <Trash2 size={16} />
-            <span>Thùng Rác Hóa Đơn ({deletedExpenses.length})</span>
+            <span>{t('audit.recycleBinTab')} ({deletedExpenses.length})</span>
           </button>
 
           <button
@@ -66,7 +69,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
             style={{ borderRadius: '10px' }}
           >
             <Clock size={16} />
-            <span>Nhật Ký Thao Tác ({auditLogs.length})</span>
+            <span>{t('audit.auditTrailTab')} ({auditLogs.length})</span>
           </button>
         </div>
 
@@ -76,15 +79,15 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
             {deletedExpenses.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '50px 20px', color: 'var(--text-dim)' }}>
                 <ShieldCheck size={48} color="#34d399" style={{ margin: '0 auto 12px' }} />
-                <p style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>Thùng rác trống!</p>
+                <p style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>{t('audit.emptyTrashTitle')}</p>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  Không có hóa đơn nào bị xóa gần đây. Tất cả dữ liệu chi phí của bạn đều an toàn.
+                  {t('audit.emptyTrashBody')}
                 </p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Các mục dưới đây đã bị xóa khỏi sổ chính. Bạn có thể khôi phục 1-click hoặc xóa vĩnh viễn:
+                  {t('audit.trashHint')}
                 </p>
                 {deletedExpenses.map(item => (
                   <div
@@ -103,10 +106,10 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       {item.imageUrl ? (
-                        <img src={item.imageUrl} alt="Hóa đơn" style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+                        <img src={item.imageUrl} alt={t('ledger.invoiceImageAlt')} style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
                       ) : (
                         <div style={{ width: '42px', height: '42px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: 'var(--text-dim)' }}>
-                          No Img
+                          {t('ledger.noImg')}
                         </div>
                       )}
                       <div>
@@ -114,13 +117,13 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
                           <span style={{ fontWeight: 800, color: '#f87171', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
                           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {item.date}</span>
                           <span className="badge" style={{ background: CATEGORY_METADATA[item.category]?.bg, color: CATEGORY_METADATA[item.category]?.color, fontSize: '0.72rem' }}>
-                            {CATEGORY_METADATA[item.category]?.label}
+                            {catLabel(CATEGORY_METADATA[item.category])}
                           </span>
                         </div>
                         <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>
-                          {item.merchant} ({item.subCategory || 'Vật tư'})
+                          {item.merchant} ({item.subCategory || t('audit.materials')})
                         </p>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Ghi chú: {item.note}</p>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('audit.noteLabel')} {item.note}</p>
                       </div>
                     </div>
 
@@ -131,21 +134,21 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
                         style={{ padding: '6px 12px' }}
                       >
                         <RotateCcw size={14} />
-                        <span>Khôi Phục</span>
+                        <span>{t('audit.restore')}</span>
                       </button>
 
                       <button
                         className="btn btn-danger btn-sm"
                         onClick={() => {
-                          if (window.confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN chi phí này không?\n\n(Hành động này sẽ xóa dữ liệu hoàn toàn khỏi máy tính & đám mây)')) {
+                          if (window.confirm(t('audit.permanentDeleteConfirm'))) {
                             onPermanentDeleteExpense(item.id);
                           }
                         }}
                         style={{ padding: '6px 12px' }}
-                        title="Xóa hoàn toàn khỏi cơ sở dữ liệu"
+                        title={t('audit.permanentDeleteTitle')}
                       >
                         <Trash size={14} />
-                        <span>Xóa Vĩnh Viễn</span>
+                        <span>{t('audit.permanentDelete')}</span>
                       </button>
                     </div>
                   </div>
@@ -160,7 +163,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
           <div>
             {auditLogs.length === 0 ? (
               <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textAlign: 'center', padding: '40px' }}>
-                Chưa có nhật ký thao tác nào được ghi nhận.
+                {t('audit.noAuditLogs')}
               </p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -201,7 +204,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
                           </span>
                         </div>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                          ID Hóa đơn: {log.expenseId} • Thời gian: {new Date(log.timestamp).toLocaleString('vi-VN')}
+                          {t('audit.invoiceIdLabel')} {log.expenseId} • {t('audit.timeLabel')} {new Date(log.timestamp).toLocaleString(language === 'en' ? 'en-US' : 'vi-VN')}
                         </p>
                       </div>
                     </div>
