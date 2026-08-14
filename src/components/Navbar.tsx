@@ -62,7 +62,6 @@ function buildTabs(t: (key: import('../i18n/translations').TranslationKey) => st
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  projectName,
   totalSpent,
   pendingCount,
   activeView,
@@ -104,14 +103,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               <div style={{ minWidth: 0 }} className="desktop-only">
                 <h1 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
-                  {projectName}
+                  AI Construction Expense Manager
                 </h1>
-                <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: 'var(--primary)', border: '1px solid rgba(59, 130, 246, 0.3)', fontSize: '0.75rem', fontWeight: 600 }}>
-                  AI Vision 1.5
-                </span>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  {t('nav.subtitle')}
-                </p>
               </div>
             </div>
 

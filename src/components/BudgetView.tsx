@@ -4,6 +4,7 @@ import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, ExpenseCategory, CategoryBudgets, VendorQuotation } from '../types/expense';
 import { formatVND, getCategoryBudgets, saveCategoryBudgets, generateMultiPeriodReport, exportBvaToExcel, getVendorQuotations, deleteVendorQuotation } from '../services/storageService';
 import { categoryAccent } from '../theme';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface BudgetViewProps {
   projectName: string;
@@ -35,6 +36,8 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
   onExportExcel,
   onOpenQuotationModal
 }) => {
+  const { t, language } = useLanguage();
+  const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
   const [budgets, setBudgets] = useState<CategoryBudgets>(getCategoryBudgets());
   const [quotations, setQuotations] = useState<VendorQuotation[]>(getVendorQuotations());
   const [isEditing, setIsEditing] = useState(false);
@@ -42,7 +45,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   const handleDeleteQuote = (id: string) => {
-    if (confirm('Bạn có chắc chắn muốn xóa báo giá/hợp đồng này?')) {
+    if (confirm(t('budget.deleteQuoteConfirm'))) {
       deleteVendorQuotation(id);
       setQuotations(getVendorQuotations());
     }
@@ -91,17 +94,17 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span className="badge" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.75rem' }}>
-                <Target size={14} /> BVA Cost Control
+                <Target size={14} /> {t('budget.pillLabel')}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Dự án {projectName}
+                {t('budget.projectPrefix')} {projectName}
               </span>
             </div>
             <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
-              Dự Toán Ngân Sách Hạng Mục (Budget vs. Actual)
+              {t('budget.title')}
             </h2>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Quản lý hạn mức ngân sách dự toán, theo dõi chênh lệch & kiểm soát vượt trần chi phí 9 hạng mục
+              {t('budget.subtitle')}
             </p>
           </div>
 
@@ -110,21 +113,21 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
               className="btn btn-secondary"
               onClick={() => onExportExcel ? onExportExcel() : exportBvaToExcel(allExpenses, projectName)}
               style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--success)', border: '1px solid rgba(16, 185, 129, 0.3)' }}
-              title="Xuất báo cáo dự toán BVA 9 hạng mục"
+              title={t('budget.exportTitle')}
             >
               <FileSpreadsheet size={18} />
-              <span>Xuất Báo Cáo Dự Toán (BVA)</span>
+              <span>{t('budget.exportBtn')}</span>
             </button>
 
             {isEditing ? (
               <button className="btn btn-primary" onClick={handleSaveBudgets}>
                 <Save size={18} />
-                <span>Lưu Hạn Mức Mới</span>
+                <span>{t('budget.saveBudgets')}</span>
               </button>
             ) : (
               <button className="btn btn-secondary" onClick={() => setIsEditing(true)}>
                 <Edit2 size={18} color="var(--chart-blue)" />
-                <span>Chỉnh Sửa Dự Toán</span>
+                <span>{t('budget.editBudgets')}</span>
               </button>
             )}
           </div>
@@ -135,7 +138,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
       {savedSuccess && (
         <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: 'var(--success)', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontWeight: 700, textAlign: 'center' }}>
           <Check size={18} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
-          Đã cập nhật hạn mức dự toán ngân sách thành công!
+          {t('budget.savedToast')}
         </div>
       )}
 
@@ -145,7 +148,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
             <AlertCircle size={24} color="var(--danger)" />
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--danger)' }}>
-              Cảnh Báo: Có {overBudgetCategories.length} Hạng Mục Chi Vượt Ngân Sách Dự Toán!
+              {t('budget.overrunAlertTitle').replace('{n}', String(overBudgetCategories.length))}
             </h3>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -155,10 +158,10 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
               return (
                 <div key={c.category} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-card-alt)', padding: '10px 14px', borderRadius: '10px' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                    {c.label}
+                    {catLabel(CATEGORY_METADATA[c.category as ExpenseCategory])}
                   </span>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--danger)' }}>
-                    Thực chi: {formatVND(c.totalAmount)} / Dự toán: {formatVND(target)} (Vượt {formatVND(overrun)})
+                    {t('budget.actual')}: {formatVND(c.totalAmount)} / {t('budget.budget')}: {formatVND(target)} ({t('budget.over')} {formatVND(overrun)})
                   </span>
                 </div>
               );
@@ -170,28 +173,28 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
       {/* Overview Financial KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--chart-blue)' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Ngân Sách Dự Toán</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('budget.totalBudget')}</p>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '6px' }}>
             {formatVND(totalTargetBudget)}
           </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Tất cả 9 hạng mục công trình</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{t('budget.totalBudgetSub')}</p>
         </div>
 
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--primary)' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Thực Chi Đến Nay</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('budget.totalActual')}</p>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)', marginTop: '6px' }}>
             {formatVND(totalActualSpent)}
           </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Đã dùng {totalPercentageUsed}% tổng dự toán</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{t('budget.usedPctOfTotal').replace('{pct}', String(totalPercentageUsed))}</p>
         </div>
 
         <div className="glass-card" style={{ padding: '20px', borderLeft: `4px solid ${totalRemaining < 0 ? 'var(--danger)' : 'var(--success)'}` }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Ngân Sách Còn Lại</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('budget.remainingBudget')}</p>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: totalRemaining < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '6px' }}>
             {formatVND(totalRemaining)}
           </h3>
           <p style={{ fontSize: '0.75rem', color: totalRemaining < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-            {totalRemaining < 0 ? <><AlertCircle size={12} /> Vượt Tổng Dự Toán</> : <><Check size={12} /> Ngân Sách An Toàn</>}
+            {totalRemaining < 0 ? <><AlertCircle size={12} /> {t('budget.overTotalBudget')}</> : <><Check size={12} /> {t('budget.budgetSafe')}</>}
           </p>
         </div>
       </div>
@@ -200,11 +203,11 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
       <div className="glass-card" style={{ padding: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)' }}>
-            Hạn Mức Ngân Sách
+            {t('budget.categoryLimits')}
           </h3>
           {isEditing && (
             <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <Edit2 size={13} /> Bạn đang ở chế độ chỉnh sửa hạn mức dự toán
+              <Edit2 size={13} /> {t('budget.editModeNotice')}
             </span>
           )}
         </div>
@@ -247,20 +250,20 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: accent, flexShrink: 0 }} />
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-main)' }}>{meta.label}</span>
+                        <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-main)' }}>{catLabel(meta)}</span>
                         {catQuotes.length > 0 && (
                           <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', fontSize: '0.72rem', fontWeight: 700 }}>
-                            <FileText size={11} /> {catQuotes.length} Hợp đồng ({formatVND(signedQuotesTotal)})
+                            <FileText size={11} /> {catQuotes.length} {t('budget.contractsCount')} ({formatVND(signedQuotesTotal)})
                           </span>
                         )}
                         {isOver && (
                           <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)', fontSize: '0.72rem', fontWeight: 800 }}>
-                            Vượt {formatVND(actual - targetB)}
+                            {t('budget.over')} {formatVND(actual - targetB)}
                           </span>
                         )}
                       </div>
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>
-                        {meta.englishLabel} • {catSummary.count} hóa đơn
+                        {language === 'en' ? meta.label : meta.englishLabel} • {catSummary.count} {t('budget.invoicesCount')}
                       </p>
                     </div>
                   </div>
@@ -271,7 +274,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     {/* Target Budget Input / Display */}
                     <div style={{ textAlign: 'right' }}>
                       <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
-                        {signedQuotesTotal > 0 ? 'Dự Toán (Theo HĐ)' : 'Hạn Mức Dự Toán'}
+                        {signedQuotesTotal > 0 ? t('budget.budgetFromContract') : t('budget.budgetLimit')}
                       </p>
                       {isEditing && signedQuotesTotal === 0 ? (
                         <input
@@ -299,7 +302,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
 
                     {/* Actual Spent */}
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Thực Chi</p>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>{t('budget.actualSpend')}</p>
                       <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)' }}>
                         {formatVND(actual)}
                       </p>
@@ -307,7 +310,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
 
                     {/* Remaining */}
                     <div style={{ textAlign: 'right', minWidth: '120px' }}>
-                      <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Còn Lại</p>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>{t('budget.remaining')}</p>
                       <p style={{ fontSize: '0.95rem', fontWeight: 800, color: remaining < 0 ? 'var(--danger)' : 'var(--success)' }}>
                         {formatVND(remaining)}
                       </p>
@@ -318,7 +321,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                       className="btn btn-secondary btn-sm"
                       onClick={() => toggleCategory(key)}
                       style={{ padding: '8px', borderRadius: '8px' }}
-                      title="Xem chi tiết hợp đồng & hóa đơn"
+                      title={t('budget.viewDetailsTitle')}
                     >
                       {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                     </button>
@@ -339,18 +342,18 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                         <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#818cf8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <FileText size={16} /> Danh Sách Báo Giá & Hợp Đồng Thành Phần ({catQuotes.length})
+                          <FileText size={16} /> {t('budget.quotesListTitle')} ({catQuotes.length})
                         </h4>
                         {onOpenQuotationModal && (
                           <button className="btn btn-secondary btn-sm" onClick={onOpenQuotationModal} style={{ padding: '4px 10px', fontSize: '0.75rem', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>
-                            <Plus size={14} /> Thêm Báo Giá Hạng Mục Này
+                            <Plus size={14} /> {t('budget.addQuoteForCategory')}
                           </button>
                         )}
                       </div>
 
                       {catQuotes.length === 0 ? (
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic', background: 'var(--bg-card-alt)', padding: '12px', borderRadius: '8px' }}>
-                          Chưa có báo giá/hợp đồng nào được nhập cho hạng mục này. Hạn mức đang tính theo số tiền thủ công.
+                          {t('budget.noQuotesYet')}
                         </p>
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -377,7 +380,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-main)' }}>{q.vendorName}</span>
                                     <span className="badge" style={{ background: q.status === 'signed' ? 'rgba(16, 185, 129, 0.2)' : 'var(--bg-card-alt)', color: q.status === 'signed' ? 'var(--success)' : 'var(--text-dim)', border: q.status === 'signed' ? 'none' : '1px solid var(--border-strong)', fontSize: '0.75rem' }}>
-                                      {q.status === 'signed' ? 'Hợp Đồng Đã Ký' : 'Báo Giá Dự Thảo'}
+                                      {q.status === 'signed' ? t('budget.contractSigned') : t('budget.quoteDraft')}
                                     </span>
                                     {q.subCategory && (
                                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {q.subCategory}</span>
@@ -390,15 +393,15 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
                                   <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>GIÁ TRỊ BÁO GIÁ</p>
+                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>{t('budget.quoteValue')}</p>
                                     <p style={{ fontSize: '0.95rem', fontWeight: 800, color: '#818cf8' }}>{formatVND(q.amount)}</p>
                                   </div>
                                   <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>ĐÃ CHI THANH TOÁN</p>
+                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>{t('budget.paidSoFar')}</p>
                                     <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)' }}>{formatVND(paidAmount)}</p>
                                   </div>
                                   <div style={{ textAlign: 'right', minWidth: '110px' }}>
-                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>CÒN LẠI THUỘC HĐ</p>
+                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>{t('budget.contractRemaining')}</p>
                                     <p style={{ fontSize: '0.95rem', fontWeight: 800, color: qRemaining < 0 ? 'var(--danger)' : 'var(--success)' }}>
                                       {formatVND(qRemaining)}
                                     </p>
@@ -407,7 +410,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                                     onClick={() => handleDeleteQuote(q.id)}
                                     className="btn btn-secondary btn-sm"
                                     style={{ padding: '6px', color: 'var(--danger)' }}
-                                    title="Xóa báo giá này"
+                                    title={t('budget.deleteQuoteTitle')}
                                   >
                                     <Trash2 size={16} />
                                   </button>
@@ -422,11 +425,11 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     {/* Section B: Logged Receipts List */}
                     <div>
                       <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '10px' }}>
-                        Danh Sách Hóa Đơn Đã Ghi Nhận ({categoryTransactions.length})
+                        {t('budget.loggedInvoicesTitle')} ({categoryTransactions.length})
                       </h4>
                       {categoryTransactions.length === 0 ? (
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                          Chưa có hóa đơn nào thuộc hạng mục này.
+                          {t('budget.noInvoicesYet')}
                         </p>
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -450,7 +453,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                                   <span style={{ fontWeight: 800, color: 'var(--success)', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
                                   {item.quantity && (
                                     <span style={{ fontSize: '0.75rem', background: 'var(--bg-card-alt)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-main)' }}>
-                                      SL: {item.quantity} {item.unit || ''}
+                                      {t('report.qty')}: {item.quantity} {item.unit || ''}
                                     </span>
                                   )}
                                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {item.date}</span>
@@ -460,7 +463,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                                 </p>
                               </div>
                               <span style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 700 }}>
-                                Xem chi tiết ➔
+                                {t('budget.viewDetails')}
                               </span>
                             </div>
                           ))}
