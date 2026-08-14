@@ -1,6 +1,8 @@
 import React from 'react';
 import { HardHat, PlusCircle, Calendar, Settings, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users, Wallet, FileText, ClipboardList, Sun, Moon } from 'lucide-react';
 import { formatVND } from '../services/storageService';
+import { useLanguage } from '../i18n/LanguageContext';
+import type { Language } from '../i18n/translations';
 
 type ViewKey = 'ledger' | 'saturday_report' | 'bva_budget' | 'vendors' | 'cash_flow';
 
@@ -12,6 +14,8 @@ interface NavbarProps {
   setActiveView: (view: ViewKey) => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  language: Language;
+  onToggleLanguage: () => void;
   onOpenUpload: () => void;
   onOpenManualCreate: () => void;
   onOpenQuotationModal: () => void;
@@ -41,26 +45,21 @@ interface TabDef {
   key: ViewKey;
   label: string;
   shortLabel: string;
+  title: string;
   icon: React.ElementType;
 }
 
 // Desktop tab labels are intentionally short (per design spec) — the long
 // descriptive names live only in each button's `title` attribute for a11y.
-const TABS: TabDef[] = [
-  { key: 'ledger', label: 'Chi Phí', shortLabel: 'Sổ Chi', icon: ClipboardList },
-  { key: 'saturday_report', label: 'Báo Cáo', shortLabel: 'Báo Cáo', icon: Calendar },
-  { key: 'bva_budget', label: 'Ngân Sách', shortLabel: 'BVA', icon: Target },
-  { key: 'vendors', label: 'Nhà Cung Cấp & Thợ', shortLabel: 'Nhà CC', icon: Users },
-  { key: 'cash_flow', label: 'Dòng Tiền & Quỹ', shortLabel: 'Dòng Tiền', icon: Wallet }
-];
-
-const TAB_TITLES: Record<ViewKey, string> = {
-  ledger: 'Sổ Ghi Chép Chi Phí (Ledger)',
-  saturday_report: 'Báo Cáo',
-  bva_budget: 'Dự Toán Ngân Sách (BVA)',
-  vendors: 'Nhà Cung Cấp & Tổ Thợ',
-  cash_flow: 'Dòng Tiền & Quỹ'
-};
+function buildTabs(t: (key: import('../i18n/translations').TranslationKey) => string): TabDef[] {
+  return [
+    { key: 'ledger', label: t('nav.tab.ledger'), shortLabel: t('nav.tab.ledgerShort'), title: t('nav.tab.ledgerTitle'), icon: ClipboardList },
+    { key: 'saturday_report', label: t('nav.tab.report'), shortLabel: t('nav.tab.report'), title: t('nav.tab.report'), icon: Calendar },
+    { key: 'bva_budget', label: t('nav.tab.budget'), shortLabel: t('nav.tab.budgetShort'), title: t('nav.tab.budgetTitle'), icon: Target },
+    { key: 'vendors', label: t('nav.tab.vendors'), shortLabel: t('nav.tab.vendorsShort'), title: t('nav.tab.vendorsTitle'), icon: Users },
+    { key: 'cash_flow', label: t('nav.tab.cashflow'), shortLabel: t('nav.tab.cashflowShort'), title: t('nav.tab.cashflow'), icon: Wallet }
+  ];
+}
 
 export const Navbar: React.FC<NavbarProps> = ({
   projectName,
@@ -70,6 +69,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveView,
   theme,
   onToggleTheme,
+  language,
+  onToggleLanguage,
   onOpenUpload,
   onOpenManualCreate,
   onOpenQuotationModal,
@@ -77,6 +78,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuditLog,
   onLockApp
 }) => {
+  const { t } = useLanguage();
+  const TABS = buildTabs(t);
   return (
     <>
       <header className="glass-panel no-print" style={{ borderBottom: '1px solid var(--border-color)', position: 'sticky', top: 0, zIndex: 100, background: 'var(--header-bg)' }}>
@@ -107,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   AI Vision 1.5
                 </span>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  AI Quản Lý Chi Phí Công Trình
+                  {t('nav.subtitle')}
                 </p>
               </div>
             </div>
@@ -116,12 +119,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ alignItems: 'center', gap: '20px', background: 'var(--bg-card-alt)', padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)' }} className="desktop-only" title="Metrics">
                 <div>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Tổng Chi Phí</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>{t('nav.totalCost')}</p>
                   <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)' }}>{formatVND(totalSpent)}</p>
                 </div>
                 <div style={{ width: '1px', height: '24px', background: 'var(--border-color)' }} />
                 <div>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Cần Xác Minh</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>{t('nav.needsReview')}</p>
                   <p style={{ fontSize: '0.95rem', fontWeight: 800, color: pendingCount > 0 ? 'var(--danger)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     {pendingCount > 0 ? <AlertCircle size={14} color="var(--danger)" /> : <CheckCircle2 size={14} color="var(--success)" />}
                     {pendingCount}
@@ -131,9 +134,19 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 className="btn btn-secondary"
+                onClick={onToggleLanguage}
+                title={language === 'en' ? t('nav.langToggle') : t('nav.langToggleFromVi')}
+                aria-label="Toggle language / Đổi ngôn ngữ"
+                style={{ padding: '7px', fontSize: '0.75rem', fontWeight: 800, minWidth: '30px' }}
+              >
+                {language === 'en' ? 'VI' : 'EN'}
+              </button>
+
+              <button
+                className="btn btn-secondary"
                 onClick={onToggleTheme}
-                title={theme === 'light' ? 'Chuyển sang giao diện tối' : 'Chuyển sang giao diện sáng'}
-                aria-label="Đổi giao diện sáng / tối"
+                title={theme === 'light' ? t('nav.themeToDark') : t('nav.themeToLight')}
+                aria-label="Toggle theme / Đổi giao diện"
                 style={{ padding: '7px' }}
               >
                 {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
@@ -145,30 +158,30 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', overflowY: 'hidden', marginTop: '8px', paddingBottom: '4px', scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}>
             <button className="btn btn-primary" onClick={onOpenUpload} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
               <PlusCircle size={16} />
-              <span className="desktop-only">Thêm Ảnh / Hóa Đơn</span>
+              <span className="desktop-only">{t('nav.addPhoto')}</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onOpenManualCreate} title="Tạo hóa đơn thủ công khi không có ảnh đính kèm" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <button className="btn btn-secondary" onClick={onOpenManualCreate} title={t('nav.createInvoiceTitle')} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
               <FilePlus size={16} color="var(--primary)" />
-              <span className="desktop-only">Tạo Hóa Đơn</span>
+              <span className="desktop-only">{t('nav.createInvoice')}</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onOpenQuotationModal} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', whiteSpace: 'nowrap', flexShrink: 0 }} title="Nhập báo giá hoặc hợp đồng chi tiết với nhà cung cấp">
+            <button className="btn btn-secondary" onClick={onOpenQuotationModal} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', whiteSpace: 'nowrap', flexShrink: 0 }} title={t('nav.importQuoteTitle')}>
               <FileText size={16} color="#818cf8" />
-              <span className="desktop-only">Nhập Báo Giá / HĐ</span>
+              <span className="desktop-only">{t('nav.importQuote')}</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onOpenAuditLog} title="Lịch sử giao dịch & Thùng rác khôi phục" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <button className="btn btn-secondary" onClick={onOpenAuditLog} title={t('nav.historyTitle')} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
               <History size={16} color="var(--primary)" />
-              <span className="desktop-only">Lịch Sử & Thùng Rác</span>
+              <span className="desktop-only">{t('nav.history')}</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onOpenSettings} title="Cài đặt chìa khóa AI Gemini & Tên công trình" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <button className="btn btn-secondary" onClick={onOpenSettings} title={t('nav.settingsTitle')} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
               <Settings size={16} />
-              <span className="desktop-only">Cài Đặt</span>
+              <span className="desktop-only">{t('nav.settings')}</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onLockApp} title="Khóa ứng dụng ngay lập tức" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <button className="btn btn-secondary" onClick={onLockApp} title={t('nav.lockAppTitle')} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
               <Lock size={14} color="var(--danger)" />
             </button>
           </div>
@@ -182,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={tab.key}
                   onClick={() => setActiveView(tab.key)}
-                  title={TAB_TITLES[tab.key]}
+                  title={tab.title}
                   style={{
                     padding: '8px 16px',
                     borderRadius: '10px',

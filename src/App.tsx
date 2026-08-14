@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { Navbar } from './components/Navbar';
 import { ExpenseLedger } from './components/ExpenseLedger';
 import { SaturdayReportView } from './components/SaturdayReportView';
@@ -35,6 +36,15 @@ import {
 } from './services/storageService';
 
 export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+}
+
+function AppContent() {
+  const { language, toggleLanguage } = useLanguage();
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [deletedExpenses, setDeletedExpenses] = useState<ExpenseItem[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
@@ -180,6 +190,8 @@ export default function App() {
         setActiveView={setActiveView}
         theme={theme}
         onToggleTheme={toggleTheme}
+        language={language}
+        onToggleLanguage={toggleLanguage}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenManualCreate={() => setIsManualCreateOpen(true)}
         onOpenQuotationModal={() => setIsQuotationOpen(true)}
