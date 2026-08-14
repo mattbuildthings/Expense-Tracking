@@ -4,6 +4,7 @@ import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, ExpenseCategory, ReportPeriod } from '../types/expense';
 import { formatVND, generateMultiPeriodReport } from '../services/storageService';
 import { categoryAccent } from '../theme';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface SaturdayReportViewProps {
   projectName: string;
@@ -18,6 +19,8 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
   onExportExcel,
   allExpenses
 }) => {
+  const { t, language } = useLanguage();
+  const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
   const [selectedPeriod, setSelectedPeriod] = useState<ReportPeriod>('all');
   
   const report = generateMultiPeriodReport(allExpenses, selectedPeriod);
@@ -51,25 +54,25 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                 <Calendar size={14} /> {report.periodLabel}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Tự động tổng hợp cho {projectName}
+                {t('report.autoSummaryFor')} {projectName}
               </span>
             </div>
             <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
-              Báo Cáo Phân Tích Ngân Sách & Chi Phí (BVA)
+              {t('report.title')}
             </h2>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              So sánh hạn mức dự toán vs. thực chi, rà soát biến động & tiến độ 12 tháng dự án
+              {t('report.subtitle')}
             </p>
           </div>
 
           <div className="no-print" style={{ display: 'flex', gap: '10px' }}>
             <button className="btn btn-secondary" onClick={handlePrint}>
               <Printer size={18} />
-              <span>In Báo Cáo / PDF</span>
+              <span>{t('report.printPdf')}</span>
             </button>
             <button className="btn btn-success" onClick={onExportExcel}>
               <FileSpreadsheet size={18} />
-              <span>Xuất Excel</span>
+              <span>{t('report.exportExcel')}</span>
             </button>
           </div>
         </div>
@@ -77,35 +80,35 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
         {/* Period Selector Tabs Bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
           <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <Filter size={14} /> Kỳ Báo Cáo:
+            <Filter size={14} /> {t('report.periodLabel')}
           </span>
 
           <button
             onClick={() => setSelectedPeriod('weekly')}
             className={`btn btn-sm ${selectedPeriod === 'weekly' ? 'btn-primary' : 'btn-secondary'}`}
           >
-            Tuần
+            {t('report.periodWeekly')}
           </button>
 
           <button
             onClick={() => setSelectedPeriod('monthly')}
             className={`btn btn-sm ${selectedPeriod === 'monthly' ? 'btn-primary' : 'btn-secondary'}`}
           >
-            Tháng
+            {t('report.periodMonthly')}
           </button>
 
           <button
             onClick={() => setSelectedPeriod('quarterly')}
             className={`btn btn-sm ${selectedPeriod === 'quarterly' ? 'btn-primary' : 'btn-secondary'}`}
           >
-            Quý
+            {t('report.periodQuarterly')}
           </button>
 
           <button
             onClick={() => setSelectedPeriod('all')}
             className={`btn btn-sm ${selectedPeriod === 'all' ? 'btn-primary' : 'btn-secondary'}`}
           >
-            Toàn Bộ Dự Án
+            {t('report.periodAll')}
           </button>
         </div>
 
@@ -117,17 +120,17 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
             <AlertCircle size={24} color="var(--danger)" />
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--danger)' }}>
-              Cảnh Báo: Phát Hiện {overBudgetCategories.length} Hạng Mục Chi Vượt Ngân Sách Dự Toán!
+              {t('report.overrunAlertTitle').replace('{n}', String(overBudgetCategories.length))}
             </h3>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {overBudgetCategories.map(c => (
               <div key={c.category} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-card-alt)', padding: '10px 14px', borderRadius: '10px' }}>
                 <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                  {c.label}
+                  {catLabel(CATEGORY_METADATA[c.category as ExpenseCategory])}
                 </span>
                 <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--danger)' }}>
-                  Thực chi: {formatVND(c.totalAmount)} / Dự toán: {formatVND(c.targetBudget || 0)} (Vượt {formatVND(c.totalAmount - (c.targetBudget || 0))})
+                  {t('report.actual')}: {formatVND(c.totalAmount)} / {t('report.budget')}: {formatVND(c.targetBudget || 0)} ({t('report.over')} {formatVND(c.totalAmount - (c.targetBudget || 0))})
                 </span>
               </div>
             ))}
@@ -145,10 +148,10 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
               </div>
               <div>
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-amber)' }}>
-                  Các Mục Cần Rà Soát Lại ({report.flaggedExpenses.length} mục)
+                  {t('report.flaggedTitle')} ({report.flaggedExpenses.length} {t('ledger.itemsSuffix')})
                 </h3>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Hãy xem lại hóa đơn hoặc ghi chú bên dưới trong kỳ báo cáo này
+                  {t('report.flaggedSubtitle')}
                 </p>
               </div>
             </div>
@@ -173,7 +176,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   {item.imageUrl ? (
-                    <img src={item.imageUrl} alt="Hóa đơn" style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
+                    <img src={item.imageUrl} alt={t('ledger.invoiceImageAlt')} style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
                   ) : (
                     <div style={{ width: '48px', height: '48px', background: 'var(--bg-card-alt)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <ImageIcon size={20} color="var(--text-dim)" />
@@ -184,20 +187,20 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                       <span style={{ fontWeight: 800, color: 'var(--accent-amber)', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
                       {item.quantity && (
                         <span style={{ fontSize: '0.75rem', background: 'var(--bg-card-alt)', padding: '2px 8px', borderRadius: '6px', color: 'var(--text-main)', fontWeight: 700 }}>
-                          SL: {item.quantity} {item.unit || ''}
+                          {t('report.qty')}: {item.quantity} {item.unit || ''}
                         </span>
                       )}
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>• {item.date}</span>
                     </div>
                     <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '3px' }}>
-                      {item.merchant} ({CATEGORY_METADATA[item.category]?.label})
+                      {item.merchant} ({catLabel(CATEGORY_METADATA[item.category])})
                     </p>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Ghi chú: {item.note}</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('report.note')}: {item.note}</p>
                   </div>
                 </div>
 
                 <div className="no-print" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--chart-blue)', fontSize: '0.75rem', fontWeight: 700 }}>
-                  <span>Rà soát & Sửa</span>
+                  <span>{t('report.reviewEdit')}</span>
                   <ExternalLink size={16} />
                 </div>
               </div>
@@ -213,7 +216,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
             <Sparkles size={20} />
           </div>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)' }}>
-            Tóm Tắt Tổng Quan ({report.periodLabel})
+            {t('report.summaryTitle')} ({report.periodLabel})
           </h3>
         </div>
         <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', lineHeight: '1.6', fontWeight: 500 }}>
@@ -224,17 +227,17 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
       {/* Financial Metrics Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Tiêu Thực Tế</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('report.totalActualSpend')}</p>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)', marginTop: '6px' }}>
             {formatVND(report.totalAmount)}
           </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{report.itemCount} hóa đơn & giao dịch</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{report.itemCount} {t('report.invoicesTransactions')}</p>
         </div>
 
         <div className="glass-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Hạng Mục Chi Nhiều Nhất</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('report.topCategory')}</p>
           <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '6px' }}>
-            {report.categoryBreakdown[0]?.label || 'Không có'}
+            {report.categoryBreakdown[0] ? catLabel(CATEGORY_METADATA[report.categoryBreakdown[0].category as ExpenseCategory]) : t('report.none')}
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             {formatVND(report.categoryBreakdown[0]?.totalAmount || 0)} ({report.categoryBreakdown[0]?.percentage}%)
@@ -242,11 +245,11 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
         </div>
 
         <div className="glass-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Số Công Thợ Đã Ghi Nhận</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('report.manDaysRecorded')}</p>
           <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--success)', marginTop: '6px' }}>
-            {report.totalManDaysRecorded} Công Thợ
+            {report.totalManDaysRecorded} {t('report.manDaysUnit')}
           </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Phần thô & Hoàn thiện</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{t('report.shellAndFinish')}</p>
         </div>
       </div>
 
@@ -255,10 +258,10 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
           <div>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Target size={18} /> Chi Tiết Ngân Sách Dự Toán vs. Thực Chi (BVA)
+              <Target size={18} /> {t('report.bvaDetailTitle')}
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Theo dõi biến động chi phí, ngân sách còn lại & tỷ lệ hoàn thành 9 hạng mục
+              {t('report.bvaDetailSubtitle')}
             </p>
           </div>
         </div>
@@ -310,15 +313,15 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                     <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: accent, flexShrink: 0 }} />
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 800, fontSize: '1.02rem', color: 'var(--text-main)' }}>{meta.label}</span>
+                        <span style={{ fontWeight: 800, fontSize: '1.02rem', color: 'var(--text-main)' }}>{catLabel(meta)}</span>
                         {isOverBudget && (
                           <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)', fontSize: '0.72rem', fontWeight: 800 }}>
-                            Vượt {formatVND(catSummary.totalAmount - targetB)}
+                            {t('report.over')} {formatVND(catSummary.totalAmount - targetB)}
                           </span>
                         )}
                       </div>
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '3px' }}>
-                        Dự toán: <strong style={{ color: 'var(--text-main)' }}>{formatVND(targetB)}</strong> • Còn lại: <strong style={{ color: remaining < 0 ? 'var(--danger)' : 'var(--success)' }}>{formatVND(remaining)}</strong>
+                        {t('report.budget')}: <strong style={{ color: 'var(--text-main)' }}>{formatVND(targetB)}</strong> • {t('ledger.remainingBudget')}: <strong style={{ color: remaining < 0 ? 'var(--danger)' : 'var(--success)' }}>{formatVND(remaining)}</strong>
                       </p>
                     </div>
                   </div>
@@ -329,7 +332,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                         {formatVND(catSummary.totalAmount)}
                       </p>
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        Đã dùng {variancePct}% dự toán
+                        {t('report.usedPctOfBudget').replace('{pct}', String(variancePct))}
                       </p>
                     </div>
                     <div style={{ color: accent, padding: '4px' }}>
@@ -348,7 +351,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                   <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', background: 'var(--bg-card-alt)' }}>
                     {categoryTransactions.length === 0 ? (
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                        Chưa có giao dịch nào trong danh mục này.
+                        {t('report.noTransactionsInCategory')}
                       </p>
                     ) : (
                       <div>
@@ -377,7 +380,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                                 </p>
                                 {item.quantity && (
                                   <p style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700, marginTop: '2px' }}>
-                                    SL: {item.quantity} {item.unit || ''} {uCost ? `(${formatVND(uCost)}/đv)` : ''}
+                                    {t('report.qty')}: {item.quantity} {item.unit || ''} {uCost ? `(${formatVND(uCost)}/đv)` : ''}
                                   </p>
                                 )}
                               </div>
@@ -390,14 +393,14 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', textAlign: 'left' }}>
                             <thead>
                               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-dim)', fontSize: '0.72rem', textTransform: 'uppercase' }}>
-                                <th style={{ padding: '8px' }}>Mã / Ngày</th>
-                                <th style={{ padding: '8px' }}>Số Lượng (Quantity)</th>
-                                <th style={{ padding: '8px' }}>Đơn Giá (Unit Cost)</th>
-                                <th style={{ padding: '8px' }}>Số Tiền (VND)</th>
-                                <th style={{ padding: '8px' }}>Chi Tiết Phụ</th>
-                                <th style={{ padding: '8px' }}>Nhà Cung Cấp / Thợ</th>
-                                <th style={{ padding: '8px' }}>Ghi Chú</th>
-                                <th style={{ padding: '8px', textAlign: 'right' }}>Thao Tác</th>
+                                <th style={{ padding: '8px' }}>{t('report.colCode')}</th>
+                                <th style={{ padding: '8px' }}>{t('report.colQuantity')}</th>
+                                <th style={{ padding: '8px' }}>{t('report.colUnitCost')}</th>
+                                <th style={{ padding: '8px' }}>{t('report.colAmount')}</th>
+                                <th style={{ padding: '8px' }}>{t('report.colSubDetail')}</th>
+                                <th style={{ padding: '8px' }}>{t('report.colVendor')}</th>
+                                <th style={{ padding: '8px' }}>{t('report.colNote')}</th>
+                                <th style={{ padding: '8px', textAlign: 'right' }}>{t('report.colActions')}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -410,7 +413,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                                   </td>
                                   <td style={{ padding: '10px 8px', fontWeight: 800, color: item.quantity ? 'var(--text-main)' : 'var(--text-dim)' }}>
                                     {item.quantity ? `${item.quantity} ${item.unit || ''}` : item.manDays ? (
-                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><HardHat size={12} /> {item.manDays} công</span>
+                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><HardHat size={12} /> {item.manDays} {t('report.manDaysShort')}</span>
                                     ) : '—'}
                                   </td>
                                   <td style={{ padding: '10px 8px', fontWeight: 700, color: item.unitCost ? 'var(--primary)' : 'var(--text-dim)' }}>
@@ -434,7 +437,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                                       onClick={() => onSelectExpense(item)}
                                       style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                                     >
-                                      Xem & Sửa
+                                      {t('report.viewEdit')}
                                     </button>
                                   </td>
                                 </tr>
