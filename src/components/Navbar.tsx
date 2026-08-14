@@ -107,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   AI Vision 1.5
                 </span>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  Hệ thống tự động đọc hóa đơn Zalo
+                  AI Quản Lý Chi Phí Công Trình
                 </p>
               </div>
             </div>

@@ -200,7 +200,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
       <div className="glass-card" style={{ padding: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)' }}>
-            Chi Tiết Hạn Mức & Biến Động Ngân Sách 9 Hạng Mục
+            Hạn Mức Ngân Sách
           </h3>
           {isEditing && (
             <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
