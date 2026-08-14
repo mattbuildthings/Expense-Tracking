@@ -2,30 +2,32 @@ import React, { useState } from 'react';
 import { Users, HardHat, Boxes, Armchair, Briefcase, Search, ChevronDown, ChevronUp, FileSpreadsheet } from 'lucide-react';
 import type { ExpenseItem, ExpenseCategory } from '../types/expense';
 import { formatVND, removeVietnameseTones, exportVendorsToExcel, getVendorQuotations } from '../services/storageService';
+import { useLanguage } from '../i18n/LanguageContext';
+import type { TranslationKey } from '../i18n/translations';
 
 export type VendorType = 'thợ_thi_công' | 'cung_cấp_vlxd' | 'cung_cấp_thiết_bị_nội_thất' | 'cung_cấp_dịch_vụ_khác';
 
-export const VENDOR_TYPES_METADATA: Record<VendorType, { label: string; icon: any; color: string; bg: string }> = {
+export const VENDOR_TYPES_METADATA: Record<VendorType, { labelKey: TranslationKey; icon: any; color: string; bg: string }> = {
   thợ_thi_công: {
-    label: 'Thợ Thi Công',
+    labelKey: 'vendor.typeLabor',
     icon: HardHat,
     color: '#10b981',
     bg: 'rgba(16, 185, 129, 0.15)'
   },
   cung_cấp_vlxd: {
-    label: 'Cung Cấp VLXD',
+    labelKey: 'vendor.typeMaterials',
     icon: Boxes,
     color: '#3b82f6',
     bg: 'rgba(59, 130, 246, 0.15)'
   },
   cung_cấp_thiết_bị_nội_thất: {
-    label: 'Cung Cấp Thiết Bị Nội Thất',
+    labelKey: 'vendor.typeFFE',
     icon: Armchair,
     color: '#f59e0b',
     bg: 'rgba(245, 158, 11, 0.15)'
   },
   cung_cấp_dịch_vụ_khác: {
-    label: 'Cung Cấp Dịch Vụ Khác',
+    labelKey: 'vendor.typeOther',
     icon: Briefcase,
     color: '#8b5cf6',
     bg: 'rgba(139, 92, 246, 0.15)'
@@ -70,6 +72,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
   onSelectExpense,
   onExportExcel
 }) => {
+  const { t } = useLanguage();
   const [activeFilterType, setActiveFilterType] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVendorName, setSelectedVendorName] = useState<string | null>(null);
@@ -78,7 +81,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
   const vendorsMap = new Map<string, VendorSummary>();
 
   allExpenses.forEach(item => {
-    const rawName = (item.merchant || 'Nhà cung cấp khác').trim();
+    const rawName = (item.merchant || t('vendor.unknownVendor')).trim();
     if (!rawName) return;
 
     const existing = vendorsMap.get(rawName);
@@ -134,17 +137,17 @@ export const VendorView: React.FC<VendorViewProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span className="badge" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', padding: '6px 12px', fontSize: '0.75rem' }}>
-                <Users size={14} /> Danh Mục Đối Tác
+                <Users size={14} /> {t('vendor.pillLabel')}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Dự án {projectName}
+                {t('vendor.projectPrefix')} {projectName}
               </span>
             </div>
             <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '10px' }}>
-              Danh Sách Thợ Thi Công & Nhà Cung Cấp
+              {t('vendor.title')}
             </h2>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Quản lý tổng tiền đã chi trả, số công thợ & bảng kê quyết toán theo 4 nhóm đối tác chuẩn
+              {t('vendor.subtitle')}
             </p>
           </div>
 
@@ -153,10 +156,10 @@ export const VendorView: React.FC<VendorViewProps> = ({
               className="btn btn-secondary"
               onClick={() => onExportExcel ? onExportExcel() : exportVendorsToExcel(allExpenses, projectName)}
               style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--success)', border: '1px solid rgba(16, 185, 129, 0.3)' }}
-              title="Xuất danh sách nhà cung cấp & tổ thợ"
+              title={t('vendor.exportTitle')}
             >
               <FileSpreadsheet size={18} />
-              <span>Xuất Nhà Cung Cấp</span>
+              <span>{t('vendor.exportBtn')}</span>
             </button>
           </div>
         </div>
@@ -168,7 +171,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
             onClick={() => setActiveFilterType('all')}
             className={`btn btn-sm ${activeFilterType === 'all' ? 'btn-primary' : 'btn-secondary'}`}
           >
-            Tất Cả ({vendorsList.length})
+            {t('vendor.all')} ({vendorsList.length})
           </button>
 
           {(Object.entries(VENDOR_TYPES_METADATA) as [VendorType, typeof VENDOR_TYPES_METADATA[VendorType]][]).map(([typeKey, meta]) => {
@@ -181,7 +184,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
                 className={`btn btn-sm ${active ? 'btn-primary' : 'btn-secondary'}`}
                 style={{ background: active ? meta.color : undefined, display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                <IconComp size={14} /> {meta.label}
+                <IconComp size={14} /> {t(meta.labelKey)}
               </button>
             );
           })}
@@ -192,19 +195,19 @@ export const VendorView: React.FC<VendorViewProps> = ({
       {/* Overview Metrics Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--success)' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Tiền Đã Thanh Toán</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('vendor.totalPaid')}</p>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)', marginTop: '6px' }}>
             {formatVND(totalPaidInFilter)}
           </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Qua {totalVendorsCount} nhà cung cấp / tổ thợ</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{t('vendor.totalPaidSub').replace('{n}', String(totalVendorsCount))}</p>
         </div>
 
         <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--chart-blue)' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Số Công Thợ</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('vendor.totalManDays')}</p>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <HardHat size={18} /> {totalManDaysInFilter} Công Thợ
+            <HardHat size={18} /> {totalManDaysInFilter} {t('vendor.totalManDaysUnit')}
           </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Phần thô & Hoàn thiện</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{t('vendor.shellAndFinish')}</p>
         </div>
       </div>
 
@@ -213,7 +216,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
         <Search size={18} color="var(--text-dim)" />
         <input
           type="text"
-          placeholder="Tìm kiếm theo tên tổ thợ, đơn vị cung cấp (VD: Anh Hùng, Sắt Hồng Phát)..."
+          placeholder={t('vendor.searchPlaceholder')}
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           style={{
@@ -258,10 +261,10 @@ export const VendorView: React.FC<VendorViewProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <span className="badge" style={{ background: typeMeta.bg, color: typeMeta.color, fontSize: '0.75rem', fontWeight: 800 }}>
                   <IconComp size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-                  {typeMeta.label}
+                  {t(typeMeta.labelKey)}
                 </span>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 600 }}>
-                  {vendor.transactionCount} hóa đơn
+                  {vendor.transactionCount} {t('vendor.invoicesSuffix')}
                 </span>
               </div>
 
@@ -274,15 +277,15 @@ export const VendorView: React.FC<VendorViewProps> = ({
               {quotedTotal > 0 ? (
                 <div style={{ background: 'var(--bg-card-alt)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '10px', padding: '10px', marginBottom: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
-                    <span style={{ color: '#818cf8', fontWeight: 700 }}>Giá trị hợp đồng:</span>
+                    <span style={{ color: '#818cf8', fontWeight: 700 }}>{t('vendor.contractValue')}</span>
                     <span style={{ color: '#818cf8', fontWeight: 800 }}>{formatVND(quotedTotal)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
-                    <span style={{ color: 'var(--text-dim)' }}>Đã chi thanh toán:</span>
+                    <span style={{ color: 'var(--text-dim)' }}>{t('vendor.paidSoFar')}</span>
                     <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{formatVND(vendor.totalPaid)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', borderTop: '1px dashed var(--border-color)', paddingTop: '4px' }}>
-                    <span style={{ color: 'var(--text-dim)' }}>Còn lại thuộc HĐ:</span>
+                    <span style={{ color: 'var(--text-dim)' }}>{t('vendor.contractRemaining')}</span>
                     <span style={{ color: remainingContract < 0 ? 'var(--danger)' : 'var(--success)', fontWeight: 800 }}>{formatVND(remainingContract)}</span>
                   </div>
                 </div>
@@ -295,14 +298,14 @@ export const VendorView: React.FC<VendorViewProps> = ({
               {/* Man days info if applicable */}
               {vendor.totalManDays > 0 && (
                 <p style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <HardHat size={13} /> Tổng {vendor.totalManDays} công thợ đã ghi nhận
+                  <HardHat size={13} /> {t('vendor.manDaysRecordedPrefix')} {vendor.totalManDays} {t('vendor.manDaysRecordedSuffix')}
                 </p>
               )}
 
               {/* Expand Hint Footer */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '10px', marginTop: '10px' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                  {isSelected ? 'Đóng chi tiết' : 'Xem lịch sử giao dịch'}
+                  {isSelected ? t('vendor.closeDetails') : t('vendor.viewHistory')}
                 </span>
                 {isSelected ? <ChevronUp size={16} color={typeMeta.color} /> : <ChevronDown size={16} color="var(--text-dim)" />}
               </div>
@@ -311,7 +314,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
               {isSelected && (
                 <div style={{ marginTop: '14px', borderTop: '1px solid var(--border-color)', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--chart-blue)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                    Lịch Sử Chi Trả Cho {vendor.name}:
+                    {t('vendor.paymentHistoryFor')} {vendor.name}:
                   </h4>
                   {vendor.transactions.map(tx => (
                     <div
@@ -341,7 +344,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
                         </p>
                       </div>
                       <span style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 700 }}>
-                        Sửa ➔
+                        {t('vendor.edit')}
                       </span>
                     </div>
                   ))}

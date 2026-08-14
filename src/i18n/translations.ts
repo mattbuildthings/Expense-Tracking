@@ -195,7 +195,37 @@ export const translations = {
     'budget.loggedInvoicesTitle': 'Logged Invoices',
     'budget.noInvoicesYet': 'No invoices logged in this category yet.',
     'budget.viewDetails': 'View Details ➔',
-    'budget.deleteQuoteConfirm': 'Are you sure you want to delete this quote/contract?'
+    'budget.deleteQuoteConfirm': 'Are you sure you want to delete this quote/contract?',
+
+    // VendorView
+    'vendor.pillLabel': 'Partner Directory',
+    'vendor.projectPrefix': 'Project',
+    'vendor.title': 'Vendors & Work Crews Directory',
+    'vendor.subtitle': 'Track total payouts, man-days & settlement statements across 4 standard partner groups',
+    'vendor.exportTitle': 'Export the vendor & crew directory',
+    'vendor.exportBtn': 'Export Vendors',
+    'vendor.all': 'All',
+    'vendor.typeLabor': 'Labor Crews',
+    'vendor.typeMaterials': 'Materials Supplier',
+    'vendor.typeFFE': 'FF&E Supplier',
+    'vendor.typeOther': 'Other Services',
+    'vendor.totalPaid': 'Total Amount Paid',
+    'vendor.totalPaidSub': 'Across {n} vendors / crews',
+    'vendor.totalManDays': 'Total Man-Days',
+    'vendor.totalManDaysUnit': 'Man-Days',
+    'vendor.shellAndFinish': 'Shell & Finishes',
+    'vendor.searchPlaceholder': 'Search by crew name, supplier (e.g. Mr. Hung, Hong Phat Steel)...',
+    'vendor.invoicesSuffix': 'invoices',
+    'vendor.contractValue': 'Contract value:',
+    'vendor.paidSoFar': 'Paid so far:',
+    'vendor.contractRemaining': 'Contract remaining:',
+    'vendor.manDaysRecordedPrefix': 'Total',
+    'vendor.manDaysRecordedSuffix': 'man-days recorded',
+    'vendor.closeDetails': 'Close details',
+    'vendor.viewHistory': 'View transaction history',
+    'vendor.paymentHistoryFor': 'Payment History for',
+    'vendor.edit': 'Edit ➔',
+    'vendor.unknownVendor': 'Other Vendor'
   },
   vi: {
     // Navbar
@@ -389,7 +419,37 @@ export const translations = {
     'budget.loggedInvoicesTitle': 'Danh Sách Hóa Đơn Đã Ghi Nhận',
     'budget.noInvoicesYet': 'Chưa có hóa đơn nào thuộc hạng mục này.',
     'budget.viewDetails': 'Xem chi tiết ➔',
-    'budget.deleteQuoteConfirm': 'Bạn có chắc chắn muốn xóa báo giá/hợp đồng này?'
+    'budget.deleteQuoteConfirm': 'Bạn có chắc chắn muốn xóa báo giá/hợp đồng này?',
+
+    // VendorView
+    'vendor.pillLabel': 'Danh Mục Đối Tác',
+    'vendor.projectPrefix': 'Dự án',
+    'vendor.title': 'Danh Sách Thợ Thi Công & Nhà Cung Cấp',
+    'vendor.subtitle': 'Quản lý tổng tiền đã chi trả, số công thợ & bảng kê quyết toán theo 4 nhóm đối tác chuẩn',
+    'vendor.exportTitle': 'Xuất danh sách nhà cung cấp & tổ thợ',
+    'vendor.exportBtn': 'Xuất Nhà Cung Cấp',
+    'vendor.all': 'Tất Cả',
+    'vendor.typeLabor': 'Thợ Thi Công',
+    'vendor.typeMaterials': 'Cung Cấp VLXD',
+    'vendor.typeFFE': 'Cung Cấp Thiết Bị Nội Thất',
+    'vendor.typeOther': 'Cung Cấp Dịch Vụ Khác',
+    'vendor.totalPaid': 'Tổng Tiền Đã Thanh Toán',
+    'vendor.totalPaidSub': 'Qua {n} nhà cung cấp / tổ thợ',
+    'vendor.totalManDays': 'Tổng Số Công Thợ',
+    'vendor.totalManDaysUnit': 'Công Thợ',
+    'vendor.shellAndFinish': 'Phần thô & Hoàn thiện',
+    'vendor.searchPlaceholder': 'Tìm kiếm theo tên tổ thợ, đơn vị cung cấp (VD: Anh Hùng, Sắt Hồng Phát)...',
+    'vendor.invoicesSuffix': 'hóa đơn',
+    'vendor.contractValue': 'Giá trị hợp đồng:',
+    'vendor.paidSoFar': 'Đã chi thanh toán:',
+    'vendor.contractRemaining': 'Còn lại thuộc HĐ:',
+    'vendor.manDaysRecordedPrefix': 'Tổng',
+    'vendor.manDaysRecordedSuffix': 'công thợ đã ghi nhận',
+    'vendor.closeDetails': 'Đóng chi tiết',
+    'vendor.viewHistory': 'Xem lịch sử giao dịch',
+    'vendor.paymentHistoryFor': 'Lịch Sử Chi Trả Cho',
+    'vendor.edit': 'Sửa ➔',
+    'vendor.unknownVendor': 'Nhà cung cấp khác'
   }
 } as const;
 
