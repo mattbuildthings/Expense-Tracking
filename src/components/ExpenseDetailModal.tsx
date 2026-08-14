@@ -3,6 +3,7 @@ import { X, Save, Trash2, DollarSign, Calendar, Tag, Store, CreditCard, Layers, 
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, ExpenseCategory, PaymentMethod, VerificationStatus } from '../types/expense';
 import { formatVND } from '../services/storageService';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ExpenseDetailModalProps {
   item: ExpenseItem | null;
@@ -37,6 +38,8 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
   existingVendors = [],
   existingSubCategories = []
 }) => {
+  const { t, language } = useLanguage();
+  const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
   if (!item) return null;
 
   const [date, setDate] = useState(item.date);
@@ -136,7 +139,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span className="badge" style={{ background: CATEGORY_METADATA[category]?.bg, color: CATEGORY_METADATA[category]?.color, fontSize: '0.75rem', padding: '6px 12px' }}>
-              {CATEGORY_METADATA[category]?.label}
+              {catLabel(CATEGORY_METADATA[category])}
             </span>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>
               ID: {item.id}
@@ -156,7 +159,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                 <div style={{ marginBottom: '16px' }}>
                   <img
                     src={item.imageUrl}
-                    alt="Hóa đơn chi tiết"
+                    alt={t('ledger.invoiceImageAlt')}
                     style={{
                       width: '100%',
                       maxHeight: '340px',
@@ -173,14 +176,14 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                       rel="noreferrer"
                       style={{ fontSize: '0.75rem', color: '#60a5fa', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
-                      <span>Xem ảnh phóng to</span>
+                      <span>{t('detail.viewLargerImage')}</span>
                       <ExternalLink size={14} />
                     </a>
                   </div>
                 </div>
               ) : (
                 <div style={{ padding: '40px 20px', textAlign: 'center', background: 'var(--bg-input)', borderRadius: '16px', border: '1px dashed var(--border-color)', marginBottom: '16px', color: 'var(--text-dim)' }}>
-                  <p style={{ fontSize: '0.75rem' }}>Không có ảnh đính kèm (Hóa đơn thủ công)</p>
+                  <p style={{ fontSize: '0.75rem' }}>{t('detail.noImageAttached')}</p>
                 </div>
               )}
 
@@ -188,8 +191,8 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               {item.aiReasoning && (
                 <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '14px', padding: '14px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '5px' }}><Sparkles size={12} /> ĐỘ TIN CẬY AI VISION</span>
-                    <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>{item.confidenceScore}% Match</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '5px' }}><Sparkles size={12} /> {t('detail.aiConfidence')}</span>
+                    <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>{item.confidenceScore}% {t('detail.match')}</span>
                   </div>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
                     {item.aiReasoning}
@@ -205,7 +208,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                   <DollarSign size={14} />
-                  <span>SỐ TIỀN THANH TOÁN (VND) — THỰC CHI</span>
+                  <span>{t('detail.amountLabel')}</span>
                 </label>
                 <input
                   type="text"
@@ -231,19 +234,19 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                 {/* Quantity & Unit */}
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f8fafc', display: 'block', marginBottom: '4px' }}>
-                    # Số Lượng & Đơn Vị
+                    {t('detail.qtyUnitLabel')}
                   </label>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <input
                       type="number"
-                      placeholder="VD: 50"
+                      placeholder={t('common.qtyPlaceholder')}
                       value={quantity !== undefined ? quantity : ''}
                       onChange={e => handleQuantityChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                       style={{ width: '60%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
                     />
                     <input
                       type="text"
-                      placeholder="cây, m3, công..."
+                      placeholder={t('common.unitPlaceholder')}
                       value={unit}
                       onChange={e => setUnit(e.target.value)}
                       style={{ width: '40%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
@@ -254,11 +257,11 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                 {/* Unit Cost */}
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
-                    <DollarSign size={12} /> Đơn Giá (Unit Cost)
+                    <DollarSign size={12} /> {t('detail.unitCostLabel')}
                   </label>
                   <input
                     type="text"
-                    placeholder="VD: 370,000"
+                    placeholder="e.g. 370,000"
                     value={unitCostStr}
                     onChange={e => handleUnitCostChange(e.target.value)}
                     style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fbbf24', fontSize: '0.75rem', fontWeight: 700 }}
@@ -269,7 +272,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               {/* Variance Indicator Notice */}
               {isVariance && (
                 <div style={{ fontSize: '0.75rem', color: '#fbbf24', background: 'rgba(245, 158, 11, 0.1)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-                  ℹ️ LƯU Ý: Số tiền thực chi ({formatVND(currentAmt)}) khác tích SL × Đơn giá ({formatVND(calculatedTotal)}). Số tiền thực chi được giữ nguyên làm chuẩn.
+                  ℹ️ {t('detail.varianceNotice').replace('{amt}', formatVND(currentAmt)).replace('{calc}', formatVND(calculatedTotal))}
                 </div>
               )}
 
@@ -277,7 +280,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                   <Layers size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                  Danh Mục Công Trình Chuẩn
+                  {t('detail.categoryLabel')}
                 </label>
                 <select
                   value={category}
@@ -296,11 +299,11 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                   <Tag size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                  Chi Tiết Vật Tư / Công Việc Phụ
+                  {t('detail.subCategoryLabel')}
                 </label>
                 <input
                   type="text"
-                  placeholder="VD: Sắt Phi 16, Sơn Dulux, Thợ tô..."
+                  placeholder={t('common.subCategoryPlaceholder')}
                   value={subCategory}
                   list="subcategory-suggestions-detail"
                   onChange={e => setSubCategory(e.target.value)}
@@ -318,7 +321,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                     <Calendar size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                    Ngày Giao Dịch
+                    {t('detail.dateLabel')}
                   </label>
                   <input
                     type="date"
@@ -332,7 +335,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                     <Store size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                    Đơn Vị / Thợ Nhận
+                    {t('detail.vendorLabel')}
                   </label>
                   <input
                     type="text"
@@ -355,29 +358,29 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                     <CreditCard size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                    Hình Thức Thanh Toán
+                    {t('detail.paymentMethodLabel')}
                   </label>
                   <select
                     value={paymentMethod}
                     onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
                     style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
                   >
-                    <option value="chuyển_khoản">Chuyển khoản</option>
-                    <option value="tiền_mặt">Tiền mặt</option>
+                    <option value="chuyển_khoản">{t('common.bankTransfer')}</option>
+                    <option value="tiền_mặt">{t('common.cash')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                    Trạng Thái Kiểm Tra
+                    {t('detail.statusLabel')}
                   </label>
                   <select
                     value={status}
                     onChange={e => setStatus(e.target.value as VerificationStatus)}
                     style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: status === 'đã_xác_minh' ? '#34d399' : '#fbbf24', fontSize: '0.75rem', fontWeight: 800 }}
                   >
-                    <option value="đã_xác_minh">Đã xác minh</option>
-                    <option value="cần_kiểm_tra">Cần kiểm tra lại</option>
+                    <option value="đã_xác_minh">{t('common.verified')}</option>
+                    <option value="cần_kiểm_tra">{t('common.needsRecheck')}</option>
                   </select>
                 </div>
               </div>
@@ -385,7 +388,7 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               {/* Detail Note */}
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                  Ghi Chú Chi Tiết
+                  {t('detail.noteLabel')}
                 </label>
                 <textarea
                   rows={2}
@@ -405,23 +408,23 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
               type="button"
               className="btn btn-danger btn-sm"
               onClick={() => {
-                if (window.confirm('Bạn có chắc chắn muốn xóa chi phí này không?\n\n(Lưu ý: Hóa đơn đã xóa có thể khôi phục từ Thùng Rác)')) {
+                if (window.confirm(t('detail.deleteConfirm'))) {
                   onDelete(item.id);
                   onClose();
                 }
               }}
             >
               <Trash2 size={16} />
-              <span>Xóa Hóa Đơn</span>
+              <span>{t('detail.deleteInvoice')}</span>
             </button>
 
             <div style={{ display: 'flex', gap: '10px' }}>
               <button type="button" className="btn btn-secondary" onClick={onClose}>
-                Hủy
+                {t('common.cancel')}
               </button>
               <button type="submit" className="btn btn-primary">
                 <Save size={18} />
-                <span>Lưu Thay Đổi</span>
+                <span>{t('common.saveChanges')}</span>
               </button>
             </div>
           </div>

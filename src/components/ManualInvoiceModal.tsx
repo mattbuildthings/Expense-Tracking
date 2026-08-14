@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Plus, FilePlus, DollarSign, Calendar, Tag, Store, CreditCard, Layers } from 'lucide-react';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, ExpenseCategory, PaymentMethod, VerificationStatus } from '../types/expense';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ManualInvoiceModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
   existingVendors = [],
   existingSubCategories = []
 }) => {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -92,8 +94,8 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
       unitCost: finalUnitCost || undefined,
       category,
       subCategory: subCategory.trim() || undefined,
-      merchant: merchant.trim() || 'Nhà cung cấp',
-      note: note.trim() || 'Thêm thủ công',
+      merchant: merchant.trim() || t('manual.defaultVendor'),
+      note: note.trim() || t('manual.defaultNote'),
       paymentMethod,
       status,
       confidenceScore: 100,
@@ -117,10 +119,10 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
             </div>
             <div>
               <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
-                Tạo Hóa Đơn Thủ Công
+                {t('manual.title')}
               </h2>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Thêm giao dịch khi không có ảnh hóa đơn đính kèm
+                {t('manual.subtitle')}
               </p>
             </div>
           </div>
@@ -135,12 +137,12 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
           <div>
             <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
               <DollarSign size={14} />
-              <span>SỐ TIỀN THANH TOÁN (VND) — THỰC CHI *</span>
+              <span>{t('manual.amountRequired')}</span>
             </label>
             <input
               type="text"
               required
-              placeholder="VD: 18,500,000"
+              placeholder={t('manual.amountPlaceholder')}
               value={amountStr}
               onChange={e => handleAmountChange(e.target.value)}
               style={{
@@ -161,19 +163,19 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f8fafc', display: 'block', marginBottom: '4px' }}>
-                # Số Lượng & Đơn Vị
+                {t('detail.qtyUnitLabel')}
               </label>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input
                   type="number"
-                  placeholder="VD: 50"
+                  placeholder={t('common.qtyPlaceholder')}
                   value={quantity !== undefined ? quantity : ''}
                   onChange={e => handleQuantityChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                   style={{ width: '60%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', fontWeight: 700 }}
                 />
                 <input
                   type="text"
-                  placeholder="cây, m3..."
+                  placeholder={t('common.unitPlaceholder')}
                   value={unit}
                   onChange={e => setUnit(e.target.value)}
                   style={{ width: '40%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
@@ -183,11 +185,11 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
 
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
-                <DollarSign size={12} /> Đơn Giá (Unit Cost)
+                <DollarSign size={12} /> {t('detail.unitCostLabel')}
               </label>
               <input
                 type="text"
-                placeholder="VD: 370,000"
+                placeholder="e.g. 370,000"
                 value={unitCostStr}
                 onChange={e => handleUnitCostChange(e.target.value)}
                 style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fbbf24', fontSize: '0.75rem', fontWeight: 700 }}
@@ -199,7 +201,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
           <div>
             <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
               <Layers size={14} style={{ display: 'inline', marginRight: '4px' }} />
-              Danh Mục Công Trình Chuẩn *
+              {t('manual.categoryRequired')}
             </label>
             <select
               value={category}
@@ -218,11 +220,11 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
           <div>
             <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
               <Tag size={14} style={{ display: 'inline', marginRight: '4px' }} />
-              Chi Tiết Phụ (Tên Vật Tư / Công Việc)
+              {t('manual.subCategoryLabel')}
             </label>
             <input
               type="text"
-              placeholder="VD: Sắt thép Phi 16, Sơn Dulux..."
+              placeholder={t('manual.subCategoryPlaceholder')}
               value={subCategory}
               list="subcategory-suggestions-manual"
               onChange={e => setSubCategory(e.target.value)}
@@ -240,7 +242,7 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                 <Calendar size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                Ngày Giao Dịch *
+                {t('manual.dateRequired')}
               </label>
               <input
                 type="date"
@@ -254,12 +256,12 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                 <Store size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                Đơn Vị / Thợ Nhận *
+                {t('manual.vendorRequired')}
               </label>
               <input
                 type="text"
                 required
-                placeholder="VD: Đại lý sắt thép, Tổ thợ anh Hùng..."
+                placeholder={t('manual.vendorPlaceholder')}
                 value={merchant}
                 list="vendor-suggestions-manual"
                 onChange={e => setMerchant(e.target.value)}
@@ -278,29 +280,29 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
                 <CreditCard size={14} style={{ display: 'inline', marginRight: '4px' }} />
-                Hình Thức Thanh Toán
+                {t('detail.paymentMethodLabel')}
               </label>
               <select
                 value={paymentMethod}
                 onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
                 style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
               >
-                <option value="chuyển_khoản">Chuyển khoản</option>
-                <option value="tiền_mặt">Tiền mặt</option>
+                <option value="chuyển_khoản">{t('common.bankTransfer')}</option>
+                <option value="tiền_mặt">{t('common.cash')}</option>
               </select>
             </div>
 
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                Trạng Thái Ban Đầu
+                {t('manual.initialStatus')}
               </label>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value as VerificationStatus)}
                 style={{ width: '100%', padding: '8px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: status === 'đã_xác_minh' ? '#34d399' : '#fbbf24', fontSize: '0.75rem', fontWeight: 800 }}
               >
-                <option value="cần_kiểm_tra">Cần kiểm tra lại</option>
-                <option value="đã_xác_minh">Đã xác minh</option>
+                <option value="cần_kiểm_tra">{t('common.needsRecheck')}</option>
+                <option value="đã_xác_minh">{t('common.verified')}</option>
               </select>
             </div>
           </div>
@@ -308,11 +310,11 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
           {/* Detail Note */}
           <div>
             <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-              Ghi Chú Chi Tiết
+              {t('detail.noteLabel')}
             </label>
             <textarea
               rows={2}
-              placeholder="Ghi chú thêm về nội dung thanh toán..."
+              placeholder={t('manual.notePlaceholder')}
               value={note}
               onChange={e => setNote(e.target.value)}
               style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem', resize: 'vertical' }}
@@ -322,11 +324,11 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
           {/* Footer Actions */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose}>
-              Hủy
+              {t('common.cancel')}
             </button>
             <button type="submit" className="btn btn-primary">
               <Plus size={18} />
-              <span>Tạo Hóa Đơn</span>
+              <span>{t('manual.createBtn')}</span>
             </button>
           </div>
 

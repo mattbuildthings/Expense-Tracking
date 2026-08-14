@@ -270,7 +270,56 @@ export const translations = {
     'cashflow.cancel': 'Cancel',
     'cashflow.saveTransaction': 'Save Transaction',
     'cashflow.defaultNoteDeposit': 'Additional capital deposit',
-    'cashflow.defaultNoteWithdrawal': 'Cash withdrawal into site fund'
+    'cashflow.defaultNoteWithdrawal': 'Cash withdrawal into site fund',
+
+    // Common (shared across modals)
+    'common.cancel': 'Cancel',
+    'common.saveChanges': 'Save Changes',
+    'common.delete': 'Delete',
+    'common.close': 'Close',
+    'common.qtyPlaceholder': 'e.g. 50',
+    'common.unitPlaceholder': 'unit, m3, day...',
+    'common.subCategoryPlaceholder': 'e.g. Steel Rebar #16, Dulux Paint...',
+    'common.bankTransfer': 'Bank Transfer',
+    'common.cash': 'Cash',
+    'common.verified': 'Verified',
+    'common.needsRecheck': 'Needs recheck',
+
+    // ExpenseDetailModal
+    'detail.viewLargerImage': 'View larger image',
+    'detail.noImageAttached': 'No image attached (Manual invoice)',
+    'detail.aiConfidence': 'AI VISION CONFIDENCE',
+    'detail.match': 'Match',
+    'detail.amountLabel': 'AMOUNT PAID (VND) — ACTUAL SPEND',
+    'detail.qtyUnitLabel': '# Quantity & Unit',
+    'detail.unitCostLabel': 'Unit Cost',
+    'detail.varianceNotice': 'NOTE: Actual amount paid ({amt}) differs from Qty × Unit Cost ({calc}). The actual amount paid is kept as the source of truth.',
+    'detail.categoryLabel': 'Standard Construction Category',
+    'detail.subCategoryLabel': 'Material / Sub-task Detail',
+    'detail.dateLabel': 'Transaction Date',
+    'detail.vendorLabel': 'Vendor / Recipient',
+    'detail.paymentMethodLabel': 'Payment Method',
+    'detail.statusLabel': 'Review Status',
+    'detail.noteLabel': 'Detail Note',
+    'detail.deleteConfirm': 'Are you sure you want to delete this expense?\n\n(Note: deleted invoices can be restored from the Trash)',
+    'detail.deleteInvoice': 'Delete Invoice',
+
+    // ManualInvoiceModal
+    'manual.title': 'Create Manual Invoice',
+    'manual.subtitle': 'Add a transaction when no receipt photo is available',
+    'manual.amountRequired': 'AMOUNT PAID (VND) — ACTUAL SPEND *',
+    'manual.amountPlaceholder': 'e.g. 18,500,000',
+    'manual.categoryRequired': 'Standard Construction Category *',
+    'manual.subCategoryLabel': 'Sub-detail (Material / Task Name)',
+    'manual.subCategoryPlaceholder': 'e.g. Steel Rebar #16, Dulux Paint...',
+    'manual.dateRequired': 'Transaction Date *',
+    'manual.vendorRequired': 'Vendor / Recipient *',
+    'manual.vendorPlaceholder': 'e.g. Steel supplier, Mr. Hung\'s crew...',
+    'manual.initialStatus': 'Initial Status',
+    'manual.notePlaceholder': 'Additional note about this payment...',
+    'manual.createBtn': 'Create Invoice',
+    'manual.defaultVendor': 'Vendor',
+    'manual.defaultNote': 'Added manually'
   },
   vi: {
     // Navbar
@@ -539,7 +588,56 @@ export const translations = {
     'cashflow.cancel': 'Hủy',
     'cashflow.saveTransaction': 'Lưu Giao Dịch',
     'cashflow.defaultNoteDeposit': 'Nạp vốn bổ sung',
-    'cashflow.defaultNoteWithdrawal': 'Rút tiền mặt nhập quỹ công trình'
+    'cashflow.defaultNoteWithdrawal': 'Rút tiền mặt nhập quỹ công trình',
+
+    // Common (shared across modals)
+    'common.cancel': 'Hủy',
+    'common.saveChanges': 'Lưu Thay Đổi',
+    'common.delete': 'Xóa',
+    'common.close': 'Đóng',
+    'common.qtyPlaceholder': 'VD: 50',
+    'common.unitPlaceholder': 'cây, m3, công...',
+    'common.subCategoryPlaceholder': 'VD: Sắt Phi 16, Sơn Dulux...',
+    'common.bankTransfer': 'Chuyển khoản',
+    'common.cash': 'Tiền mặt',
+    'common.verified': 'Đã xác minh',
+    'common.needsRecheck': 'Cần kiểm tra lại',
+
+    // ExpenseDetailModal
+    'detail.viewLargerImage': 'Xem ảnh phóng to',
+    'detail.noImageAttached': 'Không có ảnh đính kèm (Hóa đơn thủ công)',
+    'detail.aiConfidence': 'ĐỘ TIN CẬY AI VISION',
+    'detail.match': 'Khớp',
+    'detail.amountLabel': 'SỐ TIỀN THANH TOÁN (VND) — THỰC CHI',
+    'detail.qtyUnitLabel': '# Số Lượng & Đơn Vị',
+    'detail.unitCostLabel': 'Đơn Giá (Unit Cost)',
+    'detail.varianceNotice': 'LƯU Ý: Số tiền thực chi ({amt}) khác tích SL × Đơn giá ({calc}). Số tiền thực chi được giữ nguyên làm chuẩn.',
+    'detail.categoryLabel': 'Danh Mục Công Trình Chuẩn',
+    'detail.subCategoryLabel': 'Chi Tiết Vật Tư / Công Việc Phụ',
+    'detail.dateLabel': 'Ngày Giao Dịch',
+    'detail.vendorLabel': 'Đơn Vị / Thợ Nhận',
+    'detail.paymentMethodLabel': 'Hình Thức Thanh Toán',
+    'detail.statusLabel': 'Trạng Thái Kiểm Tra',
+    'detail.noteLabel': 'Ghi Chú Chi Tiết',
+    'detail.deleteConfirm': 'Bạn có chắc chắn muốn xóa chi phí này không?\n\n(Lưu ý: Hóa đơn đã xóa có thể khôi phục từ Thùng Rác)',
+    'detail.deleteInvoice': 'Xóa Hóa Đơn',
+
+    // ManualInvoiceModal
+    'manual.title': 'Tạo Hóa Đơn Thủ Công',
+    'manual.subtitle': 'Thêm giao dịch khi không có ảnh hóa đơn đính kèm',
+    'manual.amountRequired': 'SỐ TIỀN THANH TOÁN (VND) — THỰC CHI *',
+    'manual.amountPlaceholder': 'VD: 18,500,000',
+    'manual.categoryRequired': 'Danh Mục Công Trình Chuẩn *',
+    'manual.subCategoryLabel': 'Chi Tiết Phụ (Tên Vật Tư / Công Việc)',
+    'manual.subCategoryPlaceholder': 'VD: Sắt thép Phi 16, Sơn Dulux...',
+    'manual.dateRequired': 'Ngày Giao Dịch *',
+    'manual.vendorRequired': 'Đơn Vị / Thợ Nhận *',
+    'manual.vendorPlaceholder': 'VD: Đại lý sắt thép, Tổ thợ anh Hùng...',
+    'manual.initialStatus': 'Trạng Thái Ban Đầu',
+    'manual.notePlaceholder': 'Ghi chú thêm về nội dung thanh toán...',
+    'manual.createBtn': 'Tạo Hóa Đơn',
+    'manual.defaultVendor': 'Nhà cung cấp',
+    'manual.defaultNote': 'Thêm thủ công'
   }
 } as const;
 
