@@ -3,6 +3,7 @@ import { Search, Trash2, CheckCircle, ExternalLink, Boxes, AlertTriangle, Shield
 import { CATEGORY_METADATA } from '../types/expense';
 import type { ExpenseItem, FilterOptions } from '../types/expense';
 import { formatVND, filterExpenses, getCategoryBudgets, getInitialFunds } from '../services/storageService';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ExpenseLedgerProps {
   expenses: ExpenseItem[];
@@ -27,6 +28,8 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
   onOpenUpload,
   onOpenQuotationModal
 }) => {
+  const { t, language } = useLanguage();
+  const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
   const [filters, setFilters] = useState<FilterOptions>({
     searchTerm: '',
     category: 'all',
@@ -114,36 +117,36 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
       {/* GROUP 1: OVERALL PROJECT BUDGET SUMMARY (BVA) */}
       <div style={{ marginBottom: '20px' }}>
         <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Target size={14} /> Tổng Quan Ngân Sách Dự Án (BVA)
+          <Target size={14} /> {t('ledger.bvaOverview')}
         </h4>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', background: 'rgba(99, 102, 241, 0.06)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(99, 102, 241, 0.25)' }}>
           <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid var(--primary)', background: 'var(--bg-card)' }}>
-            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Chi Phí Thực Tế</p>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('ledger.actualSpent')}</p>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
               {formatVND(totalSpent)}
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-              {expenses.length} giao dịch
+              {expenses.length} {t('ledger.transactionsSuffix')}
             </p>
           </div>
 
           <div className="glass-card" style={{ padding: '16px', borderLeft: '4px solid var(--chart-blue)', background: 'var(--bg-card)' }}>
-            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Dự Toán Ngân Sách</p>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('ledger.budgetEstimate')}</p>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-blue)', marginTop: '4px' }}>
               {formatVND(totalTargetBudget)}
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-              Hạn mức 9 hạng mục
+              {t('ledger.budgetLimit9')}
             </p>
           </div>
 
           <div className="glass-card" style={{ padding: '16px', borderLeft: `4px solid ${totalRemainingBudget < 0 ? 'var(--danger)' : 'var(--success)'}`, background: 'var(--bg-card)' }}>
-            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Ngân Sách Còn Lại</p>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('ledger.remainingBudget')}</p>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: totalRemainingBudget < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '4px' }}>
               {formatVND(totalRemainingBudget)}
             </h3>
             <p style={{ fontSize: '0.75rem', color: totalRemainingBudget < 0 ? 'var(--danger)' : 'var(--success)', marginTop: '2px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {totalRemainingBudget < 0 ? <><AlertTriangle size={12} /> Đã Vượt Ngân Sách</> : <><ShieldCheck size={12} /> Khả Dụng</>}
+              {totalRemainingBudget < 0 ? <><AlertTriangle size={12} /> {t('ledger.overBudget')}</> : <><ShieldCheck size={12} /> {t('ledger.available')}</>}
             </p>
           </div>
         </div>
@@ -151,15 +154,15 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
         {/* Real-time Cash Flow Sub-strip */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginTop: '12px' }}>
           <div style={{ background: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.25)', padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--chart-blue)', display: 'flex', alignItems: 'center', gap: '5px' }}><Landmark size={13} /> Số Dư Ngân Hàng Còn:</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--chart-blue)', display: 'flex', alignItems: 'center', gap: '5px' }}><Landmark size={13} /> {t('ledger.bankRemaining')}</span>
             <span style={{ fontSize: '0.95rem', fontWeight: 800, color: bankAvailable < 0 ? 'var(--danger)' : 'var(--text-main)' }}>{formatVND(bankAvailable)}</span>
           </div>
           <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.25)', padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '5px' }}><Wallet size={13} /> Ví Tiền Mặt Còn:</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '5px' }}><Wallet size={13} /> {t('ledger.cashRemaining')}</span>
             <span style={{ fontSize: '0.95rem', fontWeight: 800, color: cashAvailable < 0 ? 'var(--danger)' : 'var(--text-main)' }}>{formatVND(cashAvailable)}</span>
           </div>
           <div style={{ background: 'rgba(99, 102, 241, 0.18)', border: '1px solid rgba(99, 102, 241, 0.35)', padding: '10px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '5px' }}><DollarSign size={13} /> Tổng Dòng Tiền Khả Dụng:</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '5px' }}><DollarSign size={13} /> {t('ledger.totalFundsAvailable')}</span>
             <span style={{ fontSize: '0.95rem', fontWeight: 900, color: totalFundsAvailable < 0 ? 'var(--danger)' : 'var(--success)' }}>{formatVND(totalFundsAvailable)}</span>
           </div>
         </div>
@@ -169,70 +172,70 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
           <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <HardHat size={14} /> Chi Phí Hạng Mục Chính & Trạng Thái
+            <HardHat size={14} /> {t('ledger.categoryStatus')}
           </h4>
           {totalManDays > 0 && (
             <span style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <HardHat size={13} /> Tổng {totalManDays} công thợ ghi nhận
+              <HardHat size={13} /> {t('ledger.manDaysRecordedPrefix')} {totalManDays} {t('ledger.manDaysRecordedSuffix')}
             </span>
           )}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '12px', background: 'var(--bg-card-alt)', padding: '16px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
           <div className="glass-card" style={{ padding: '14px', borderLeft: '4px solid var(--cat-shell-material)', background: 'var(--bg-card)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Phần Thô — Vật Tư</p>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('ledger.catShellMaterial')}</p>
               <Boxes size={14} color="var(--cat-shell-material)" />
             </div>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--cat-shell-material)', marginTop: '4px' }}>
               {formatVND(categoryStats['phần_thô_vật_tư'] || 0)}
             </h3>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Sắt, cát, xi măng</p>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>{t('ledger.catShellMaterialDesc')}</p>
           </div>
 
           <div className="glass-card" style={{ padding: '14px', borderLeft: '4px solid var(--cat-shell-labor)', background: 'var(--bg-card)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Phần Thô — Nhân Công</p>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('ledger.catShellLabor')}</p>
               <HardHat size={14} color="var(--cat-shell-labor)" />
             </div>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--cat-shell-labor)', marginTop: '4px' }}>
               {formatVND(categoryStats['phần_thô_nhân_công'] || 0)}
             </h3>
             <p style={{ fontSize: '0.72rem', color: 'var(--cat-shell-labor)', fontWeight: 700, marginTop: '2px' }}>
-              Lương thợ
+              {t('ledger.catShellLaborDesc')}
             </p>
           </div>
 
           <div className="glass-card" style={{ padding: '14px', borderLeft: '4px solid var(--cat-finish-material)', background: 'var(--bg-card)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Hoàn Thiện — Vật Tư</p>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('ledger.catFinishMaterial')}</p>
               <Paintbrush size={14} color="var(--cat-finish-material)" />
             </div>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--cat-finish-material)', marginTop: '4px' }}>
               {formatVND(categoryStats['hoàn_thiện_vật_tư'] || 0)}
             </h3>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Sơn, gạch, thiết bị</p>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>{t('ledger.catFinishMaterialDesc')}</p>
           </div>
 
           <div className="glass-card" style={{ padding: '14px', borderLeft: '4px solid var(--cat-furniture)', background: 'var(--bg-card)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Nội Thất (FF&E)</p>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('ledger.catFurniture')}</p>
               <Armchair size={14} color="var(--cat-furniture)" />
             </div>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--cat-furniture)', marginTop: '4px' }}>
               {formatVND(categoryStats['nội_thất_thiết_bị'] || 0)}
             </h3>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Tủ kệ, máy lạnh</p>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>{t('ledger.catFurnitureDesc')}</p>
           </div>
 
           <div className="glass-card" style={{ padding: '14px', borderLeft: `4px solid ${pendingItems.length > 0 ? 'var(--border-strong)' : 'var(--success)'}`, background: 'var(--bg-card)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Cần Rà Soát</p>
+              <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{t('ledger.needsReview')}</p>
               {pendingItems.length > 0 ? <AlertTriangle size={14} color="var(--text-dim)" /> : <ShieldCheck size={14} color="var(--success)" />}
             </div>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: pendingItems.length > 0 ? 'var(--text-dim)' : 'var(--success)', marginTop: '4px' }}>
-              {pendingItems.length} mục
+              {pendingItems.length} {t('ledger.itemsSuffix')}
             </h3>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Chưa xác minh</p>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>{t('ledger.unverified')}</p>
           </div>
         </div>
       </div>
@@ -246,7 +249,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
               <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
-                placeholder="Tìm GPXD, sắt thép, minh ngoc, 18.5M..."
+                placeholder={t('ledger.searchPlaceholder')}
                 value={filters.searchTerm}
                 onChange={e => {
                   setFilters({ ...filters, searchTerm: e.target.value });
@@ -282,9 +285,9 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                 cursor: 'pointer'
               }}
             >
-              <option value="all">Tất cả trạng thái</option>
-              <option value="đã_xác_minh">Đã xác minh</option>
-              <option value="cần_kiểm_tra">Cần kiểm tra lại</option>
+              <option value="all">{t('ledger.allStatuses')}</option>
+              <option value="đã_xác_minh">{t('ledger.verified')}</option>
+              <option value="cần_kiểm_tra">{t('ledger.needsRecheck')}</option>
             </select>
 
             <button
@@ -292,10 +295,10 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             >
               <Filter size={16} />
-              <span>{showAdvancedFilters ? 'Ẩn Bộ Lọc' : 'Bộ Lọc...'}</span>
+              <span>{showAdvancedFilters ? t('ledger.filtersHide') : t('ledger.filtersShow')}</span>
             </button>
 
-            <button className="btn btn-secondary btn-sm" onClick={handleResetFilters} title="Đặt lại bộ lọc">
+            <button className="btn btn-secondary btn-sm" onClick={handleResetFilters} title={t('ledger.resetFiltersTitle')}>
               <RotateCcw size={16} />
             </button>
 
@@ -304,10 +307,10 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                 className="btn btn-secondary"
                 onClick={onOpenQuotationModal}
                 style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }}
-                title="Nhập báo giá hoặc hợp đồng chi tiết với nhà cung cấp"
+                title={t('nav.importQuoteTitle')}
               >
                 <FileText size={16} />
-                <span>+ Nhập Báo Giá / HĐ</span>
+                <span>{t('ledger.importQuoteShort')}</span>
               </button>
             )}
 
@@ -315,10 +318,10 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
               className="btn btn-secondary"
               onClick={onExportExcel}
               style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--success)', border: '1px solid rgba(16, 185, 129, 0.3)' }}
-              title="Xuất bảng danh sách hóa đơn hiển thị ra Excel hoặc Google Sheets"
+              title={t('ledger.exportTitle')}
             >
               <FileSpreadsheet size={16} />
-              <span>Xuất Sheets / Excel ({filteredExpenses.length})</span>
+              <span>{t('ledger.exportSheets')} ({filteredExpenses.length})</span>
             </button>
           </div>
 
@@ -334,7 +337,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
             }}>
               <div>
                 <label style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                  Từ Ngày
+                  {t('ledger.fromDate')}
                 </label>
                 <input
                   type="date"
@@ -346,7 +349,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
               <div>
                 <label style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                  Đến Ngày
+                  {t('ledger.toDate')}
                 </label>
                 <input
                   type="date"
@@ -358,7 +361,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
               <div>
                 <label style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--success)', display: 'block', marginBottom: '4px' }}>
-                  Tiền Min (VND)
+                  {t('ledger.minAmount')}
                 </label>
                 <input
                   type="number"
@@ -371,7 +374,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
               <div>
                 <label style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--success)', display: 'block', marginBottom: '4px' }}>
-                  Tiền Max (VND)
+                  {t('ledger.maxAmount')}
                 </label>
                 <input
                   type="number"
@@ -387,7 +390,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
           {/* Category Filter Grid */}
           <div>
             <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: '8px' }}>
-              Danh Mục Công Trình ({Object.keys(CATEGORY_METADATA).length} Hạng Mục):
+              {t('ledger.categoryFilterLabel')} ({Object.keys(CATEGORY_METADATA).length} {t('ledger.categoriesSuffix')}):
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
               <button
@@ -395,7 +398,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                 className={`btn btn-sm ${filters.category === 'all' ? 'btn-primary' : 'btn-secondary'}`}
                 style={{ justifyContent: 'center', width: '100%' }}
               >
-                Tất cả ({expenses.length})
+                {t('ledger.all')} ({expenses.length})
               </button>
 
               {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => (
@@ -413,7 +416,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  {meta.label}
+                  {catLabel(meta)}
                 </button>
               ))}
             </div>
@@ -436,24 +439,24 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
           gap: '10px'
         }}>
           <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
-            Đã chọn {selectedIds.length} mục
+            {selectedIds.length} {t('ledger.selectedSuffix')}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button className="btn btn-success btn-sm" onClick={() => { onBatchVerify(selectedIds); setSelectedIds([]); }}>
               <CheckCircle size={16} />
-              <span>Xác Minh</span>
+              <span>{t('ledger.verifyBtn')}</span>
             </button>
             <button
               className="btn btn-danger btn-sm"
               onClick={() => {
-                if (window.confirm(`Bạn có chắc chắn muốn xóa ${selectedIds.length} chi phí đã chọn không?`)) {
+                if (window.confirm(t('ledger.deleteSelectedConfirm'))) {
                   onBatchDelete(selectedIds);
                   setSelectedIds([]);
                 }
               }}
             >
               <Trash2 size={16} />
-              <span>Xóa Đã Chọn</span>
+              <span>{t('ledger.deleteSelected')}</span>
             </button>
           </div>
         </div>
@@ -462,13 +465,13 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
       {/* Header Result Counter */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', padding: '0 4px' }}>
         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          Tìm thấy <strong style={{ color: 'var(--success)' }}>{filteredExpenses.length}</strong> giao dịch
+          {t('ledger.found')} <strong style={{ color: 'var(--success)' }}>{filteredExpenses.length}</strong> {t('ledger.transactionsSuffix')}
         </p>
 
         {totalPages > 1 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-              Trang {validCurrentPage} / {totalPages}
+              {t('ledger.page')} {validCurrentPage} / {totalPages}
             </span>
             <div style={{ display: 'flex', gap: '4px' }}>
               <button
@@ -494,10 +497,10 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
       <div className="glass-panel" style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
         {paginatedExpenses.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-muted)' }}>Chưa có hóa đơn nào khớp với bộ lọc</p>
+            <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-muted)' }}>{t('ledger.noMatch')}</p>
             <button className="btn btn-primary" onClick={onOpenUpload} style={{ marginTop: '16px' }}>
               <Plus size={18} />
-              <span>Tải Lên Hóa Đơn Đầu Tiên</span>
+              <span>{t('ledger.uploadFirst')}</span>
             </button>
           </div>
         ) : (
@@ -524,10 +527,10 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                     }}
                   >
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt="Hóa đơn" style={{ width: '54px', height: '54px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
+                      <img src={item.imageUrl} alt={t('ledger.invoiceImageAlt')} style={{ width: '54px', height: '54px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
                     ) : (
                       <div style={{ width: '54px', height: '54px', background: 'var(--bg-card-alt)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-dim)', fontSize: '0.7rem' }}>
-                        No Img
+                        {t('ledger.noImg')}
                       </div>
                     )}
                     <div style={{ flex: 1 }}>
@@ -540,7 +543,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                       </p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
                         <span className="badge" style={{ background: categoryMeta.bg, color: categoryMeta.color, fontSize: '0.72rem' }}>
-                          {categoryMeta.label}
+                          {catLabel(categoryMeta)}
                         </span>
                         {item.quantity && (
                           <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700 }}>
@@ -567,17 +570,17 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                         style={{ cursor: 'pointer' }}
                       />
                     </th>
-                    <th style={{ padding: '14px 16px', width: '75px' }}>Ảnh Hóa Đơn</th>
-                    <th style={{ padding: '14px 16px' }}>Ngày</th>
-                    <th style={{ padding: '14px 16px' }}>Số Lượng</th>
-                    <th style={{ padding: '14px 16px' }}>Đơn Giá (Unit Cost)</th>
-                    <th style={{ padding: '14px 16px' }}>Số Tiền (Total Paid)</th>
-                    <th style={{ padding: '14px 16px' }}>Danh Mục Chuẩn & Phụ</th>
-                    <th style={{ padding: '14px 16px' }}>Đơn Vị / Thợ Nhận</th>
-                    <th style={{ padding: '14px 16px' }}>Ghi Chú Chi Tiết</th>
-                    <th style={{ padding: '14px 16px' }}>Thanh Toán</th>
-                    <th style={{ padding: '14px 16px' }}>Trạng Thái</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'right' }}>Thao Tác</th>
+                    <th style={{ padding: '14px 16px', width: '75px' }}>{t('ledger.colImage')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colDate')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colQuantity')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colUnitCost')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colTotalPaid')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colCategory')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colVendor')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colNote')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colPayment')}</th>
+                    <th style={{ padding: '14px 16px' }}>{t('ledger.colStatus')}</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'right' }}>{t('ledger.colActions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -608,7 +611,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                           {item.imageUrl ? (
                             <img
                               src={item.imageUrl}
-                              alt="Hóa đơn"
+                              alt={t('ledger.invoiceImageAlt')}
                               onClick={() => onSelectExpense(item)}
                               style={{
                                 width: '46px',
@@ -635,7 +638,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                                 cursor: 'pointer'
                               }}
                             >
-                              No Img
+                              {t('ledger.noImg')}
                             </div>
                           )}
                         </td>
@@ -658,7 +661,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
 
                         <td style={{ padding: '14px 16px' }}>
                           <span className="badge" style={{ background: categoryMeta.bg, color: categoryMeta.color }}>
-                            {categoryMeta.label}
+                            {catLabel(categoryMeta)}
                           </span>
                           {item.subCategory && (
                             <p style={{ fontSize: '0.75rem', color: 'var(--chart-blue)', fontWeight: 700, marginTop: '3px' }}>
@@ -676,17 +679,17 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                         </td>
 
                         <td style={{ padding: '14px 16px', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          {item.paymentMethod === 'chuyển_khoản' ? <><Landmark size={13} /> Chuyển khoản</> : <><Wallet size={13} /> Tiền mặt</>}
+                          {item.paymentMethod === 'chuyển_khoản' ? <><Landmark size={13} /> {t('ledger.bankTransfer')}</> : <><Wallet size={13} /> {t('ledger.cash')}</>}
                         </td>
 
                         <td style={{ padding: '14px 16px' }}>
                           {item.status === 'đã_xác_minh' ? (
                             <span className="badge badge-verified">
-                              <CheckCircle size={14} /> Đã xác minh
+                              <CheckCircle size={14} /> {t('ledger.verifiedBadge')}
                             </span>
                           ) : (
                             <span className="badge badge-pending">
-                              <AlertTriangle size={14} /> Cần kiểm tra
+                              <AlertTriangle size={14} /> {t('ledger.needsCheckBadge')}
                             </span>
                           )}
                         </td>
@@ -696,19 +699,19 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                             <button
                               className="btn btn-secondary btn-sm"
                               onClick={() => onSelectExpense(item)}
-                              title="Xem chi tiết & Chỉnh sửa"
+                              title={t('ledger.editTitle')}
                             >
                               <ExternalLink size={14} />
-                              <span>Sửa</span>
+                              <span>{t('ledger.edit')}</span>
                             </button>
                             <button
                               className="btn btn-danger btn-sm"
                               onClick={() => {
-                                if (window.confirm('Bạn có chắc chắn muốn xóa chi phí này không?')) {
+                                if (window.confirm(t('ledger.deleteConfirm'))) {
                                   onDeleteExpense(item.id);
                                 }
                               }}
-                              title="Xóa dòng chi phí"
+                              title={t('ledger.deleteTitle')}
                             >
                               <Trash2 size={14} />
                             </button>
@@ -726,7 +729,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
         {totalPages > 1 && (
           <div style={{ padding: '16px 20px', background: 'var(--bg-card-alt)', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Trang <strong style={{ color: 'var(--text-main)' }}>{validCurrentPage}</strong> / {totalPages}
+              {t('ledger.page')} <strong style={{ color: 'var(--text-main)' }}>{validCurrentPage}</strong> / {totalPages}
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
@@ -734,14 +737,14 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                 disabled={validCurrentPage === 1}
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               >
-                <ChevronLeft size={16} /> Trang Trước
+                <ChevronLeft size={16} /> {t('ledger.prevPage')}
               </button>
               <button
                 className="btn btn-secondary btn-sm"
                 disabled={validCurrentPage === totalPages}
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               >
-                Trang Sau <ChevronRight size={16} />
+                {t('ledger.nextPage')} <ChevronRight size={16} />
               </button>
             </div>
           </div>
