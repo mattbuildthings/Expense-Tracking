@@ -22,13 +22,10 @@ html[data-theme="dark"] {
   --accent-purple: #8b5cf6;
 
   --success: #34d399;
-  --warning: #fbbf24;
   --danger: #f87171;
 
   --chart-blue: #60a5fa;
   --chart-green: #34d399;
-  --chart-cyan: #22d3ee;
-  --chart-amber: #fbbf24;
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
@@ -77,13 +74,10 @@ html[data-theme="light"] {
   --accent-purple: #6d28d9;
 
   --success: #047857;
-  --warning: #b45309;
   --danger: #dc2626;
 
   --chart-blue: #1d4ed8;
   --chart-green: #047857;
-  --chart-cyan: #0e7490;
-  --chart-amber: #b45309;
 
   --text-main: #0f172a;
   --text-muted: #475569;
@@ -285,9 +279,9 @@ html[data-theme="light"] .btn-primary:hover {
 }
 
 .badge-pending {
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--warning);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: var(--bg-card-alt);
+  color: var(--text-dim);
+  border: 1px solid var(--border-strong);
 }
 
 html[data-theme="light"] .badge-verified {

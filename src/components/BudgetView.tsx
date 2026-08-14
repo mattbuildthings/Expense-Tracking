@@ -177,9 +177,9 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Tất cả 9 hạng mục công trình</p>
         </div>
 
-        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--chart-cyan)' }}>
+        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--primary)' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Tổng Thực Chi Đến Nay</p>
-          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-cyan)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)', marginTop: '6px' }}>
             {formatVND(totalActualSpent)}
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Đã dùng {totalPercentageUsed}% tổng dự toán</p>
@@ -203,7 +203,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
             Chi Tiết Hạn Mức & Biến Động Ngân Sách 9 Hạng Mục
           </h3>
           {isEditing && (
-            <span style={{ fontSize: '0.75rem', color: 'var(--warning)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
               <Edit2 size={13} /> Bạn đang ở chế độ chỉnh sửa hạn mức dự toán
             </span>
           )}
@@ -226,7 +226,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
             const categoryTransactions = allExpenses.filter(i => i.category === key);
 
             let barColor = 'var(--success)'; // Green < 85%
-            if (pctUsed >= 85 && pctUsed <= 100) barColor = 'var(--warning)'; // Amber
+            if (pctUsed >= 85 && pctUsed <= 100) barColor = 'var(--accent-amber)'; // Amber
             if (isOver) barColor = 'var(--danger)'; // Red, over budget
             const accent = categoryAccent(key);
 
@@ -300,7 +300,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     {/* Actual Spent */}
                     <div style={{ textAlign: 'right' }}>
                       <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Thực Chi</p>
-                      <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-cyan)' }}>
+                      <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)' }}>
                         {formatVND(actual)}
                       </p>
                     </div>
@@ -376,7 +376,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                                 <div>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <span style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-main)' }}>{q.vendorName}</span>
-                                    <span className="badge" style={{ background: q.status === 'signed' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)', color: q.status === 'signed' ? 'var(--success)' : 'var(--warning)', fontSize: '0.72rem' }}>
+                                    <span className="badge" style={{ background: q.status === 'signed' ? 'rgba(16, 185, 129, 0.2)' : 'var(--bg-card-alt)', color: q.status === 'signed' ? 'var(--success)' : 'var(--text-dim)', border: q.status === 'signed' ? 'none' : '1px solid var(--border-strong)', fontSize: '0.75rem' }}>
                                       {q.status === 'signed' ? 'Hợp Đồng Đã Ký' : 'Báo Giá Dự Thảo'}
                                     </span>
                                     {q.subCategory && (
@@ -395,7 +395,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                                   </div>
                                   <div style={{ textAlign: 'right' }}>
                                     <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>ĐÃ CHI THANH TOÁN</p>
-                                    <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--chart-cyan)' }}>{formatVND(paidAmount)}</p>
+                                    <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)' }}>{formatVND(paidAmount)}</p>
                                   </div>
                                   <div style={{ textAlign: 'right', minWidth: '110px' }}>
                                     <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>CÒN LẠI THUỘC HĐ</p>
@@ -421,7 +421,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
 
                     {/* Section B: Logged Receipts List */}
                     <div>
-                      <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--chart-cyan)', marginBottom: '10px' }}>
+                      <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '10px' }}>
                         Danh Sách Hóa Đơn Đã Ghi Nhận ({categoryTransactions.length})
                       </h4>
                       {categoryTransactions.length === 0 ? (

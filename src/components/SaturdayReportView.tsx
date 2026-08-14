@@ -141,10 +141,10 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ padding: '8px', background: 'rgba(245, 158, 11, 0.2)', borderRadius: '10px' }}>
-                <AlertTriangle color="var(--warning)" size={24} />
+                <AlertTriangle color="var(--accent-amber)" size={24} />
               </div>
               <div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--warning)' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-amber)' }}>
                   Các Mục Cần Rà Soát Lại ({report.flaggedExpenses.length} mục)
                 </h3>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -181,7 +181,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                   )}
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 800, color: 'var(--warning)', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
+                      <span style={{ fontWeight: 800, color: 'var(--accent-amber)', fontSize: '0.95rem' }}>{formatVND(item.amount)}</span>
                       {item.quantity && (
                         <span style={{ fontSize: '0.75rem', background: 'var(--bg-card-alt)', padding: '2px 8px', borderRadius: '6px', color: 'var(--text-main)', fontWeight: 700 }}>
                           SL: {item.quantity} {item.unit || ''}
@@ -277,7 +277,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
             const accent = categoryAccent(catKey);
 
             let progressColor = 'var(--success)'; // Green < 85%
-            if (variancePct >= 85 && variancePct <= 100) progressColor = 'var(--warning)'; // Amber
+            if (variancePct >= 85 && variancePct <= 100) progressColor = 'var(--accent-amber)'; // Amber
             if (isOverBudget) progressColor = 'var(--danger)'; // Red, over budget
 
             return (
@@ -376,7 +376,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                                   {item.merchant} {item.subCategory ? `(↳ ${item.subCategory})` : ''}
                                 </p>
                                 {item.quantity && (
-                                  <p style={{ fontSize: '0.75rem', color: 'var(--warning)', fontWeight: 700, marginTop: '2px' }}>
+                                  <p style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700, marginTop: '2px' }}>
                                     SL: {item.quantity} {item.unit || ''} {uCost ? `(${formatVND(uCost)}/đv)` : ''}
                                   </p>
                                 )}
@@ -413,7 +413,7 @@ export const SaturdayReportView: React.FC<SaturdayReportViewProps> = ({
                                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><HardHat size={12} /> {item.manDays} công</span>
                                     ) : '—'}
                                   </td>
-                                  <td style={{ padding: '10px 8px', fontWeight: 700, color: item.unitCost ? 'var(--warning)' : 'var(--text-dim)' }}>
+                                  <td style={{ padding: '10px 8px', fontWeight: 700, color: item.unitCost ? 'var(--primary)' : 'var(--text-dim)' }}>
                                     {item.unitCost ? formatVND(item.unitCost) : '—'}
                                   </td>
                                   <td style={{ padding: '10px 8px', fontWeight: 800, color: 'var(--success)' }}>

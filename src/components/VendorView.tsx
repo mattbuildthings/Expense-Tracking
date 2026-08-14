@@ -279,7 +279,7 @@ export const VendorView: React.FC<VendorViewProps> = ({
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
                     <span style={{ color: 'var(--text-dim)' }}>Đã chi thanh toán:</span>
-                    <span style={{ color: 'var(--chart-cyan)', fontWeight: 800 }}>{formatVND(vendor.totalPaid)}</span>
+                    <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{formatVND(vendor.totalPaid)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', borderTop: '1px dashed var(--border-color)', paddingTop: '4px' }}>
                     <span style={{ color: 'var(--text-dim)' }}>Còn lại thuộc HĐ:</span>

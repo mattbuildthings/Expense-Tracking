@@ -25,6 +25,6 @@ export function categoryAccent(category: ExpenseCategory): string {
 export function budgetBarColor(spent: number, target: number): string {
   if (target > 0 && spent > target) return 'var(--danger)';
   const pct = target > 0 ? (spent / target) * 100 : 0;
-  if (pct >= 85) return 'var(--warning)';
+  if (pct >= 85) return 'var(--accent-amber)';
   return 'var(--success)';
 }

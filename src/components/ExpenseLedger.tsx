@@ -224,12 +224,12 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Tủ kệ, máy lạnh</p>
           </div>
 
-          <div className="glass-card" style={{ padding: '14px', borderLeft: `4px solid ${pendingItems.length > 0 ? 'var(--warning)' : 'var(--success)'}`, background: 'var(--bg-card)' }}>
+          <div className="glass-card" style={{ padding: '14px', borderLeft: `4px solid ${pendingItems.length > 0 ? 'var(--border-strong)' : 'var(--success)'}`, background: 'var(--bg-card)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>Cần Rà Soát</p>
-              {pendingItems.length > 0 ? <AlertTriangle size={14} color="var(--warning)" /> : <ShieldCheck size={14} color="var(--success)" />}
+              {pendingItems.length > 0 ? <AlertTriangle size={14} color="var(--text-dim)" /> : <ShieldCheck size={14} color="var(--success)" />}
             </div>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: pendingItems.length > 0 ? 'var(--warning)' : 'var(--success)', marginTop: '4px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: pendingItems.length > 0 ? 'var(--text-dim)' : 'var(--success)', marginTop: '4px' }}>
               {pendingItems.length} mục
             </h3>
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>Chưa xác minh</p>
@@ -543,7 +543,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                           {categoryMeta.label}
                         </span>
                         {item.quantity && (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--warning)', fontWeight: 700 }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700 }}>
                             {item.quantity} {item.unit || ''} {uCost ? `(${formatVND(uCost)}/đv)` : ''}
                           </span>
                         )}
@@ -648,7 +648,7 @@ export const ExpenseLedger: React.FC<ExpenseLedgerProps> = ({
                           {item.quantity ? `${item.quantity} ${item.unit || ''}` : '—'}
                         </td>
 
-                        <td style={{ padding: '14px 16px', fontWeight: 700, color: uCost ? 'var(--warning)' : 'var(--text-dim)' }}>
+                        <td style={{ padding: '14px 16px', fontWeight: 700, color: uCost ? 'var(--primary)' : 'var(--text-dim)' }}>
                           {uCost ? formatVND(uCost) : '—'}
                         </td>
 

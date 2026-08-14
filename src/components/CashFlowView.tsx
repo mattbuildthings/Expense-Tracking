@@ -196,12 +196,12 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
         </div>
 
         {/* Card 4: Burn Rate & Weeks Remaining */}
-        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--warning)' }}>
+        <div className="glass-card" style={{ padding: '20px', borderLeft: '4px solid var(--primary)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--warning)', textTransform: 'uppercase' }}>Dự Báo Duy Trì Vốn</p>
-            <Clock size={20} color="var(--warning)" />
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase' }}>Dự Báo Duy Trì Vốn</p>
+            <Clock size={20} color="var(--primary)" />
           </div>
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--warning)', marginTop: '6px' }}>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '6px' }}>
             ~{weeksRemaining === 999 ? '∞' : weeksRemaining} Tuần
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -243,16 +243,16 @@ export const CashFlowView: React.FC<CashFlowViewProps> = ({
         </div>
 
         {/* Saturday Payout & Low Cash Warning */}
-        <div className="glass-card" style={{ padding: '20px', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--warning)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Calendar size={18} color="var(--warning)" />
+        <div className="glass-card" style={{ padding: '20px', border: '1px solid rgba(248, 113, 113, 0.3)' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--danger)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Calendar size={18} color="var(--danger)" />
             Dự Báo Tiền Lương Thợ Thứ 7
           </h3>
 
-          <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '14px', borderRadius: '12px', marginBottom: '14px' }}>
+          <div style={{ background: 'rgba(248, 113, 113, 0.1)', padding: '14px', borderRadius: '12px', marginBottom: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--warning)', fontWeight: 700 }}>Lương thợ chưa thanh toán:</span>
-              <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--warning)' }}>{formatVND(pendingLaborAmount)}</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--danger)', fontWeight: 700 }}>Lương thợ chưa thanh toán:</span>
+              <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--danger)' }}>{formatVND(pendingLaborAmount)}</span>
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Gồm {pendingLaborCount} phiếu ghi nhận công chưa duyệt

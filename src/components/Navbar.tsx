@@ -44,13 +44,23 @@ interface TabDef {
   icon: React.ElementType;
 }
 
+// Desktop tab labels are intentionally short (per design spec) — the long
+// descriptive names live only in each button's `title` attribute for a11y.
 const TABS: TabDef[] = [
-  { key: 'ledger', label: 'Sổ Ghi Chép Chi Phí (Ledger)', shortLabel: 'Sổ Chi', icon: ClipboardList },
+  { key: 'ledger', label: 'Chi Phí', shortLabel: 'Sổ Chi', icon: ClipboardList },
   { key: 'saturday_report', label: 'Báo Cáo', shortLabel: 'Báo Cáo', icon: Calendar },
-  { key: 'bva_budget', label: 'Dự Toán Ngân Sách (BVA)', shortLabel: 'BVA', icon: Target },
-  { key: 'vendors', label: 'Nhà Cung Cấp & Tổ Thợ', shortLabel: 'Nhà CC', icon: Users },
+  { key: 'bva_budget', label: 'Ngân Sách', shortLabel: 'BVA', icon: Target },
+  { key: 'vendors', label: 'Nhà Cung Cấp & Thợ', shortLabel: 'Nhà CC', icon: Users },
   { key: 'cash_flow', label: 'Dòng Tiền & Quỹ', shortLabel: 'Dòng Tiền', icon: Wallet }
 ];
+
+const TAB_TITLES: Record<ViewKey, string> = {
+  ledger: 'Sổ Ghi Chép Chi Phí (Ledger)',
+  saturday_report: 'Báo Cáo',
+  bva_budget: 'Dự Toán Ngân Sách (BVA)',
+  vendors: 'Nhà Cung Cấp & Tổ Thợ',
+  cash_flow: 'Dòng Tiền & Quỹ'
+};
 
 export const Navbar: React.FC<NavbarProps> = ({
   projectName,
@@ -172,6 +182,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={tab.key}
                   onClick={() => setActiveView(tab.key)}
+                  title={TAB_TITLES[tab.key]}
                   style={{
                     padding: '8px 16px',
                     borderRadius: '10px',
@@ -241,7 +252,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Icon size={20} />
               <span style={{ fontSize: '0.62rem', fontWeight: 700 }}>{tab.shortLabel}</span>
               {tab.key === 'saturday_report' && pendingCount > 0 && (
-                <span style={{ position: 'absolute', top: '2px', right: '22%', background: 'var(--warning)', color: '#000', fontSize: '0.6rem', fontWeight: 900, padding: '1px 4px', borderRadius: '8px' }}>
+                <span style={{ position: 'absolute', top: '2px', right: '22%', background: 'var(--danger)', color: '#ffffff', fontSize: '0.6rem', fontWeight: 900, padding: '1px 4px', borderRadius: '8px' }}>
                   {pendingCount}
                 </span>
               )}

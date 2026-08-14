@@ -332,8 +332,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Printer size={20} color="var(--warning)" />
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#fbbf24' }}>
+                <Printer size={20} color="var(--primary)" />
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)' }}>
                   In Báo Cáo / Xuất File PDF
                 </h3>
               </div>
@@ -341,7 +341,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 Mở giao diện in ẩn các nút điều khiển, sẵn sàng lưu thành file PDF hoặc in giấy
               </p>
             </div>
-            <div style={{ padding: '10px', background: 'rgba(245, 158, 11, 0.15)', borderRadius: '12px', color: '#fbbf24' }}>
+            <div style={{ padding: '10px', background: 'var(--primary-glow)', borderRadius: '12px', color: 'var(--primary)' }}>
               <Printer size={20} />
             </div>
           </div>
