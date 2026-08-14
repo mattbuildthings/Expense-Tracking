@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, KeyRound, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { verifyPinCode, getStoredPinHash } from '../services/storageService';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface PinLockScreenProps {
   projectName: string;
@@ -8,6 +9,7 @@ interface PinLockScreenProps {
 }
 
 export const PinLockScreen: React.FC<PinLockScreenProps> = ({ projectName, onUnlock }) => {
+  const { t } = useLanguage();
   const [pinInput, setPinInput] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -16,7 +18,7 @@ export const PinLockScreen: React.FC<PinLockScreenProps> = ({ projectName, onUnl
     const storedHash = getStoredPinHash();
 
     if (!storedHash) {
-      setErrorMsg('Chưa cài đặt mã PIN. Vui lòng thiết lập mã PIN trong Cài Đặt.');
+      setErrorMsg(t('pin.noPinSet'));
       return;
     }
 
@@ -24,7 +26,7 @@ export const PinLockScreen: React.FC<PinLockScreenProps> = ({ projectName, onUnl
     if (isValid) {
       onUnlock();
     } else {
-      setErrorMsg('Mã PIN không chính xác, vui lòng thử lại!');
+      setErrorMsg(t('pin.wrongPin'));
       setPinInput('');
       setTimeout(() => setErrorMsg(null), 2000);
     }
@@ -53,7 +55,7 @@ export const PinLockScreen: React.FC<PinLockScreenProps> = ({ projectName, onUnl
           {projectName}
         </h2>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px', marginBottom: '24px' }}>
-          Nhập mã PIN để mở khóa sổ chi phí công trình
+          {t('pin.subtitle')}
         </p>
 
         <form onSubmit={handleUnlockSubmit}>
@@ -63,7 +65,7 @@ export const PinLockScreen: React.FC<PinLockScreenProps> = ({ projectName, onUnl
               type="password"
               maxLength={8}
               autoFocus
-              placeholder="Nhập mã PIN..."
+              placeholder={t('pin.placeholder')}
               value={pinInput}
               onChange={e => setPinInput(e.target.value)}
               style={{
@@ -90,14 +92,14 @@ export const PinLockScreen: React.FC<PinLockScreenProps> = ({ projectName, onUnl
           )}
 
           <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px', fontSize: '1rem', borderRadius: '14px' }}>
-            <span>Mở Khóa Ứng Dụng</span>
+            <span>{t('pin.unlockBtn')}</span>
             <ArrowRight size={18} />
           </button>
         </form>
 
         <div style={{ marginTop: '24px', paddingTop: '18px', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--text-dim)' }}>
           <ShieldCheck size={16} color="#34d399" />
-          <span>Mã PIN được bảo mật bằng mã hóa SHA-256</span>
+          <span>{t('pin.securedBy')}</span>
         </div>
 
       </div>

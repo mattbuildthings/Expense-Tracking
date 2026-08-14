@@ -377,7 +377,15 @@ export const translations = {
     'audit.permanentDelete': 'Delete Permanently',
     'audit.noAuditLogs': 'No activity has been logged yet.',
     'audit.invoiceIdLabel': 'Invoice ID:',
-    'audit.timeLabel': 'Time:'
+    'audit.timeLabel': 'Time:',
+
+    // PinLockScreen
+    'pin.noPinSet': 'No PIN set yet. Please set up a PIN in Settings.',
+    'pin.wrongPin': 'Incorrect PIN, please try again!',
+    'pin.subtitle': 'Enter your PIN to unlock the expense ledger',
+    'pin.placeholder': 'Enter PIN...',
+    'pin.unlockBtn': 'Unlock App',
+    'pin.securedBy': 'PIN is secured with SHA-256 encryption'
   },
   vi: {
     // Navbar
@@ -753,7 +761,15 @@ export const translations = {
     'audit.permanentDelete': 'Xóa Vĩnh Viễn',
     'audit.noAuditLogs': 'Chưa có nhật ký thao tác nào được ghi nhận.',
     'audit.invoiceIdLabel': 'ID Hóa đơn:',
-    'audit.timeLabel': 'Thời gian:'
+    'audit.timeLabel': 'Thời gian:',
+
+    // PinLockScreen
+    'pin.noPinSet': 'Chưa cài đặt mã PIN. Vui lòng thiết lập mã PIN trong Cài Đặt.',
+    'pin.wrongPin': 'Mã PIN không chính xác, vui lòng thử lại!',
+    'pin.subtitle': 'Nhập mã PIN để mở khóa sổ chi phí công trình',
+    'pin.placeholder': 'Nhập mã PIN...',
+    'pin.unlockBtn': 'Mở Khóa Ứng Dụng',
+    'pin.securedBy': 'Mã PIN được bảo mật bằng mã hóa SHA-256'
   }
 } as const;
 
