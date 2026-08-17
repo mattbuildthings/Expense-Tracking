@@ -36,7 +36,6 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
-  if (!isOpen) return null;
 
   const [vendorName, setVendorName] = useState('');
   const [title, setTitle] = useState('');
@@ -46,6 +45,8 @@ export const QuotationModal: React.FC<QuotationModalProps> = ({
   const [status, setStatus] = useState<QuotationStatus>('signed');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState('');
+
+  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

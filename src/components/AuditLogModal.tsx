@@ -24,9 +24,9 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
-  if (!isOpen) return null;
-
   const [activeTab, setActiveTab] = useState<'recycle_bin' | 'audit_trail'>('recycle_bin');
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">

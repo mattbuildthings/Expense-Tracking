@@ -40,20 +40,19 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
-  if (!item) return null;
 
-  const [date, setDate] = useState(item.date);
-  const [amountStr, setAmountStr] = useState(formatFormattedNumber(item.amount));
-  const [quantity, setQuantity] = useState<number | undefined>(item.quantity);
-  const [unit, setUnit] = useState(item.unit || '');
-  const [unitCostStr, setUnitCostStr] = useState(formatFormattedNumber(item.unitCost));
-  const [category, setCategory] = useState<ExpenseCategory>(item.category);
-  const [subCategory, setSubCategory] = useState(item.subCategory || '');
-  const [merchant, setMerchant] = useState(item.merchant);
-  const [note, setNote] = useState(item.note);
-  const [manDays, setManDays] = useState<number | undefined>(item.manDays);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(item.paymentMethod);
-  const [status, setStatus] = useState<VerificationStatus>(item.status);
+  const [date, setDate] = useState(item?.date ?? '');
+  const [amountStr, setAmountStr] = useState(formatFormattedNumber(item?.amount));
+  const [quantity, setQuantity] = useState<number | undefined>(item?.quantity);
+  const [unit, setUnit] = useState(item?.unit || '');
+  const [unitCostStr, setUnitCostStr] = useState(formatFormattedNumber(item?.unitCost));
+  const [category, setCategory] = useState<ExpenseCategory>(item?.category ?? 'phần_thô_vật_tư');
+  const [subCategory, setSubCategory] = useState(item?.subCategory || '');
+  const [merchant, setMerchant] = useState(item?.merchant ?? '');
+  const [note, setNote] = useState(item?.note ?? '');
+  const [manDays, setManDays] = useState<number | undefined>(item?.manDays);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(item?.paymentMethod ?? 'chuyển_khoản');
+  const [status, setStatus] = useState<VerificationStatus>(item?.status ?? 'cần_kiểm_tra');
 
   useEffect(() => {
     if (item) {
@@ -71,6 +70,8 @@ export const ExpenseDetailModal: React.FC<ExpenseDetailModalProps> = ({
       setStatus(item.status);
     }
   }, [item]);
+
+  if (!item) return null;
 
   // P0 FIX: Amount is the authoritative anchor! Editing quantity updates unitCost, NEVER amount!
   const handleQuantityChange = (newQty: number | undefined) => {

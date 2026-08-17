@@ -36,7 +36,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
-  if (!isOpen) return null;
 
   const [projectName, setProjectNameInput] = useState('');
   const [pinCode, setPinCodeInput] = useState('');
@@ -67,6 +66,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     const client = getSupabaseClient();
     setIsSupabaseConnected(Boolean(client && getSupabaseAnonKey()));
   }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const handleBudgetChange = (catKey: ExpenseCategory, valStr: string) => {
     const parsed = parseFormattedNumber(valStr);

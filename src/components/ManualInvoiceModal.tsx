@@ -35,7 +35,6 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
   existingSubCategories = []
 }) => {
   const { t } = useLanguage();
-  if (!isOpen) return null;
 
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [amountStr, setAmountStr] = useState('');
@@ -48,6 +47,8 @@ export const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({
   const [note, setNote] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('chuyển_khoản');
   const [status, setStatus] = useState<VerificationStatus>('cần_kiểm_tra'); // Default to unverified
+
+  if (!isOpen) return null;
 
   // P0 FIX: Amount is the authoritative anchor!
   const handleQuantityChange = (newQty: number | undefined) => {
