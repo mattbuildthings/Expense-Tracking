@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Quick Metrics Bar (desktop only) + Theme Toggle */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ alignItems: 'center', gap: '20px', background: 'var(--bg-card-alt)', padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)' }} className="desktop-only" title="Metrics">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', background: 'var(--bg-card-alt)', padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)' }} className="desktop-only-flex" title="Metrics">
                 <div>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>{t('nav.totalCost')}</p>
                   <p style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)' }}>{formatVND(totalSpent)}</p>

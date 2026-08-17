@@ -358,6 +358,9 @@ html[data-theme="light"] .badge-pending {
 .desktop-only {
   display: none !important;
 }
+.desktop-only-flex {
+  display: none !important;
+}
 
 @media (min-width: 860px) {
   .mobile-only-cards {
@@ -374,6 +377,9 @@ html[data-theme="light"] .badge-pending {
   }
   .desktop-only {
     display: revert !important;
+  }
+  .desktop-only-flex {
+    display: flex !important;
   }
   .app-main {
     padding: 24px;
