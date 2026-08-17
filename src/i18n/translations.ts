@@ -421,7 +421,29 @@ export const translations = {
     'settings.proxyBody': 'The Gemini API key is kept secure in a serverless backend environment variable. No API key is ever stored in the browser or on the client device.',
     'settings.resetConfirm': 'Are you sure you want to reset to sample data?',
     'settings.resetBtn': 'Reset to Default Sample Data',
-    'settings.saveBtn': 'Save Settings'
+    'settings.saveBtn': 'Save Settings',
+
+    // UploadModal
+    'upload.title': 'Upload Photo / Zalo Screenshot Invoice',
+    'upload.subtitle': 'AI Vision automatically extracts amount paid, unit cost, quantity & vendor',
+    'upload.errDefault': 'Error reading the invoice image. Please check your Gemini API key in Settings.',
+    'upload.errSaving': 'Error saving the expense to the browser. A backup copy has been saved.',
+    'upload.dropzoneTitle': 'Drag & drop a receipt photo, or click to choose a file',
+    'upload.dropzoneSubtitle': 'Supports Zalo screenshots, Vietcombank, and handwritten receipts (PNG, JPG, WEBP)',
+    'upload.sampleHint': 'Or try a quick test with 3 sample construction invoices:',
+    'upload.sampleVcb': 'Sample Vietcombank Photo',
+    'upload.sampleLuong': 'Labor Wage Receipt',
+    'upload.sampleCom': 'Lunch Receipt',
+    'upload.processingTitle': 'AI Vision is reading & extracting the invoice...',
+    'upload.processingSubtitle': 'Detecting amount paid, unit cost, quantity, and vendor',
+    'upload.successTitle': 'AI Successfully Read',
+    'upload.transactionsSuffix': 'Transactions',
+    'upload.uploadAnother': 'Upload Another',
+    'upload.vendorLabel': 'Vendor / Store',
+    'upload.amountPaidLabel': 'Amount Paid (VND)',
+    'upload.budgetCategoryLabel': 'Budget Category',
+    'upload.noteLabel': 'Material Detail Note',
+    'upload.confirmAddBtn': 'Confirm & Add to Ledger'
   },
   vi: {
     // Navbar
@@ -841,7 +863,29 @@ export const translations = {
     'settings.proxyBody': 'Chìa khóa Gemini API Key được bảo mật tại biến môi trường Serverless Backend. Không có bất kỳ chìa khóa API nào bị lưu trữ trên trình duyệt hoặc bộ nhớ máy client.',
     'settings.resetConfirm': 'Bạn có chắc chắn muốn đặt lại dữ liệu mẫu không?',
     'settings.resetBtn': 'Đặt Lại Dữ Liệu Mẫu Mặc Định',
-    'settings.saveBtn': 'Lưu Cấu Hình'
+    'settings.saveBtn': 'Lưu Cấu Hình',
+
+    // UploadModal
+    'upload.title': 'Tải Ảnh / Screenshot Hóa Đơn Từ Zalo',
+    'upload.subtitle': 'AI Vision tự động trích xuất số tiền thực chi, đơn giá, số lượng & nhà cung cấp',
+    'upload.errDefault': 'Có lỗi khi đọc ảnh hóa đơn. Vui lòng kiểm tra chìa khóa Gemini API trong Cài Đặt.',
+    'upload.errSaving': 'Có lỗi khi lưu chi phí vào trình duyệt. Hệ thống đã lưu lại bản dự phòng.',
+    'upload.dropzoneTitle': 'Kéo thả ảnh hóa đơn hoặc Click để chọn file',
+    'upload.dropzoneSubtitle': 'Hỗ trợ ảnh chụp màn hình Zalo, Vietcombank, biên nhận viết tay (PNG, JPG, WEBP)',
+    'upload.sampleHint': 'Hoặc thử nghiệm nhanh với 3 ảnh mẫu công trình:',
+    'upload.sampleVcb': 'Ảnh Vietcombank Mẫu',
+    'upload.sampleLuong': 'Biên Nhận Lương Thợ',
+    'upload.sampleCom': 'Hóa Đơn Cơm Trưa',
+    'upload.processingTitle': 'AI Vision đang đọc & trích xuất hóa đơn...',
+    'upload.processingSubtitle': 'Đang nhận diện số tiền thực chi, đơn giá, số lượng và nhà cung cấp',
+    'upload.successTitle': 'AI Đã Đọc Thành Công',
+    'upload.transactionsSuffix': 'Giao Dịch',
+    'upload.uploadAnother': 'Tải Ảnh Khác',
+    'upload.vendorLabel': 'Nhà Cung Cấp / Cửa Hàng',
+    'upload.amountPaidLabel': 'Số Tiền Thực Chi (VND)',
+    'upload.budgetCategoryLabel': 'Hạng Mục Ngân Sách',
+    'upload.noteLabel': 'Ghi Chú Chi Tiết Vật Tư',
+    'upload.confirmAddBtn': 'Xác Nhận Thêm Vào Sổ Chi Phí'
   }
 } as const;
 

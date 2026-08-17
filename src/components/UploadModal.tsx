@@ -4,6 +4,7 @@ import type { ExpenseItem } from '../types/expense';
 import { parseInvoiceWithAI } from '../services/aiService';
 import { CATEGORY_METADATA } from '../types/expense';
 import { uploadPhotoToSupabase } from '../services/storageService';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface UploadModalProps {
 }
 
 export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAddExpenses }) => {
+  const { t, language } = useLanguage();
+  const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedItems, setExtractedItems] = useState<Partial<ExpenseItem>[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -69,7 +72,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
       setExtractedItems(parsedResults);
     } catch (err: any) {
       console.error('Failed to read receipt:', err);
-      setErrorMessage(err.message || 'Có lỗi khi đọc ảnh hóa đơn. Vui lòng kiểm tra chìa khóa Gemini API trong Cài Đặt.');
+      setErrorMessage(err.message || t('upload.errDefault'));
     } finally {
       setIsProcessing(false);
     }
@@ -176,7 +179,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
       onClose();
     } catch (err) {
       console.error('Failed to confirm expenses:', err);
-      setErrorMessage('Có lỗi khi lưu chi phí vào trình duyệt. Hệ thống đã lưu lại bản dự phòng.');
+      setErrorMessage(t('upload.errSaving'));
     }
   };
 
@@ -191,8 +194,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
               <Sparkles size={24} />
             </div>
             <div>
-              <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>Tải Ảnh / Screenshot Hóa Đơn Từ Zalo</h2>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>AI Vision tự động trích xuất số tiền thực chi, đơn giá, số lượng & nhà cung cấp</p>
+              <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>{t('upload.title')}</h2>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('upload.subtitle')}</p>
             </div>
           </div>
           <button className="btn btn-secondary btn-sm" onClick={onClose} style={{ borderRadius: '50%', padding: '8px' }}>
@@ -240,30 +243,30 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                 <UploadCloud size={30} color="#60a5fa" />
               </div>
               <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
-                Kéo thả ảnh hóa đơn hoặc Click để chọn file
+                {t('upload.dropzoneTitle')}
               </h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                Hỗ trợ ảnh chụp màn hình Zalo, Vietcombank, biên nhận viết tay (PNG, JPG, WEBP)
+                {t('upload.dropzoneSubtitle')}
               </p>
             </div>
 
             {/* Test Sample Invoices */}
             <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '10px' }}>
-                Hoặc thử nghiệm nhanh với 3 ảnh mẫu công trình:
+                {t('upload.sampleHint')}
               </p>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                 <button className="btn btn-secondary btn-sm" onClick={() => handleLoadSample('vcb')}>
                   <ImageIcon size={14} color="#60a5fa" />
-                  <span>Ảnh Vietcombank Mẫu</span>
+                  <span>{t('upload.sampleVcb')}</span>
                 </button>
                 <button className="btn btn-secondary btn-sm" onClick={() => handleLoadSample('luong')}>
                   <ImageIcon size={14} color="#34d399" />
-                  <span>Biên Nhận Lương Thợ</span>
+                  <span>{t('upload.sampleLuong')}</span>
                 </button>
                 <button className="btn btn-secondary btn-sm" onClick={() => handleLoadSample('com')}>
                   <ImageIcon size={14} color="#fbbf24" />
-                  <span>Hóa Đơn Cơm Trưa</span>
+                  <span>{t('upload.sampleCom')}</span>
                 </button>
               </div>
             </div>
@@ -275,10 +278,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
           <div style={{ textAlign: 'center', padding: '50px 20px' }}>
             <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '3px solid rgba(59, 130, 246, 0.3)', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc', marginTop: '16px' }}>
-              AI Vision đang đọc & trích xuất hóa đơn...
+              {t('upload.processingTitle')}
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Đang nhận diện số tiền thực chi, đơn giá, số lượng và nhà cung cấp
+              {t('upload.processingSubtitle')}
             </p>
           </div>
         )}
@@ -288,10 +291,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Check size={18} /> AI Đã Đọc Thành Công ({extractedItems.length} Giao Dịch)
+                <Check size={18} /> {t('upload.successTitle')} ({extractedItems.length} {t('upload.transactionsSuffix')})
               </h3>
               <button className="btn btn-secondary btn-sm" onClick={() => setExtractedItems([])}>
-                Tải Ảnh Khác
+                {t('upload.uploadAnother')}
               </button>
             </div>
 
@@ -299,13 +302,13 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
               {extractedItems.map((item, idx) => (
                 <div key={idx} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '16px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                   {item.imageUrl && (
-                    <img src={item.imageUrl} alt="Hóa đơn" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
+                    <img src={item.imageUrl} alt={t('ledger.invoiceImageAlt')} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-color)' }} />
                   )}
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div>
                         <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
-                          Nhà Cung Cấp / Cửa Hàng
+                          {t('upload.vendorLabel')}
                         </label>
                         <input
                           type="text"
@@ -316,7 +319,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                       </div>
                       <div>
                         <label style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
-                          Số Tiền Thực Chi (VND)
+                          {t('upload.amountPaidLabel')}
                         </label>
                         <input
                           type="number"
@@ -330,7 +333,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div>
                         <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
-                          Hạng Mục Ngân Sách
+                          {t('upload.budgetCategoryLabel')}
                         </label>
                         <select
                           value={item.category}
@@ -339,14 +342,14 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
                         >
                           {Object.entries(CATEGORY_METADATA).map(([catKey, meta]) => (
                             <option key={catKey} value={catKey} style={{ background: '#1e293b', color: '#fff' }}>
-                              {meta.label}
+                              {catLabel(meta)}
                             </option>
                           ))}
                         </select>
                       </div>
                       <div>
                         <label style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, display: 'block', marginBottom: '2px' }}>
-                          Ghi Chú Chi Tiết Vật Tư
+                          {t('upload.noteLabel')}
                         </label>
                         <input
                           type="text"
@@ -363,11 +366,11 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
               <button className="btn btn-secondary" onClick={() => setExtractedItems([])}>
-                Hủy
+                {t('common.cancel')}
               </button>
               <button className="btn btn-primary" onClick={handleConfirmAll}>
                 <Check size={18} />
-                <span>Xác Nhận Thêm Vào Sổ Chi Phí</span>
+                <span>{t('upload.confirmAddBtn')}</span>
               </button>
             </div>
           </div>
