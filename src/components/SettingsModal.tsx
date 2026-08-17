@@ -4,6 +4,7 @@ import { savePinCode, isPinEnabled, setPinEnabled, getProjectName, saveProjectNa
 import { getSupabaseUrl, getSupabaseAnonKey, setSupabaseConfig, resetSupabaseInstance, getSupabaseClient } from '../services/supabaseClient';
 import { CATEGORY_METADATA } from '../types/expense';
 import type { CategoryBudgets, ExpenseCategory } from '../types/expense';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -33,6 +34,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onProjectNameChange,
   onResetData
 }) => {
+  const { t, language } = useLanguage();
+  const catLabel = (meta: { label: string; englishLabel: string }) => (language === 'en' ? meta.englishLabel : meta.label);
   if (!isOpen) return null;
 
   const [projectName, setProjectNameInput] = useState('');
@@ -173,10 +176,10 @@ alter table public.audit_logs disable row level security;
             </div>
             <div>
               <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
-                Cài Đặt & Định Mức Ngân Sách
+                {t('settings.title')}
               </h2>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Cấu hình tên công trình, hạn mức dự toán (BVA) & Supabase Cloud Sync
+                {t('settings.subtitle')}
               </p>
             </div>
           </div>
@@ -188,7 +191,7 @@ alter table public.audit_logs disable row level security;
         {/* Saved Toast Alert */}
         {savedSuccess && (
           <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#34d399', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', fontWeight: 700, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <Check size={16} /> Đã lưu cấu hình thành công!
+            <Check size={16} /> {t('settings.savedToast')}
           </div>
         )}
 
@@ -197,7 +200,7 @@ alter table public.audit_logs disable row level security;
           {/* Project Name Input */}
           <div>
             <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f8fafc', display: 'block', marginBottom: '6px' }}>
-              Tên Dự Án / Công Trình
+              {t('settings.projectNameLabel')}
             </label>
             <input
               type="text"
@@ -219,19 +222,19 @@ alter table public.audit_logs disable row level security;
           {/* Initial Funds Setup (Quỹ Dòng Tiền Ban Đầu) */}
           <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '18px', padding: '20px' }}>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399', marginBottom: '12px' }}>
-              Nguồn Vốn / Dòng Tiền Ban Đầu (Cash Flow Baseline)
+              {t('settings.initialFundsTitle')}
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '14px' }}>
-              Nhập số tiền ban đầu trong Ngân hàng và Tiền mặt. Hệ thống sẽ tự động trừ dần khi bạn ghi chép hóa đơn mà KHÔNG CẦN nhập thêm thao tác kế toán nào!
+              {t('settings.initialFundsBody')}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#60a5fa', display: 'block', marginBottom: '4px' }}>
-                  Số Dư Ngân Hàng Ban Đầu (đ)
+                  {t('settings.initialBankLabel')}
                 </label>
                 <input
                   type="text"
-                  placeholder="VD: 1,000,000,000"
+                  placeholder="e.g. 1,000,000,000"
                   value={bankFundsStr}
                   onChange={e => setBankFundsStr(formatFormattedNumber(e.target.value))}
                   style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#60a5fa', fontSize: '0.75rem', fontWeight: 800 }}
@@ -240,11 +243,11 @@ alter table public.audit_logs disable row level security;
 
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399', display: 'block', marginBottom: '4px' }}>
-                  Số Dư Ví Tiền Mặt Ban Đầu (đ)
+                  {t('settings.initialCashLabel')}
                 </label>
                 <input
                   type="text"
-                  placeholder="VD: 100,000,000"
+                  placeholder="e.g. 100,000,000"
                   value={cashFundsStr}
                   onChange={e => setCashFundsStr(formatFormattedNumber(e.target.value))}
                   style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#34d399', fontSize: '0.75rem', fontWeight: 800 }}
@@ -259,16 +262,16 @@ alter table public.audit_logs disable row level security;
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Target size={20} color="#60a5fa" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#60a5fa' }}>
-                  Hạn Mức Ngân Sách Dự Toán (Budget vs. Actual - BVA)
+                  {t('settings.budgetLimitsTitle')}
                 </h3>
               </div>
               <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#34d399' }}>
-                Tổng Dự Toán: {formatVND(totalTargetBudget)}
+                {t('settings.totalBudgetLabel')} {formatVND(totalTargetBudget)}
               </span>
             </div>
 
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
-              Thiết lập hạn mức ngân sách tối đa cho 9 hạng mục công trình. Hệ thống sẽ tính toán mức chi tiêu thực tế vs. dự toán và cảnh báo khi sắp vượt trần chi phí.
+              {t('settings.budgetLimitsBody')}
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
@@ -280,12 +283,12 @@ alter table public.audit_logs disable row level security;
                   <div key={key} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '12px' }}>
                     <label style={{ fontSize: '0.75rem', fontWeight: 700, color: meta.color, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                       <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: meta.color }} />
-                      <span>{meta.label}</span>
+                      <span>{catLabel(meta)}</span>
                     </label>
                     <div style={{ position: 'relative' }}>
                       <input
                         type="text"
-                        placeholder="VD: 550,000,000"
+                        placeholder="e.g. 550,000,000"
                         value={formatFormattedNumber(val)}
                         onChange={e => handleBudgetChange(key, e.target.value)}
                         style={{
@@ -312,21 +315,21 @@ alter table public.audit_logs disable row level security;
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Key size={20} color="#60a5fa" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#60a5fa' }}>
-                  Chìa Khóa AI Đọc Hóa Đơn (Gemini Vision API Key)
+                  {t('settings.geminiKeyTitle')}
                 </h3>
               </div>
               <span className="badge" style={{ background: geminiApiKey ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)', color: geminiApiKey ? '#34d399' : '#fbbf24' }}>
-                {geminiApiKey ? 'Đã Kích Hoạt Key' : 'Chưa Điền Key'}
+                {geminiApiKey ? t('settings.keyActive') : t('settings.keyMissing')}
               </span>
             </div>
 
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
-              Nhập chìa khóa Google Gemini Flash API key để AI nhận diện và trích xuất hóa đơn Zalo/Vietcombank chính xác 100%. Lấy key miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>Google AI Studio ➔</a>
+              {t('settings.geminiKeyBody')} <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>Google AI Studio ➔</a>
             </p>
 
             <input
               type="password"
-              placeholder="AIzaSy... (Dán Gemini API Key tại đây)"
+              placeholder={t('settings.geminiKeyPlaceholder')}
               value={geminiApiKey}
               onChange={e => setGeminiApiKeyInput(e.target.value)}
               style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#60a5fa', fontSize: '0.75rem', fontWeight: 700 }}
@@ -339,22 +342,22 @@ alter table public.audit_logs disable row level security;
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Database size={20} color="#34d399" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>
-                  Đồng Bộ Đám Mây Supabase (Điện Thoại ↔ Máy Tính)
+                  {t('settings.supabaseTitle')}
                 </h3>
               </div>
               <span className="badge" style={{ background: isSupabaseConnected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', color: isSupabaseConnected ? '#34d399' : '#f87171' }}>
-                {isSupabaseConnected ? 'Đã Kết Nối' : 'Chưa Điền Key'}
+                {isSupabaseConnected ? t('settings.connected') : t('settings.keyMissing')}
               </span>
             </div>
 
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '14px' }}>
-              Dán URL & Public Anon Key từ Supabase Dashboard của bạn để tự động đồng bộ hóa đơn giữa Điện Thoại và Máy Tính thời gian thực.
+              {t('settings.supabaseBody')}
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                  Supabase Project URL
+                  {t('settings.supabaseUrlLabel')}
                 </label>
                 <input
                   type="text"
@@ -367,11 +370,11 @@ alter table public.audit_logs disable row level security;
 
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                  Supabase Public Anon Key
+                  {t('settings.supabaseKeyLabel')}
                 </label>
                 <input
                   type="password"
-                  placeholder="eyJhY2NvdW50X2lkIjoi... (Dán anon key tại đây)"
+                  placeholder={t('settings.supabaseKeyPlaceholder')}
                   value={supabaseAnonKey}
                   onChange={e => setSupabaseAnonKeyInput(e.target.value)}
                   style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#f8fafc', fontSize: '0.75rem' }}
@@ -382,7 +385,7 @@ alter table public.audit_logs disable row level security;
               <div style={{ marginTop: '6px' }}>
                 <button className="btn btn-secondary btn-sm" onClick={handleCopySql} style={{ width: '100%', justifyContent: 'center' }}>
                   {copiedSql ? <Check size={16} color="#34d399" /> : <Copy size={16} />}
-                  <span>{copiedSql ? 'Đã Copy SQL Setup Script!' : 'Copy SQL Script Tạo Bảng Cho Supabase SQL Editor'}</span>
+                  <span>{copiedSql ? t('settings.copiedSql') : t('settings.copySql')}</span>
                 </button>
               </div>
             </div>
@@ -394,7 +397,7 @@ alter table public.audit_logs disable row level security;
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <ShieldCheck size={20} color="#fbbf24" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
-                  Mã PIN Bảo Mật (Mã Hóa SHA-256)
+                  {t('settings.pinTitle')}
                 </h3>
               </div>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -403,19 +406,19 @@ alter table public.audit_logs disable row level security;
                   checked={pinEnabled}
                   onChange={e => setPinEnabledInput(e.target.checked)}
                 />
-                <span>Bật khóa PIN</span>
+                <span>{t('settings.pinToggle')}</span>
               </label>
             </div>
 
             {pinEnabled && (
               <div>
                 <label style={{ fontSize: '0.75rem', color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>
-                  Thiết Lập Mã PIN Mới (4 - 8 Số)
+                  {t('settings.newPinLabel')}
                 </label>
                 <input
                   type="password"
                   maxLength={8}
-                  placeholder="Nhập PIN mới..."
+                  placeholder={t('settings.newPinPlaceholder')}
                   value={pinCode}
                   onChange={e => setPinCodeInput(e.target.value.replace(/[^0-9]/g, ''))}
                   style={{
@@ -432,7 +435,7 @@ alter table public.audit_logs disable row level security;
                   }}
                 />
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                  Mã PIN sẽ được mã hóa bằng chuỗi SHA-256 trước khi lưu. Không lưu dạng văn bản thuần.
+                  {t('settings.pinNote')}
                 </p>
               </div>
             )}
@@ -443,11 +446,11 @@ alter table public.audit_logs disable row level security;
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <Key size={18} color="#60a5fa" />
               <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#60a5fa' }}>
-                Bảo Mật Chìa Khóa Gemini AI API (Serverless Proxy)
+                {t('settings.proxyTitle')}
               </h3>
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-              Chìa khóa Gemini API Key được bảo mật tại biến môi trường Serverless Backend (<code style={{ color: '#34d399' }}>GEMINI_API_KEY</code>). Không có bất kỳ chìa khóa API nào bị lưu trữ trên trình duyệt hoặc bộ nhớ máy client.
+              {t('settings.proxyBody')} (<code style={{ color: '#34d399' }}>GEMINI_API_KEY</code>)
             </p>
           </div>
 
@@ -456,14 +459,14 @@ alter table public.audit_logs disable row level security;
             <button
               className="btn btn-danger btn-sm"
               onClick={() => {
-                if (window.confirm('Bạn có chắc chắn muốn đặt lại dữ liệu mẫu không?')) {
+                if (window.confirm(t('settings.resetConfirm'))) {
                   onResetData();
                   onClose();
                 }
               }}
             >
               <RefreshCw size={14} />
-              <span>Đặt Lại Dữ Liệu Mẫu Mặc Định</span>
+              <span>{t('settings.resetBtn')}</span>
             </button>
           </div>
 
@@ -472,11 +475,11 @@ alter table public.audit_logs disable row level security;
         {/* Footer Actions */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
           <button className="btn btn-secondary" onClick={onClose}>
-            Hủy
+            {t('common.cancel')}
           </button>
           <button className="btn btn-primary" onClick={handleSave}>
             <Save size={18} />
-            <span>Lưu Cấu Hình</span>
+            <span>{t('settings.saveBtn')}</span>
           </button>
         </div>
 
