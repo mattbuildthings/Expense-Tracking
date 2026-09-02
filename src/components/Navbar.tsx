@@ -1,5 +1,5 @@
 import React from 'react';
-import { HardHat, PlusCircle, Calendar, Settings, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users, Wallet, FileText, ClipboardList, Sun, Moon } from 'lucide-react';
+import { HardHat, Camera, Calendar, Settings, CheckCircle2, AlertCircle, Lock, History, FilePlus, Target, Users, Wallet, FileText, ClipboardList, Sun, Moon } from 'lucide-react';
 import { formatVND } from '../services/storageService';
 import { useLanguage } from '../i18n/LanguageContext';
 import type { Language } from '../i18n/translations';
@@ -150,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Action Buttons (icon-only on mobile, scrollable) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', overflowY: 'hidden', marginTop: '8px', paddingBottom: '4px', scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}>
             <button className="btn btn-primary" onClick={onOpenUpload} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
-              <PlusCircle size={16} />
+              <Camera size={16} />
               <span className="desktop-only">{t('nav.addPhoto')}</span>
             </button>
 

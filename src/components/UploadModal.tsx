@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, UploadCloud, Sparkles, Check, Image as ImageIcon, AlertTriangle } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, UploadCloud, Sparkles, Check, Image as ImageIcon, AlertTriangle, Camera } from 'lucide-react';
 import type { ExpenseItem } from '../types/expense';
 import { parseInvoiceWithAI } from '../services/aiService';
 import { CATEGORY_METADATA } from '../types/expense';
@@ -18,6 +18,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedItems, setExtractedItems] = useState<Partial<ExpenseItem>[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
 
   if (!isOpen) return null;
 
@@ -190,11 +193,11 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ padding: '10px', background: 'rgba(59, 130, 246, 0.15)', borderRadius: '12px', color: '#60a5fa' }}>
+            <div style={{ padding: '10px', background: 'rgba(59, 130, 246, 0.15)', borderRadius: '12px', color: 'var(--chart-blue)' }}>
               <Sparkles size={24} />
             </div>
             <div>
-              <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>{t('upload.title')}</h2>
+              <h2 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)' }}>{t('upload.title')}</h2>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('upload.subtitle')}</p>
             </div>
           </div>
@@ -205,49 +208,194 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
 
         {/* Error Alert Box */}
         {errorMessage && (
-          <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', color: 'var(--danger)', padding: '12px 16px', borderRadius: '12px', marginBottom: '16px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <AlertTriangle size={18} />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        {/* Drag and Drop Zone */}
+        {/* Drag and Drop & Camera / Upload Options */}
         {extractedItems.length === 0 && (
           <>
+            {/* Hidden file inputs */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={e => {
+                if (e.target.files && e.target.files.length > 0) {
+                  handleFileUpload(e.target.files);
+                }
+                e.target.value = '';
+              }}
+            />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              style={{ display: 'none' }}
+              onChange={e => {
+                if (e.target.files && e.target.files.length > 0) {
+                  handleFileUpload(e.target.files);
+                }
+                e.target.value = '';
+              }}
+            />
+
+            {/* Drag and drop zone with 2 options */}
             <div
               onDragOver={e => e.preventDefault()}
               onDrop={e => {
                 e.preventDefault();
-                if (e.dataTransfer.files) handleFileUpload(e.dataTransfer.files);
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                  handleFileUpload(e.dataTransfer.files);
+                }
               }}
               style={{
                 border: '2px dashed var(--primary-glow)',
-                borderRadius: '18px',
-                padding: '36px 20px',
-                textAlign: 'center',
-                background: 'rgba(19, 27, 46, 0.6)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
+                borderRadius: '20px',
+                padding: '22px 18px',
+                background: 'var(--bg-card-alt)',
                 marginBottom: '20px'
               }}
-              onClick={() => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.multiple = true;
-                input.accept = 'image/*';
-                input.onchange = (e: any) => handleFileUpload(e.target.files);
-                input.click();
-              }}
             >
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-                <UploadCloud size={30} color="#60a5fa" />
+              {/* Option Cards: Camera & Gallery / File */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: '14px',
+                  marginBottom: '14px'
+                }}
+              >
+                {/* 1. Take Photo with Phone Camera */}
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.22) 100%)',
+                    border: '1.5px solid rgba(52, 211, 153, 0.45)',
+                    borderRadius: '16px',
+                    padding: '20px 16px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    gap: '10px',
+                    color: 'var(--text-main)',
+                    transition: 'all 0.2s ease'
+                  }}
+                  className="hover-card"
+                >
+                  <div
+                    style={{
+                      width: '54px',
+                      height: '54px',
+                      borderRadius: '50%',
+                      background: 'rgba(52, 211, 153, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'var(--success)'
+                    }}
+                  >
+                    <Camera size={28} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px' }}>
+                      {t('upload.takePhoto')}
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.3' }}>
+                      {t('upload.takePhotoDesc')}
+                    </p>
+                  </div>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '5px 14px',
+                      borderRadius: '999px',
+                      background: 'rgba(52, 211, 153, 0.2)',
+                      color: 'var(--success)',
+                      fontSize: '0.75rem',
+                      fontWeight: 800
+                    }}
+                  >
+                    <Camera size={13} /> {t('upload.takePhotoAction')}
+                  </span>
+                </button>
+
+                {/* 2. Choose File / Gallery */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.22) 100%)',
+                    border: '1.5px solid rgba(96, 165, 250, 0.45)',
+                    borderRadius: '16px',
+                    padding: '20px 16px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    gap: '10px',
+                    color: 'var(--text-main)',
+                    transition: 'all 0.2s ease'
+                  }}
+                  className="hover-card"
+                >
+                  <div
+                    style={{
+                      width: '54px',
+                      height: '54px',
+                      borderRadius: '50%',
+                      background: 'rgba(59, 130, 246, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'var(--chart-blue)'
+                    }}
+                  >
+                    <UploadCloud size={28} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px' }}>
+                      {t('upload.chooseFile')}
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.3' }}>
+                      {t('upload.chooseFileDesc')}
+                    </p>
+                  </div>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '5px 14px',
+                      borderRadius: '999px',
+                      background: 'rgba(59, 130, 246, 0.2)',
+                      color: 'var(--chart-blue)',
+                      fontSize: '0.75rem',
+                      fontWeight: 800
+                    }}
+                  >
+                    <UploadCloud size={13} /> {t('upload.chooseFileAction')}
+                  </span>
+                </button>
               </div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>
-                {t('upload.dropzoneTitle')}
-              </h3>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                {t('upload.dropzoneSubtitle')}
-              </p>
+
+              {/* Subtitle helper */}
+              <div style={{ textAlign: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 600 }}>
+                  {t('upload.dropzoneSubtitle')}
+                </p>
+              </div>
             </div>
 
             {/* Test Sample Invoices */}
@@ -277,7 +425,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
         {isProcessing && (
           <div style={{ textAlign: 'center', padding: '50px 20px' }}>
             <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '3px solid rgba(59, 130, 246, 0.3)', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc', marginTop: '16px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '16px' }}>
               {t('upload.processingTitle')}
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>

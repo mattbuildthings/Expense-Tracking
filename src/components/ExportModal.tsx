@@ -40,10 +40,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   exportContext = 'ledger'
 }) => {
   const { t } = useLanguage();
-  if (!isOpen) return null;
-
   const [copied, setCopied] = useState(false);
   const [showPasteGuide, setShowPasteGuide] = useState(false);
+
+  if (!isOpen) return null;
 
   // Dynamic Modal Titles based on context
   const getContextTitle = () => {
