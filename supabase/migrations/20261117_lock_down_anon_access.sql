@@ -25,21 +25,33 @@
 -- table access at all. A fresh key would be published in the very next deploy's
 -- JS bundle. Fix the authorization (this file), then rotate as cleanup.
 --
--- BEFORE YOU RUN THIS -- EXPORT FIRST
--- -----------------------------------
--- This migration deliberately takes cloud sync OFFLINE. It denies `anon`, and
--- this app has no authenticated user to replace it with, so after applying it
--- the browser can no longer reach the `expenses` table. That is intended, and
--- it pairs with the companion change to src/services/supabaseClient.ts, which
--- removes the hardcoded credentials so the client degrades cleanly to
--- localStorage (every Supabase helper already returns null when no client can
--- be built, and App.tsx guards on `if (cloudItems)`).
+-- MEASURED STATE OF THE LIVE PROJECT (idckmqtcneozcrqebchd, 17 Nov 2026)
+-- ----------------------------------------------------------------------
+-- Checked directly rather than assumed, which changed what this file does:
 --
--- Rows are NOT deleted -- they stay in the table for the merge importer. But
--- export once before applying, because a device whose localStorage is stale
--- relative to the cloud will not be able to re-fetch the difference afterwards:
+--   relrowsecurity on expenses ... true      <- RLS was ALREADY on
+--   policies on expenses ......... 1         <- and this was the hole:
+--       "Allow anon access to expenses"  PERMISSIVE  {anon}  ALL
+--          USING (true)  WITH CHECK (true)
+--   storage.buckets.public ....... true      for the 'receipts' bucket
+--   rows in expenses ............. 6         placeholder/test data
 --
---   SELECT * FROM expenses ORDER BY date DESC;   -- save as CSV from the SQL editor
+-- So enabling RLS was never the missing piece; a blanket `USING (true)` grant
+-- to `anon` was. Confirmed exposure, now closed by enumeration below.
+--
+-- NO EXPORT NEEDED. The table holds 6 placeholder rows (5 merchants, dates
+-- 2017-07-27 to 2026-08-01, ~17.8M VND total -- the sample invoices from the
+-- OCR prompt and Test Receipts/). Nothing here is real bookkeeping data, so
+-- there is nothing to preserve. Were this real data, the thing to know is that
+-- rows are NOT deleted by this migration -- they stay in the table and remain
+-- readable via the dashboard, SQL editor, or service-role key. What changes is
+-- only that the unauthenticated browser can no longer reach them.
+--
+-- This migration deliberately takes cloud sync OFFLINE, which is intended: it
+-- pairs with the companion change to src/services/supabaseClient.ts that
+-- removes the hardcoded credentials, so the client degrades cleanly to
+-- localStorage (every Supabase helper returns null without a client, and
+-- App.tsx guards on `if (cloudItems)`).
 --
 -- Existing rows' image_url values point at public bucket URLs. Step 3 makes the
 -- bucket private, which breaks those links in the UI. Receipt images are also
@@ -72,20 +84,35 @@ ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
 -- Until then: RLS on, zero policies, nobody gets in. That is the safe state.
 -- ---------------------------------------------------------------------------
 
-DROP POLICY IF EXISTS "Enable read access for all users" ON expenses;
-DROP POLICY IF EXISTS "Enable insert for all users" ON expenses;
-DROP POLICY IF EXISTS "Enable update for all users" ON expenses;
-DROP POLICY IF EXISTS "Enable delete for all users" ON expenses;
-DROP POLICY IF EXISTS "Enable read access for anon" ON expenses;
-DROP POLICY IF EXISTS "Allow anon access on expenses" ON expenses;
-DROP POLICY IF EXISTS "Allow authenticated and anon access on expenses" ON expenses;
-DROP POLICY IF EXISTS "Allow all" ON expenses;
-DROP POLICY IF EXISTS "Allow public access" ON expenses;
-DROP POLICY IF EXISTS "expenses_anon_all" ON expenses;
-DROP POLICY IF EXISTS "expenses_select" ON expenses;
-DROP POLICY IF EXISTS "expenses_insert" ON expenses;
-DROP POLICY IF EXISTS "expenses_update" ON expenses;
-DROP POLICY IF EXISTS "expenses_delete" ON expenses;
+-- Drop BY ENUMERATION, not by guessed name.
+--
+-- An earlier draft of this file listed ~14 likely policy names and relied on
+-- DROP POLICY IF EXISTS. That approach was actively dangerous here. The policy
+-- that actually existed on this table was:
+--
+--   "Allow anon access to expenses"  PERMISSIVE  {anon}  ALL
+--      USING (true)  WITH CHECK (true)
+--
+-- The draft guessed "Allow anon access ON expenses". One preposition out, so
+-- every DROP would have been a silent no-op, the migration would have reported
+-- success, and the wide-open policy would have survived. That is the same shape
+-- of failure as Siteop's 20260910b incident: the SQL looks right, the hole
+-- stays open.
+--
+-- So enumerate what is really there and drop it. This is correct whatever the
+-- policies happen to be named, in this project or any other.
+DO $$
+DECLARE
+  pol RECORD;
+BEGIN
+  FOR pol IN
+    SELECT policyname FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'expenses'
+  LOOP
+    RAISE NOTICE 'dropping policy on expenses: %', pol.policyname;
+    EXECUTE format('DROP POLICY %I ON public.expenses', pol.policyname);
+  END LOOP;
+END $$;
 
 -- Belt and braces: revoke the table grants the `anon` role holds, so access
 -- does not come back if someone toggles RLS off in the dashboard later.
@@ -97,11 +124,21 @@ REVOKE ALL ON TABLE expenses FROM anon;
 
 UPDATE storage.buckets SET public = false WHERE id = 'receipts';
 
-DROP POLICY IF EXISTS "Public read receipts" ON storage.objects;
-DROP POLICY IF EXISTS "Public Access" ON storage.objects;
-DROP POLICY IF EXISTS "Allow anon uploads to receipts" ON storage.objects;
-DROP POLICY IF EXISTS "Give anon access to receipts" ON storage.objects;
-DROP POLICY IF EXISTS "receipts_anon_all" ON storage.objects;
+-- Same enumeration approach for storage. Only drop policies that actually
+-- mention the receipts bucket, so other buckets' policies are left alone.
+DO $$
+DECLARE
+  pol RECORD;
+BEGIN
+  FOR pol IN
+    SELECT policyname FROM pg_policies
+    WHERE schemaname = 'storage' AND tablename = 'objects'
+      AND (COALESCE(qual, '') LIKE '%receipts%' OR COALESCE(with_check, '') LIKE '%receipts%')
+  LOOP
+    RAISE NOTICE 'dropping storage policy: %', pol.policyname;
+    EXECUTE format('DROP POLICY %I ON storage.objects', pol.policyname);
+  END LOOP;
+END $$;
 
 -- ---------------------------------------------------------------------------
 -- 4. VERIFICATION -- run these after applying. Do not skip this step; the
