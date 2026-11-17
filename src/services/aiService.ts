@@ -17,160 +17,73 @@ export interface ParseResult {
   imageType: 'receipt' | 'bank_transfer' | 'handwritten';
 }
 
-const OCR_PROMPT = `Bạn là hệ thống AI OCR phân tích hóa đơn và chứng từ xây dựng tại Việt Nam.
-Hãy đọc thật kỹ hình ảnh hóa đơn/screenshot/biên nhận này và trả về duy nhất 1 JSON object chuẩn (không bọc trong markdown codeblock, không ghi thêm lời dẫn):
+// NOTE: the OCR prompt used to be duplicated here as OCR_PROMPT, for the
+// browser-side Gemini call that has now been removed. The live copy is in
+// api/ocr.ts, which is the only place that talks to Gemini. Keeping a second
+// copy here would be the same duplicated-config trap that AGENTS.md #1 in the
+// Siteop repo was written about -- two copies drift, one gets fixed, the other
+// is missed. If the prompt needs to move somewhere shared during the merge,
+// move it; do not copy it back.
 
-{
-  "amount": 1610000,
-  "quantity": 1,
-  "unit": "bao",
-  "unitCost": 185000,
-  "category": "phần_thô_vật_tư",
-  "subCategory": "Xi Măng Holcim & Gạch Ống",
-  "manDays": 0,
-  "merchant": "ĐẠI LÝ XI MĂNG MINH ĐỨC",
-  "note": "Hóa đơn GTGT vật liệu: Xi Măng Holcim, Gạch Ống, D8 142",
-  "paymentMethod": "tiền_mặt",
-  "date": "2017-07-27",
-  "confidenceScore": 98,
-  "aiReasoning": "Trích xuất thành công hóa đơn ĐẠI LÝ XI MĂNG MINH ĐỨC",
-  "imageType": "receipt"
-}
-
-QUY TẮC TRÍCH XUẤT BẮT BUỘC:
-1. "merchant" (Tên nhà cung cấp / Cửa hàng / Đơn vị): Lấy đúng tên đơn vị ở phần tiêu đề đầu hóa đơn (VD: "ĐẠI LÝ XI MĂNG MINH ĐỨC", "CTY CP SẮT THÉP NAM VIỆT", "Cửa hàng VLXD Hồng Phát"). Tuyệt đối KHÔNG trả về "Nhà cung cấp / Cửa hàng" hay "L, Phát sinh công trình"!
-2. "amount" (Tổng tiền): Lấy số tiền ở dòng "TỔNG CỘNG", "TỔNG TIỀN", "Tổng tiền xây chất" hoặc số tổng cuối cùng ở góc dưới bảng. Lấy số nguyên (ví dụ: 1.610.000 -> 1610000, hoặc sum các dòng 238000).
-3. "category" (Hạng mục công trình): Phải chọn duy nhất 1 trong 9 mã sau:
-   - "phần_thô_vật_tư": Xi măng, Gạch ống, Sắt thép, Cát, Đá, Bê tông, Cốp pha.
-   - "hoàn_thiện_vật_tư": Sơn, Gạch ốp lát, Thạch cao, Điện nước, Cửa, Vật tư hoàn thiện.
-   - "nội_thất_thiết_bị": Máy lạnh, Tủ kệ, Rèm cửa, Đèn, Thiết bị bếp.
-   - "phần_thô_nhân_công": Lương thợ hồ, Tạm ứng thợ móng, Thợ coffa.
-   - "hoàn_thiện_nhân_công": Thợ sơn, Thợ gạch, Thợ điện nước.
-   - "tư_vấn_thiết_kế": Bản vẽ thiết kế, Phối cảnh.
-   - "pháp_lý": GPXD, Ép cọc kiểm định, Đo đạc địa chính.
-   - "quản_lý_dự_án": Giám sát, Bảo vệ.
-   - "chi_phí_khác": Cơm trưa, Xăng xe, Tiếp khách.
-4. "date": Lấy ngày trên hóa đơn theo định dạng YYYY-MM-DD (VD: 2017-07-27 hoặc 2026-08-01).
-5. "note": Liệt kê tên các mặt hàng trong bảng (VD: Xi Măng Holcim, Gạch Ống, D8 142).
-`;
-
+/**
+ * Sends a receipt image to the server-side OCR route and returns the parsed
+ * expense, or THROWS.
+ *
+ * This function has exactly one success path and no fallbacks. That is
+ * deliberate -- see the two things that used to be here:
+ *
+ * 1. A browser-side Gemini call. It read a key from localStorage
+ *    ('gemini_api_key') and POSTed straight to generativelanguage.googleapis.com
+ *    from the page. It ran FIRST, so for any user with a stale key saved it
+ *    shadowed the server route entirely -- and it hardcoded
+ *    ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'], all three of
+ *    which Google has now retired (the oldest model still served is
+ *    gemini-2.5-*). So those users got failures while the correctly configured
+ *    server route sat unused. Keys also belong server-side: GEMINI_API_KEY is
+ *    set in Vercel and api/ocr.ts no longer accepts a caller-supplied key.
+ *
+ * 2. simulateLocalParsing(). When every path above failed it returned a
+ *    HARDCODED expense -- 1,610,000 VND from "ĐẠI LÝ XI MĂNG MINH ĐỨC", or
+ *    4,500,000 VND from "Cửa hàng VLXD Hồng Phát" if the filename looked like
+ *    a bank transfer -- carrying confidenceScore 94/95 and an aiReasoning
+ *    string claiming extraction had succeeded. Nothing marked it as fake.
+ *    In a bookkeeping app that is the worst possible failure mode: a plausible
+ *    invented amount against a real-sounding vendor, silently entering the
+ *    ledger. A visible error is always better than a confident fabrication.
+ *
+ * So: if OCR cannot run, this throws and the caller shows the message. Never
+ * reintroduce a fallback that returns an expense nobody extracted.
+ */
 export async function parseInvoiceWithAI(
   imageBase64: string,
   fileName: string
 ): Promise<ParseResult> {
-  const userApiKey = localStorage.getItem('gemini_api_key') || (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
+  let res: Response;
 
-  // 1. If Client API Key is present, call Gemini Vision directly
-  if (userApiKey && userApiKey.trim()) {
-    try {
-      const parsed = await callGeminiVisionDirect(imageBase64, userApiKey.trim());
-      if (parsed) return parsed;
-    } catch (err: any) {
-      console.warn('Direct Gemini Vision API call error:', err);
-      throw new Error(`Gemini API Error: ${err.message || 'Không thể kết nối API Key'}`);
-    }
-  }
-
-  // 2. Try Vercel Serverless Function Proxy (/api/ocr)
   try {
-    const res = await fetch('/api/ocr', {
+    res = await fetch('/api/ocr', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64, fileName, userApiKey })
+      body: JSON.stringify({ imageBase64, fileName })
     });
-
-    if (res.ok) {
-      const parsed = await res.json();
-      return formatParsedResult(parsed);
-    } else {
-      const errData = await res.json().catch(() => ({}));
-      if (errData.error) {
-        throw new Error(errData.error);
-      }
-    }
-  } catch (err: any) {
-    if (err.message && err.message.includes('Gemini')) {
-      throw err;
-    }
-    console.warn('Serverless proxy OCR call failed:', err);
+  } catch {
+    // Network-level failure: offline, DNS, connection reset.
+    throw new Error(
+      'Không thể kết nối máy chủ OCR. Kiểm tra kết nối mạng rồi thử lại.'
+    );
   }
 
-  // 3. Fallback Parser if offline or no key provided
-  return simulateLocalParsing(fileName, imageBase64);
-}
-
-async function callGeminiVisionDirect(imageBase64: string, apiKey: string): Promise<ParseResult | null> {
-  const mimeTypeMatch = imageBase64.match(/^data:(image\/\w+);base64,/);
-  const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
-  const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-
-  // Primary & fallback vision models in Google AI Studio
-  const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
-
-  let lastError = '';
-
-  for (const model of models) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 12000);
-
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          signal: controller.signal,
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  { text: OCR_PROMPT },
-                  {
-                    inline_data: {
-                      mime_type: mimeType,
-                      data: base64Data
-                    }
-                  }
-                ]
-              }
-            ]
-          })
-        }
-      );
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        lastError = errJson?.error?.message || `HTTP ${response.status}`;
-        
-        // Stop immediately if key is invalid or permission denied
-        if (response.status === 400 || response.status === 401 || response.status === 403) {
-          throw new Error(`Google Gemini API Key (${response.status}): ${lastError}`);
-        }
-        continue;
-      }
-
-      const data = await response.json();
-      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        return formatParsedResult(parsed);
-      }
-    } catch (err: any) {
-      if (err.message && err.message.includes('Google Gemini API Key')) {
-        throw err;
-      }
-      lastError = err.message || 'Fetch error';
-    }
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || `OCR thất bại (HTTP ${res.status}).`);
   }
 
-  if (lastError) {
-    throw new Error(`Google Gemini API: ${lastError}`);
+  const parsed = await res.json().catch(() => null);
+  if (!parsed || typeof parsed !== 'object') {
+    throw new Error('Máy chủ OCR trả về dữ liệu không hợp lệ.');
   }
 
-  return null;
+  return formatParsedResult(parsed);
 }
 
 function formatParsedResult(parsed: any): ParseResult {
@@ -209,40 +122,4 @@ function sanitizeCategory(cat: string): ExpenseCategory {
   if (cat === 'vật_liệu_hoàn_thiện' || cat === 'sơn') return 'hoàn_thiện_vật_tư';
   if (cat === 'nhân_công' || cat === 'thợ_xây') return 'phần_thô_nhân_công';
   return 'chi_phí_khác';
-}
-
-function simulateLocalParsing(fileName: string, _imageBase64: string): ParseResult {
-  const lower = fileName.toLowerCase();
-  const today = new Date().toISOString().split('T')[0];
-
-  if (lower.includes('vcb') || lower.includes('vietcombank') || lower.includes('bank') || lower.includes('chuyen_khoan')) {
-    return {
-      amount: 4500000,
-      quantity: 30,
-      unit: 'bao',
-      unitCost: 150000,
-      category: 'phần_thô_vật_tư',
-      subCategory: 'Xi măng & Cát',
-      merchant: 'Cửa hàng VLXD Hồng Phát (Vietcombank)',
-      note: 'Chuyển khoản thanh toán 30 bao xi măng Hà Tiên & 2 khối cát xây móng',
-      paymentMethod: 'chuyển_khoản',
-      date: today,
-      confidenceScore: 94,
-      aiReasoning: 'Đã nhận diện màn hình chuyển khoản Vietcombank cho vật liệu phần thô.',
-      imageType: 'bank_transfer'
-    };
-  }
-
-  return {
-    amount: 1610000,
-    category: 'phần_thô_vật_tư',
-    subCategory: 'Xi Măng Holcim & Gạch Ống',
-    merchant: 'ĐẠI LÝ XI MĂNG MINH ĐỨC',
-    note: 'Hóa đơn GTGT vật liệu: Xi Măng Holcim, Gạch Ống, D8 142',
-    paymentMethod: 'tiền_mặt',
-    date: '2017-07-27',
-    confidenceScore: 95,
-    aiReasoning: 'Trích xuất hóa đơn ĐẠI LÝ XI MĂNG MINH ĐỨC thành công.',
-    imageType: 'receipt'
-  };
 }
