@@ -1,39 +1,43 @@
 declare const process: { env: Record<string, string | undefined> };
 
-export default async function handler(req: any, res: any) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+/**
+ * Ceiling on the inline image accepted, in base64 characters. ~14M base64
+ * characters is ~10MB of image bytes, which is the Gemini inline-data limit.
+ * Nothing bounded this before, so a caller could post an arbitrarily large
+ * body and bill the processing to this project's key.
+ */
+const MAX_IMAGE_BASE64_CHARS = 14_000_000;
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+export default async function handler(req: any, res: any) {
+  // NO CORS HEADERS.
+  //
+  // This route previously sent `Access-Control-Allow-Origin: *` together with
+  // `Allow-Credentials: true`, and accepted a caller-supplied `userApiKey`
+  // from the request body. Between them, any website could POST here and have
+  // OCR billed to this project's Gemini key. The browser app calls this route
+  // same-origin, which needs no CORS headers at all, so the fix is to send
+  // none. Do not add a wildcard origin back.
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-  const { imageBase64, userApiKey } = body || {};
+  const { imageBase64 } = body || {};
 
-  const apiKey =
-    userApiKey ||
-    process.env.GEMINI_API_KEY ||
-    process.env.VITE_GEMINI_API_KEY ||
-    process.env.GEMINI_KEY ||
-    process.env.gemini_api_key ||
-    process.env.GEMINI_PRO_KEY ||
-    process.env.GOOGLE_API_KEY;
+  // Server-side key ONLY. A key arriving in the request body is never trusted:
+  // honouring one turns this route into an open relay for third-party keys and
+  // makes abuse untraceable.
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey || !apiKey.trim()) {
-    return res.status(400).json({
-      error: 'GEMINI_API_KEY is missing. Please provide an API key in Cài Đặt Settings.'
+    return res.status(500).json({
+      error: 'Server is not configured for OCR (GEMINI_API_KEY is not set).'
     });
+  }
+
+  if (typeof imageBase64 === 'string' && imageBase64.length > MAX_IMAGE_BASE64_CHARS) {
+    return res.status(413).json({ error: 'Image too large to process.' });
   }
 
   try {
@@ -82,7 +86,21 @@ QUY TẮC TRÍCH XUẤT BẮT BUỘC:
 5. "note": Liệt kê tên các mặt hàng trong bảng (VD: Xi Măng Holcim, Gạch Ống, D8 142).
 `;
 
-    const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+    // ONE place defines the model, and it defaults to a `-latest` alias.
+    //
+    // This list used to be hardcoded as
+    //   ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro']
+    // Every one of those is a dated snapshot, and `gemini-1.5-flash` is the
+    // specific model whose sunset returned 404s and took three Siteop routes
+    // down in production for days (see Siteop AGENTS.md #1). Dated snapshots
+    // get retired on Google's schedule, not yours -- `gemini-3.6-flash`
+    // retires 19 Nov 2026.
+    //
+    // Override with the GEMINI_MODEL env var to pin a specific model (e.g. to
+    // move onto Gemini 4 Hydrogen once you have confirmed its exact API id
+    // against your own key -- see scripts/list-gemini-models.sh). Do not write
+    // a model string literal inline here again.
+    const models = [process.env.GEMINI_MODEL?.trim() || 'gemini-flash-latest'];
     let lastError = '';
 
     for (const model of models) {
